@@ -1,0 +1,49 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px; // full
+  border: 1px solid transparent;
+  padding: 0.125rem 0.625rem; // py-0.5 px-2.5
+  font-size: 0.75rem; // text-xs
+  font-weight: 600; // font-semibold
+  transition: background-color 0.2s ease, color 0.2s ease;
+  outline: none;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--ring-color), 0 0 0 4px var(--ring-offset-color);
+  }
+
+  &--default {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+
+    &:hover {
+      background-color: rgba(var(--primary-rgb), 0.8);
+    }
+  }
+
+  &--secondary {
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
+
+    &:hover {
+      background-color: rgba(var(--secondary-rgb), 0.8);
+    }
+  }
+
+  &--destructive {
+    background-color: var(--destructive);
+    color: var(--destructive-foreground);
+
+    &:hover {
+      background-color: rgba(var(--destructive-rgb), 0.8);
+    }
+  }
+
+  &--outline {
+    background-color: transparent;
+    border-color: currentColor;
+    color: var(--foreground);
+  }
+}

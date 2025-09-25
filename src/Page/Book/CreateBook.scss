@@ -1,0 +1,114 @@
+.create-book {
+  font-family: sans-serif;
+  background: #f8f9fa;
+  min-height: 100vh;
+
+  .header {
+    background: #fff;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 1rem 0;
+
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .back-link {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: #6b7280;
+        &:hover { color: #111827; }
+        .icon { margin-right: 0.5rem; }
+      }
+
+      .title {
+        display: flex;
+        align-items: center;
+        .emoji { font-size: 1.5rem; margin-right: 0.5rem; }
+        .text { font-size: 1.25rem; font-weight: bold; }
+      }
+    }
+  }
+
+  .main-content {
+    padding: 2rem 0;
+    max-width: 700px;
+    margin: 0 auto;
+
+    .page-title { text-align: center; font-size: 2rem; font-weight: bold; margin-bottom: 1rem; }
+
+    .progress-bar {
+      height: 6px;
+      background: #e5e7eb;
+      border-radius: 3px;
+      margin-bottom: 2rem;
+      .progress { height: 6px; background: #3b82f6; border-radius: 3px; transition: width 0.3s ease; }
+    }
+
+    .card {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      margin-bottom: 2rem;
+
+      .step-content {
+        h2 { text-align: center; font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .description { text-align: center; color: #6b7280; margin-bottom: 1.5rem; }
+
+        .form-group {
+          margin-bottom: 1rem;
+          label { display: block; margin-bottom: 0.25rem; font-weight: 500; }
+          input, select, textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.25rem;
+            &:focus { outline: none; border-color: #3b82f6; }
+          }
+          textarea { min-height: 100px; }
+        }
+
+        .review-section {
+          background: #f3f4f6;
+          padding: 1rem;
+          border-radius: 0.5rem;
+          margin-bottom: 1rem;
+          h3 { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; margin-bottom: 0.5rem; }
+        }
+
+        .center {
+          text-align: center;
+          .btn-create {
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            background: #3b82f6;
+            color: #fff;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            &:hover { background: #2563eb; }
+          }
+        }
+      }
+    }
+
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        border: 1px solid #d1d5db;
+        background: #fff;
+        cursor: pointer;
+        &:disabled { cursor: not-allowed; opacity: 0.5; }
+        &:hover:not(:disabled) { background: #f3f4f6; }
+      }
+    }
+  }
+}
