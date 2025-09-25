@@ -1,0 +1,14 @@
+.main-page {
+  min-height: 100vh;
+  background: var(--background, #f9f9f9);
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rem; // spacing between sections
+  padding-top: 64px; // offset for fixed header
+}

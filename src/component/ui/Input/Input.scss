@@ -1,0 +1,43 @@
+.custom-input {
+  display: flex;
+  height: 40px; // h-10
+  width: 100%;
+  border-radius: 6px; // rounded-md
+  border: 1px solid var(--input-border, #ccc);
+  background-color: var(--background, #fff);
+  padding: 8px 12px; // px-3 py-2
+  font-size: 1rem; // text-base
+  line-height: 1.5;
+  color: var(--foreground, #222);
+
+  // Placeholder
+  &::placeholder {
+    color: var(--muted-foreground, #888);
+  }
+
+  // File input styles
+  &::file-selector-button {
+    border: none;
+    background: transparent;
+    font-size: 0.875rem; // text-sm
+    font-weight: 500;
+    color: var(--foreground, #222);
+  }
+
+  // Focus styles
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--ring, #2684ff);
+  }
+
+  // Disabled state
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  // Responsive font size
+  @media (min-width: 768px) {
+    font-size: 0.875rem; // md:text-sm
+  }
+}

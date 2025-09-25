@@ -1,0 +1,111 @@
+.workflow-section {
+  padding: 5rem 1rem;
+
+  .workflow-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .workflow-header {
+    text-align: center;
+    margin-bottom: 4rem;
+
+    h2 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: 1.25rem;
+      color: var(--muted-foreground, #6b7280);
+      max-width: 42rem;
+      margin: 0 auto;
+    }
+  }
+
+  .workflow-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    position: relative;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .workflow-line {
+      display: none;
+      @media (min-width: 768px) {
+        display: block;
+        position: absolute;
+        top: 3rem;
+        left: 0;
+        right: 0;
+        height: 0.125rem;
+        background-color: var(--border, #d1d5db);
+        z-index: 0;
+      }
+    }
+
+    .workflow-step {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+
+      .workflow-step-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .workflow-icon {
+        width: 6rem;
+        height: 6rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        background-color: var(--primary, #D62430);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        margin-bottom: 1.5rem;
+
+        svg {
+          width: 2.5rem;
+          height: 2.5rem;
+          color: var(--primary-foreground, #fff);
+        }
+      }
+
+      .workflow-step-number {
+        position: absolute;
+        top: -0.5rem;
+        right: -0.5rem;
+        width: 2rem;
+        height: 2rem;
+        border: 4px solid var(--primary, #D62430);
+        border-radius: 50%;
+        background-color: var(--background, #fff);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: var(--primary, #D62430);
+      }
+
+      h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+      }
+
+      p {
+        font-size: 0.875rem;
+        color: var(--muted-foreground, #6b7280);
+        line-height: 1.5;
+      }
+    }
+  }
+}
