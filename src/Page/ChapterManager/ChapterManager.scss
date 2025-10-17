@@ -1,0 +1,124 @@
+.chapter-manager {
+  height: 100vh;
+  display: flex;
+  background: #fafafa;
+.chapter-list {
+  .ant-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+
+    &:hover {
+      background: #f5f5f5;
+    }
+
+    &.active {
+      background: #e6f4ff;
+      border-left: 4px solid #1677ff;
+    }
+  }
+}
+
+  .chapter-sider {
+    background: #fff;
+    border-right: 1px solid #eee;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+
+    .sider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+
+      h3 {
+        margin: 0;
+        font-weight: 600;
+      }
+    }
+
+    .chapter-list {
+      flex: 1;
+      overflow-y: auto;
+
+      .ant-list-item {
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        padding: 10px 12px;
+        margin-bottom: 6px;
+
+        &:hover {
+          background: #f5f5f5;
+        }
+
+        &.active {
+          background: #f0f5ff;
+          border: 1px solid #91caff;
+        }
+
+        .ant-list-item-meta-title {
+          font-weight: 600;
+          color: #333;
+        }
+
+        .ant-list-item-meta-description {
+          font-size: 12px;
+          color: #999;
+        }
+      }
+    }
+  }
+
+  .chapter-content-area {
+    // flex: 1;
+    // display: flex;
+    // flex-direction: column;
+    background: #fff;
+
+    .top-toolbar {
+      background: #fff;
+      padding: 12px 24px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      gap: 10px;
+    }
+
+    .editor-container {
+      padding: 24px 40px;
+      overflow-y: auto;
+      background: #fff;
+
+      .editor-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+
+        h2 {
+          margin: 0;
+          font-weight: 600;
+        }
+      }
+
+      .editor-wrapper {
+        border: 1px solid #eee;
+        border-radius: 8px;
+        background: #fff;
+        padding: 12px;
+        min-height: 500px;
+
+        .ck.ck-editor__editable_inline {
+          min-height: 400px;
+        }
+      }
+
+      .spin-wrapper {
+        text-align: center;
+        padding-top: 80px;
+      }
+    }
+  }
+}

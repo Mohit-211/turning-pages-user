@@ -8,14 +8,16 @@ const client = axios.create({
   headers: {
     timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,
     "Content-Type": "application/json",
+    
   },
 });
 
 client.interceptors.request.use(
   (req) => {
-    const token = localStorage.getItem("book_publish_token"); // or from cookie / redux
+    const token = localStorage.getItem("book_publish_token");
+    console.log(token,"token")
     if (token) {
-      req.headers.Authorization = `Bearer ${token}`;
+      req.headers['x-access-token'] = `${token}`;
     }
     return req;
   },

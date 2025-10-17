@@ -17,7 +17,7 @@ const CTABanner = () => {
 
           <div className="cta-buttons">
             <Button size="lg" variant="secondary" className="cta-join" asChild>
-              <a href="/auth">
+              <a href="/login">
                 Join Now
                 <ArrowRight className="cta-arrow" />
               </a>

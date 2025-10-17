@@ -6,6 +6,7 @@ import FeaturesSection from "../Sections/FeaturesSection/FeaturesSection";
 import WorkflowSection from "../Sections/WorkflowSection/WorkflowSection";
 import TestimonialsSection from "../Sections/TestimonialsSection/TestimonialsSection";
 import CTABanner from "../Sections/CTABanner/CTABanner";
+import Footer from "../component/Footer/Footer";
 const Main = () => {
     return (
         <div className="main-page">
@@ -16,10 +17,9 @@ const Main = () => {
                 <WorkflowSection />
                 <TestimonialsSection />
                 <CTABanner />
-                {/* 
-                */}
+             
             </main>
-            {/* <Footer /> */}
+            <Footer/>
         </div>
     );
 };

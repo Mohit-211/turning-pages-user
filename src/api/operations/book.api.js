@@ -10,3 +10,8 @@ export const GetBookByIdApi = (id) => client.get(Book_ENDPOINTS.GET_BY_ID(id));
 export const GetBooksByStatusApi = () => client.post(Book_ENDPOINTS.GET_BY_STATUS,payload);
 // Search
 export const SearchBookApi = (payload) => client.post(Book_ENDPOINTS.SEARCH, payload);
+// delete
+export const DeleteBookApi = (bookId) =>
+  client.delete(Book_ENDPOINTS.DELETE, {
+    data: { book_id: bookId },
+  });

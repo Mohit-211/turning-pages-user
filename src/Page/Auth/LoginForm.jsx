@@ -11,7 +11,8 @@ const LoginForm = () => {
     setLoading(true);
     try {
       const response = await loginApi({ email, password });
-      const token = response.data.token;
+      console.log(response,"response")
+      const token = response?.data?.data?.tokens?.access?.token;
       localStorage.setItem("book_publish_token", token);
       message.success("Login Successful! Welcome back.");
       navigate("/dashboard");
@@ -21,7 +22,7 @@ const LoginForm = () => {
 
       // Redirect only if user is not verified
       if (
-        errorMessage.includes("not verified") ||
+        errorMessage.includes("User is not verified yet.Please verify Your Otp First") ||
         errorMessage.includes("verify Your Otp")
       ) {
         message.info(`${errorMessage} Redirecting to OTP verification...`);
@@ -34,8 +35,7 @@ const LoginForm = () => {
         return;
       }
 
-      // All other errors (invalid password, email, etc) show error only
-      message.error(errorMessage);
+     
 
     } finally {
       setLoading(false);

@@ -4,7 +4,7 @@ import { AUTH_ENDPOINTS } from "../endpoints";
 // Auth
 export const loginApi = (payload) => client.post(AUTH_ENDPOINTS.LOGIN, payload);
 export const registerApi = (payload) => client.post(AUTH_ENDPOINTS.REGISTER, payload);
-export const logoutApi = () => client.post(AUTH_ENDPOINTS.LOGOUT);
+export const logoutApi = () => client.get(AUTH_ENDPOINTS.LOGOUT);
 
 // OTP
 export const sendOtpApi = (payload) => client.post(AUTH_ENDPOINTS.SEND_OTP, payload);

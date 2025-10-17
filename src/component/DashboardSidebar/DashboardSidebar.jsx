@@ -1,39 +1,62 @@
-import { Layout, Menu } from "antd";
-import {
-  HomeOutlined,
-  BookOutlined,
-  SendOutlined,
-  SettingOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Home, BookOpen, Send, Settings, User, Menu } from "lucide-react";
+import { useLocation, Link } from "react-router-dom";
 import "./DashboardSidebar.scss";
 
-const { Sider } = Layout;
-
 const menuItems = [
-  { key: "/dashboard", label: "Dashboard", icon: <HomeOutlined /> },
-  { key: "/dashboard/books", label: "My Books", icon: <BookOutlined /> },
-  { key: "/dashboard/submissions", label: "Submissions", icon: <SendOutlined /> },
-  { key: "/dashboard/settings", label: "Settings", icon: <SettingOutlined /> },
-  { key: "/dashboard/profile", label: "Profile", icon: <UserOutlined /> },
+  { title: "Dashboard", url: "/dashboard", icon: Home },
+  { title: "My Books", url: "/dashboard/books", icon: BookOpen },
+  { title: "Submissions", url: "/dashboard/submissions", icon: Send },
+  { title: "Settings", url: "/dashboard/settings", icon: Settings },
+  { title: "Profile", url: "/dashboard/profile", icon: User },
 ];
 
 const DashboardSidebar = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const currentPath = location.pathname;
 
+  // Load collapsed state from localStorage (default false)
+  const [collapsed, setCollapsed] = useState(() => {
+    const stored = localStorage.getItem("sidebarCollapsed");
+    return stored === "true";
+  });
+
+  const toggleSidebar = () => {
+    const newValue = !collapsed;
+    setCollapsed(newValue);
+    localStorage.setItem("sidebarCollapsed", String(newValue));
+  };
+
+  const isActive = (path) =>
+    currentPath === path || (path === "/dashboard" && currentPath === "/dashboard");
+
   return (
-    <Sider collapsible className="dashboard-sidebar">
-      <div className="sidebar-title">Navigation</div>
-      <Menu
-        mode="inline"
-        selectedKeys={[currentPath]}
-        onClick={({ key }) => navigate(key)}
-        items={menuItems}
-      />
-    </Sider>
+    <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
+      {/* Collapse Toggle */}
+      <div className="sidebar-toggle" onClick={toggleSidebar}>
+        <Menu className="toggle-icon" />
+      </div>
+
+      <div className="sidebar-group">
+        {!collapsed && <div className="sidebar-label">Navigation</div>}
+        <ul className="sidebar-menu">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <li key={item.title} className="sidebar-menu-item">
+                <Link
+                  to={item.url}
+                  className={`sidebar-menu-button ${isActive(item.url) ? "active" : ""}`}
+                >
+                  <Icon className="icon" />
+                  {!collapsed && <span className="title">{item.title}</span>}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </aside>
   );
 };
 

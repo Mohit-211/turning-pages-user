@@ -3,6 +3,8 @@ import "./Header.scss";
 import { Button } from "../../component/ui/button/button";
 
 const Header = () => {
+  const token = localStorage.getItem("book_publish_token"); // or wherever you store your auth token
+
   return (
     <header className="header">
       <div className="header__container">
@@ -22,12 +24,22 @@ const Header = () => {
 
         {/* Actions */}
         <div className="header__actions">
-          <Button variant="ghost" className="signin-btn" asChild>
-            <a href="/login" style={{ color: "black",textDecoration:"none" }}>Sign In</a>
-          </Button>
-          <Button variant="default" className="getstarted-btn" asChild>
-            <a href="/login" style={{ color: "white",textDecoration:"none"  }}>Get Started</a>
-          </Button>
+          {token ? (
+           <Button variant="default" className="getstarted-btn" asChild>
+                <a href="/dashboard" style={{ color: "white", textDecoration: "none" }}>
+                  Get Started
+                </a>
+              </Button>
+          ) : (
+            <>
+              <Button variant="ghost" className="signin-btn" asChild>
+                <a href="/login" style={{ color: "black", textDecoration: "none" }}>
+                  Sign In
+                </a>
+              </Button>
+             
+            </>
+          )}
         </div>
       </div>
     </header>
