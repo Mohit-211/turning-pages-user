@@ -23,7 +23,7 @@ const HeroSection = () => {
 
             <div className="hero-buttons">
               <Button size="lg" className="btn-primary" asChild>
-                <a href="/auth" style={{color:"white"}}>Get Started</a>
+                <a href="/dashboard" style={{color:"white",textDecoration:"none"}}>Get Started</a>
               </Button>
               <Button variant="outline" size="lg" className="btn-outline">
                 Watch Demo

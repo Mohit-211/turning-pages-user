@@ -9,23 +9,28 @@ import SignUpForm from './Page/Auth/SignUpForm';
 import OtpVerification from './Page/Auth/OtpVerification';
 import Dashboard from './Page/Dashboard/Dashboard';
 import CreateBook from './Page/Book/CreateBook';
+import MyBookPage from './Page/MyBookPage/MyBookPage';
+import ProfilePage from './Page/ProfilePage/ProfilePage';
+import DashboardLayout from './Page/Dashboard/DashboardLayout';
+import PublicRoute from './Page/AuthRoutes/PublicRoute';
+import ProtectedRoute from './Page/AuthRoutes/ProtectedRoute';
+import AddChapterPage from './Page/AddChapterPage/AddChapterPage';
+import ChapterManager from './Page/ChapterManager/ChapterManager';
+
 function App() {
   return (
     <>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Main />} />
-          <Route path="/auth" element={<Auth />} />
+          {/* <Route path="/auth" element={<Auth />} /> */}
           {/* <Route path="*" element={<Navigate to="/login" />} /> */}
           <Route path="/login" element={
-            <AuthLayout>
-              <LoginForm />
-            </AuthLayout>
-          } />
-          <Route path="/login" element={
-            <AuthLayout>
-              <LoginForm />
-            </AuthLayout>
+            <PublicRoute>
+              <AuthLayout>
+                <LoginForm />
+              </AuthLayout>
+            </PublicRoute>
           } />
           <Route path="/signup" element={
             <AuthLayout>
@@ -37,10 +42,42 @@ function App() {
               <OtpVerification />
             </AuthLayout>
           } />
-          <Route path="/dashboard" element={<Dashboard/>} />
           <Route path="/create-book" element={<CreateBook />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout >
+                  <Dashboard />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/profile"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout >
+                  <ProfilePage />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/books"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout >
+                  <MyBookPage />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+            <Route path="/dashboard/addchapter" element={<AddChapterPage/>} />
+            <Route path="/dashboard/chaptermanager" element={<ChapterManager/>} />
 
         </Routes>
+        
       </BrowserRouter>
     </>
   )

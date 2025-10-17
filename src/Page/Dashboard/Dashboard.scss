@@ -1,133 +1,14 @@
+:where(.css-dev-only-do-not-override-1ru20fs).ant-layout {
+  flex-direction: row !important;
+  display: block;
+}
 .dashboard {
   background: #f9fafb;
+  min-height: 100dvh;
+  display: flex;
+
 
   .dashboard-content {
     padding: 20px;
-  }
-
-  .welcome-section {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 24px;
-
-    h2 {
-      font-size: 22px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    p {
-      color: #666;
-      margin: 0;
-    }
-
-    .new-book-btn {
-      background: #e53935;
-      border: none;
-      font-weight: 500;
-      &:hover {
-        background: #c62828 !important;
-      }
-    }
-  }
-
-  .stats-section {
-    margin-bottom: 32px;
-
-    .stat-card {
-      text-align: center;
-      border-radius: 8px;
-      .stat-title {
-        color: #666;
-        font-size: 14px;
-      }
-      .stat-value {
-        font-size: 22px;
-        font-weight: 600;
-        margin: 0;
-      }
-    }
-  }
-
-  .books-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-
-    h3 {
-      font-size: 18px;
-      font-weight: 600;
-      margin: 0;
-    }
-  }
-
-  .book-card {
-    border-radius: 8px;
-    .book-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 12px;
-
-      h4 {
-        font-size: 16px;
-        margin: 0;
-      }
-
-      .genre {
-        font-size: 13px;
-        color: #666;
-      }
-
-      .status-tag {
-        border-radius: 12px;
-        padding: 2px 10px;
-        font-size: 12px;
-        &.completed {
-          background: #e8f5e9;
-          color: #2e7d32;
-        }
-        &.draft {
-          background: #fff3e0;
-          color: #ef6c00;
-        }
-        &.inediting {
-          background: #e3f2fd;
-          color: #1976d2;
-        }
-      }
-    }
-
-    .progress-section {
-      margin-bottom: 12px;
-      p {
-        margin: 0 0 4px 0;
-        font-size: 13px;
-        color: #666;
-      }
-
-      .ant-progress-inner {
-        border-radius: 10px;
-      }
-
-      .book-meta {
-        display: flex;
-        justify-content: space-between;
-        font-size: 12px;
-        color: #888;
-        margin-top: 4px;
-      }
-    }
-
-    .open-btn {
-      background: #e53935;
-      border: none;
-      font-weight: 500;
-      &:hover {
-        background: #c62828 !important;
-      }
-    }
   }
 }

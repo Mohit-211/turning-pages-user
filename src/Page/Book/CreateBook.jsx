@@ -9,14 +9,11 @@ import { CreateBookApi } from "../../api/operations/book.api";
 const { TextArea } = Input;
 
 const CreateBook = () => {
+  const [form] = Form.useForm();
   const [currentStep, setCurrentStep] = useState(1);
-  const [bookData, setBookData] = useState({
-    title: "",
-    genre_id: null,
-    description: ""
-  });
   const [genres, setGenres] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [formValues, setFormValues] = useState({});
   const navigate = useNavigate();
 
   const totalSteps = 2;
@@ -25,32 +22,35 @@ const CreateBook = () => {
   useEffect(() => {
     GetAllGenreApi()
       .then((res) => setGenres(res?.data?.data || []))
-      .catch((e) => console.log(e, "error fetching genres"));
+      .catch((e) => console.error("Error fetching genres:", e));
   }, []);
 
-  const handleNext = () => {
-    setCurrentStep(currentStep + 1);
+  const handleNext = async () => {
+    try {
+      const values = await form.validateFields();
+      setFormValues((prev) => ({ ...prev, ...values })); // ✅ store values
+      setCurrentStep((prev) => prev + 1);
+    } catch {
+      message.error("Please fill all required fields.");
+    }
   };
 
   const handlePrevious = () => {
-    setCurrentStep(currentStep - 1);
+    const values = form.getFieldsValue();
+    setFormValues((prev) => ({ ...prev, ...values }));
+    setCurrentStep((prev) => prev - 1);
   };
 
   const handleCreateProject = async () => {
-    if (!bookData.title || !bookData.genre_id || !bookData.description) {
-      message.error("Please fill all fields before creating the book.");
-      return;
-    }
-
     try {
+      const values = await form.validateFields();
+      const payload = { ...formValues, ...values }; // ✅ merge cached + latest
+
+      console.log(payload, "payload");
       setLoading(true);
-      const payload = {
-        title: bookData.title,
-        description: bookData.description,
-        genre_id: bookData.genre_id
-      };
-      const response = await CreateBookApi(payload);
-      message.success(`Project Created! "${bookData.title}" has been added to your library.`);
+      const response =await CreateBookApi(payload);
+console.log(response,"response===>>>")
+      message.success(response?.data?.message);
       navigate("/dashboard");
     } catch (error) {
       console.error(error);
@@ -60,10 +60,9 @@ const CreateBook = () => {
     }
   };
 
-  const isStep1Valid = bookData.title && bookData.genre_id && bookData.description;
-
   return (
     <div className="create-book">
+      {/* Header */}
       <header className="header">
         <div className="container header-container">
           <Link to="/dashboard" className="back-link">
@@ -76,10 +75,13 @@ const CreateBook = () => {
         </div>
       </header>
 
+      {/* Main */}
       <main className="container main-content">
         <h1 className="page-title">Create a New Book</h1>
+
+        {/* Progress */}
         <div className="progress-bar">
-          <div className="progress" style={{ width: `${progress}%` }}></div>
+          <div className="progress" style={{ width: `${progress}%` }} />
         </div>
 
         <div className="card">
@@ -88,21 +90,23 @@ const CreateBook = () => {
               <h2>Book Details</h2>
               <p className="description">Provide some basic information to get started</p>
 
-              <Form layout="vertical">
-                <Form.Item label="Book Title *">
-                  <Input
-                    placeholder="Enter your book title"
-                    value={bookData.title}
-                    onChange={(e) => setBookData({ ...bookData, title: e.target.value })}
-                  />
+              <Form layout="vertical" form={form} initialValues={formValues}>
+                <Form.Item
+                  label="Book Title *"
+                  name="title"
+                  rules={[{ required: true, message: "Please enter a book title" }]}
+                  preserve={true}
+                >
+                  <Input placeholder="Enter your book title" />
                 </Form.Item>
 
-                <Form.Item label="Genre *">
-                  <Select
-                    placeholder="Select a genre"
-                    value={bookData.genre_id}
-                    onChange={(value) => setBookData({ ...bookData, genre_id: value })}
-                  >
+                <Form.Item
+                  label="Genre *"
+                  name="genre_id"
+                  rules={[{ required: true, message: "Please select a genre" }]}
+                  preserve={true}
+                >
+                  <Select placeholder="Select a genre">
                     {genres.map((item) => (
                       <Select.Option key={item.id} value={item.id}>
                         {item.title}
@@ -111,12 +115,16 @@ const CreateBook = () => {
                   </Select>
                 </Form.Item>
 
-                <Form.Item label="Short Description *">
+                <Form.Item
+                  label="Short Description *"
+                  name="description"
+                  rules={[{ required: true, message: "Please provide a description" }]}
+                  preserve={true}
+                >
                   <TextArea
                     placeholder="Describe your book in a few sentences..."
-                    value={bookData.description}
-                    onChange={(e) => setBookData({ ...bookData, description: e.target.value })}
-                    rows={4}
+                    autoSize={{ minRows: 4, maxRows: 8 }}
+                    maxLength={3000}
                   />
                 </Form.Item>
               </Form>
@@ -129,14 +137,28 @@ const CreateBook = () => {
               <p className="description">Confirm the details and create your book project</p>
 
               <div className="review-section">
-                <h3><FileText /> Book Details</h3>
-                <p><strong>Title:</strong> {bookData.title}</p>
-                <p><strong>Genre:</strong> {genres.find((g) => g.id === bookData.genre_id)?.title}</p>
-                <p><strong>Description:</strong> {bookData.description}</p>
+                <h3>
+                  <FileText /> Book Details
+                </h3>
+                <p>
+                  <strong>Title:</strong> {formValues.title}
+                </p>
+                <p>
+                  <strong>Genre:</strong>{" "}
+                  {genres.find((g) => g.id === formValues.genre_id)?.title}
+                </p>
+                <p>
+                  <strong>Description:</strong> {formValues.description}
+                </p>
               </div>
 
               <div className="center">
-                <Button type="primary" size="large" onClick={handleCreateProject} loading={loading}>
+                <Button
+                  type="primary"
+                  size="large"
+                  onClick={handleCreateProject}
+                  loading={loading}
+                >
                   Create Project
                 </Button>
               </div>
@@ -144,17 +166,14 @@ const CreateBook = () => {
           )}
         </div>
 
+        {/* Navigation */}
         <div className="navigation">
           <Button onClick={handlePrevious} disabled={currentStep === 1} icon={<ArrowLeft />}>
             Previous
           </Button>
+
           {currentStep < totalSteps && (
-            <Button
-              onClick={handleNext}
-              disabled={!isStep1Valid}
-              icon={<ArrowRight />}
-              type="primary"
-            >
+            <Button type="primary" onClick={handleNext} icon={<ArrowRight />}>
               Next
             </Button>
           )}

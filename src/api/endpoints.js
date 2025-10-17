@@ -8,10 +8,9 @@ export const AUTH_ENDPOINTS = {
   RESET_PASSWORD: "user/auth/reset-password",
   CHANGE_PASSWORD: "user/auth/change-password",
 };
-// export const USER_ENDPOINTS = {
-//   PROFILE: "/users/me",
-//   UPDATE_PROFILE: "/users/update",
-// };
+export const USER_ENDPOINTS = {
+  PROFILE: "user/profile",
+};
 // export const POST_ENDPOINTS = {
 //   GET_ALL: "/posts",
 //   CREATE: "/posts",
@@ -26,5 +25,13 @@ export const Book_ENDPOINTS = {
   GET_ALL: "books",
   GET_BY_ID: (id) => `books/${id}`,
   GET_BY_STATUS: "books/status/update",
-  SEARCH: "books/search"
+  SEARCH: "books/search",
+  DELETE: "books/remove"
+};
+export const Chapter_ENDPOINTS = {
+  CREATE: "chapters",
+  GET_ALL: (id) => `chapters/${id}`,
+  UPDATE: "chapters",
+  DELETE:"chapters/remove"
+
 };
