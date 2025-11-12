@@ -18,7 +18,7 @@ import "./BooksSection.scss";
 
 const BooksSection = ({ books, onDeleteBook }) => {
   const navigate = useNavigate();
-  const isLoading = !books || books.length === 0;
+  const isLoading = !books;
 
   const handleOpenProject = (bookId) => {
     navigate("/dashboard/chaptermanager", { state: { bookId } });

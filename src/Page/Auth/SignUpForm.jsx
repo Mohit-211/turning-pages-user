@@ -204,7 +204,7 @@ const SignUpForm = ({ signUpData = {}, setSignUpData = () => { } }) => {
         {/* ✅ ReCAPTCHA */}
         <Form.Item style={{ justifySelf: "center", textAlign: "center" }}>
           <ReCAPTCHA
-            sitekey="6LdaS9MrAAAAABeF2Pdl7xZyfsBX6ulrtbTQiPsa"
+            sitekey="6LdpsOgrAAAAAPx-8vWg-L8aBFYI_K2Y-eHzoutI"
             onChange={(value) => setCaptchaValue(value)}
           />
         </Form.Item>

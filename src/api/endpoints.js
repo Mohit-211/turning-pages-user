@@ -32,6 +32,6 @@ export const Chapter_ENDPOINTS = {
   CREATE: "chapters",
   GET_ALL: (id) => `chapters/${id}`,
   UPDATE: "chapters",
-  DELETE:"chapters/remove"
-
+  DELETE: "chapters/remove",
+  GenerateChapterContent: "/chapters/generate/chapter/content"
 };
