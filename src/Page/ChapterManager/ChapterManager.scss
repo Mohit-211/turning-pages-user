@@ -19,6 +19,36 @@
     }
   }
 }
+.editor-scroll-container {
+  max-height: calc(100vh - 220px); // adjust height if needed
+  overflow-y: auto;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background: #fff;
+  padding: 8px;
+  scroll-behavior: smooth;
+
+  // nice thin scrollbar
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #999;
+  }
+}
+
+.editor-wrapper {
+  min-height: 400px;
+
+  .ck.ck-editor__editable_inline {
+    min-height: 400px;
+  }
+}
 
   .chapter-sider {
     background: #fff;
@@ -121,4 +151,5 @@
       }
     }
   }
+  
 }
