@@ -18,4 +18,4 @@ export const DeleteChapterApi = (payload) =>
   client.delete(Chapter_ENDPOINTS.DELETE, { data: payload });
 // Ai content
 export const GenerateChapterContentAPI = (payload) =>
-  client.post(Chapter_ENDPOINTS.GenerateChapterContent, { data: payload })
+  client.post(Chapter_ENDPOINTS.GenerateChapterContent, payload);
