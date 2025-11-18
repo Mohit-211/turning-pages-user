@@ -74,7 +74,7 @@ function App() {
             }
           />
             <Route path="/dashboard/addchapter" element={<AddChapterPage/>} />
-            {/* <Route path="/dashboard/chaptermanager" element={<ChapterManager/>} /> */}
+            <Route path="/dashboard/chaptermanager" element={<ChapterManager/>} />
 
         </Routes>
         

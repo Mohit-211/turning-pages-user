@@ -17,7 +17,33 @@ export default function ChapterEditor({ chapter, content, setContent, onSave, sa
       <div className="editor-wrapper">
         <CKEditor
           editor={ClassicEditor}
-          data={chapter?.content || ""}
+          data={content || chapter?.content || ""}
+          config={{
+            toolbar: [
+              "heading",
+              "|",
+              "bold",
+              "italic",
+              "link",
+              "|",
+              "bulletedList",
+              "numberedList",
+              "|",
+              "undo",
+              "redo",
+              "|",
+              "style",
+            ],
+            style: {
+              definitions: [
+                {
+                  name: "Dropcap Paragraph",
+                  element: "p",
+                  classes: ["dropcap"],
+                },
+              ],
+            },
+          }}
           onChange={(e, editor) => setContent(editor.getData())}
         />
       </div>

@@ -77,14 +77,18 @@ const DashboardHeader = ({ user, notifications, unreadCount }) => {
     }
   };
   const handleLogout = async () => {
-    try {
-      const response = await logoutApi(); // call your logout API
-      console.log(response, "==response for logout")
-      message.success("Logged out successfully");
-      navigate("/login"); // redirect to login page
-    } catch (error) {
-      console.log(error, "error")
-    }
+    message.success("Logged out successfully");
+    localStorage.removeItem("book_publish_token");
+    navigate("/login");
+    // try {
+    //   const response = await logoutApi(); // call your logout API
+    //   console.log(response, "==response for logout")
+    //   message.success("Logged out successfully");
+    //    localStorage.removeItem("book_publish_token");
+    //   navigate("/login"); // redirect to login page
+    // } catch (error) {
+    //   console.log(error, "error")
+    // }
   };
   return (
     <Header className="dashboard-header">
