@@ -10,9 +10,8 @@ import Toolbar from "./chapterComponent/toolbar";
 import AIAssistantDrawer from "./chapterComponent/aIAssistantDrawer";
 import AddChapterModal from "./chapterComponent/addChapterModal";
 import UploadChapterModal from "./chapterComponent/uploadChapterModal";
-
+import BookHeader from "../Book/BookHeader/BookHeader";
 const { Sider, Content } = Layout;
-
 export default function ChapterManager() {
   const token = localStorage.getItem("book_publish_token");
   const [chapters, setChapters] = useState([]);
@@ -27,18 +26,17 @@ export default function ChapterManager() {
   const [aiLoading, setAiLoading] = useState(false);
   const [instruction, setInstruction] = useState("");
   const [streamedText, setStreamedText] = useState("");
-
+  const [bookname, setBookName] = useState()
   const bookId = 1;
-
   // Fetch chapters
   useEffect(() => {
     fetchChapters();
   }, []);
-
   async function fetchChapters() {
     setLoading(true);
     try {
       const res = await GetBookByIdApi(bookId);
+      setBookName(res?.data?.data?.title)
       const chaps = res?.data?.data?.book_chapters || [];
       setChapters(chaps);
     } catch {
@@ -47,14 +45,12 @@ export default function ChapterManager() {
       setLoading(false);
     }
   }
-
   // Load selected chapter
   useEffect(() => {
     if (!selectedId) return;
     const selected = chapters.find((c) => c.id === selectedId);
     setEditorContent(selected?.content || "");
   }, [selectedId, chapters]);
-
   // Save chapter
   async function saveChapterContent() {
     if (!selectedId) return message.warning("Please select a chapter first");
@@ -75,7 +71,6 @@ export default function ChapterManager() {
       setSaving(false);
     }
   }
-
   // Create new chapter
   async function createChapter(title) {
     setCreateLoading(true);
@@ -90,97 +85,81 @@ export default function ChapterManager() {
       setCreateLoading(false);
     }
   }
-
   // Upload file content
   const handleUploadSuccess = (uploadedText) => {
     if (!selectedId) {
       message.warning("Please select a chapter first.");
       return;
     }
-
     setEditorContent(uploadedText);
     setChapters((prev) =>
       prev.map((ch) =>
         ch.id === selectedId ? { ...ch, content: uploadedText } : ch
       )
     );
-
     message.success("Uploaded file content added to selected chapter");
     setUploadModalVisible(false);
   };
-
   // ✅ AI Streaming Logic (ChatGPT-style)
- const handleGenerateWithAI = async () => {
-  if (!selectedId) return message.warning("Select a chapter first");
-  if (!instruction.trim())
-    return message.warning("Enter an instruction for AI");
-
-  setAiLoading(true);
-  setStreamedText("");
-
-  try {
-    const response = await fetch(
-      "https://api.turningpages.io:9090/api/v1/chapters/generate/chapter/content",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-access-token": token,
-        },
-        body: JSON.stringify({
-          instruction,
-          chapter_id: selectedId,
-          context: editorContent || "",
-        }),
-      }
-    );
-
-    if (!response.ok) throw new Error("Request failed");
-    if (!response.body) throw new Error("No response body");
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder("utf-8");
-    let fullText = "";
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      const chunk = decoder.decode(value, { stream: true });
-      const lines = chunk.split("\n").filter((line) => line.trim() !== "");
-
-      for (const line of lines) {
-        if (!line.startsWith("data:")) continue;
-        const jsonStr = line.replace("data:", "").trim();
-
-        try {
-          const data = JSON.parse(jsonStr);
-          if (data.token !== undefined) {
-            fullText += data.token;
-            setStreamedText((prev) => prev + data.token);
+  const handleGenerateWithAI = async () => {
+    if (!selectedId) return message.warning("Select a chapter first");
+    if (!instruction.trim())
+      return message.warning("Enter an instruction for AI");
+    setAiLoading(true);
+    setStreamedText("");
+    try {
+      const response = await fetch(
+        "https://api.turningpages.io:9090/api/v1/chapters/generate/chapter/content",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-access-token": token,
+          },
+          body: JSON.stringify({
+            instruction,
+            chapter_id: selectedId,
+            context: editorContent || "",
+          }),
+        }
+      );
+      if (!response.ok) throw new Error("Request failed");
+      if (!response.body) throw new Error("No response body");
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+      let fullText = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        const lines = chunk.split("\n").filter((line) => line.trim() !== "");
+        for (const line of lines) {
+          if (!line.startsWith("data:")) continue;
+          const jsonStr = line.replace("data:", "").trim();
+          try {
+            const data = JSON.parse(jsonStr);
+            if (data.token !== undefined) {
+              fullText += data.token;
+              setStreamedText((prev) => prev + data.token);
+            }
+          } catch {
+            // ignore malformed chunks
           }
-        } catch {
-          // ignore malformed chunks
         }
       }
+      // ✅ Show success only if text was generated
+      if (fullText.trim().length > 0) {
+        message.success("AI generation completed!");
+      } else {
+        message.warning("AI did not return any content.");
+      }
+    } catch (error) {
+      console.error("AI stream error:", error);
+      message.error("AI content generation failed");
+    } finally {
+      setAiLoading(false);
     }
-
-    // ✅ Show success only if text was generated
-    if (fullText.trim().length > 0) {
-      message.success("AI generation completed!");
-    } else {
-      message.warning("AI did not return any content.");
-    }
-
-  } catch (error) {
-    console.error("AI stream error:", error);
-    message.error("AI content generation failed");
-  } finally {
-    setAiLoading(false);
-  }
-};
-
-
+  };
   // ✅ Insert streamed text into editor
   const handleInsertToEditor = () => {
     if (!streamedText) return;
@@ -188,7 +167,6 @@ export default function ChapterManager() {
     setDrawerVisible(false);
     message.success("AI content inserted into editor");
   };
-
   return (
     <Layout className="chapter-manager">
       <Sider width={280} className="chapter-sider">
@@ -206,8 +184,8 @@ export default function ChapterManager() {
           />
         )}
       </Sider>
-
       <Layout className="chapter-content-area">
+        <BookHeader title={bookname}  bookId={bookId}/>
         <Toolbar
           onOpenAIAssistant={() => {
             if (!selectedId) return message.warning("Select a chapter first");
@@ -218,7 +196,6 @@ export default function ChapterManager() {
             setUploadModalVisible(true);
           }}
         />
-
         <Content className="editor-container">
           {selectedId ? (
             <div className="editor-scroll-container">
@@ -237,7 +214,6 @@ export default function ChapterManager() {
           )}
         </Content>
       </Layout>
-
       <AIAssistantDrawer
         visible={drawerVisible}
         onClose={() => setDrawerVisible(false)}
@@ -249,14 +225,12 @@ export default function ChapterManager() {
         setStreamedText={setStreamedText}
         onInsertToEditor={handleInsertToEditor}
       />
-
       <AddChapterModal
         visible={modalVisible}
         onCancel={() => setModalVisible(false)}
         onCreate={createChapter}
         loading={createLoading}
       />
-
       <UploadChapterModal
         visible={uploadModalVisible}
         onCancel={() => setUploadModalVisible(false)}
