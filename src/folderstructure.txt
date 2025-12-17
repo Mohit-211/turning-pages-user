@@ -1,0 +1,142 @@
+.
+├── api
+│   ├── auth
+│   │   └── auth.api.js
+│   ├── client.js
+│   ├── endpoints.js
+│   ├── operations
+│   │   ├── book.api.js
+│   │   ├── chapter.api.js
+│   │   └── genre.api.js
+│   └── users
+│       └── users.api.js
+├── App.css
+├── App.jsx
+├── assets
+│   ├── hero-illustration.jpg
+│   └── profileicon.jpg
+├── component
+│   ├── BackToDashboard
+│   │   ├── BackToDashboard.scss
+│   │   └── BackToDashboard.tsx
+│   ├── DashboardHeader
+│   │   ├── DashboardHeader.jsx
+│   │   └── DashboardHeader.scss
+│   ├── DashboardSidebar
+│   │   ├── DashboardSidebar.jsx
+│   │   └── DashboardSidebar.scss
+│   ├── Footer
+│   │   ├── Footer.jsx
+│   │   └── Footer.scss
+│   ├── Header
+│   │   ├── Header.jsx
+│   │   └── Header.scss
+│   └── ui
+│       ├── Avatar
+│       │   ├── Avatar.jsx
+│       │   └── Avatar.scss
+│       ├── badge
+│       │   ├── badge.jsx
+│       │   └── badge.scss
+│       ├── button
+│       │   ├── button.jsx
+│       │   └── button.scss
+│       ├── Card
+│       │   ├── Card.jsx
+│       │   └── Card.scss
+│       ├── dropdown-menu
+│       │   ├── dropdown-menu.jsx
+│       │   └── dropdown-menu.scss
+│       ├── Input
+│       │   ├── Input.jsx
+│       │   └── Input.scss
+│       ├── Label
+│       │   ├── Label.jsx
+│       │   └── Label.scss
+│       ├── Tabs
+│       │   ├── Tabs.jsx
+│       │   └── Tabs.scss
+│       └── Toast
+│           ├── Toast.jsx
+│           └── Toast.scss
+├── constants
+│   └── config.js
+├── errors
+│   ├── ApiErrorHandler.js
+│   └── errorMessages.js
+├── folderstructure.txt
+├── hooks
+│   └── useToast.js
+├── index.css
+├── main.jsx
+├── Page
+│   ├── AddChapterPage
+│   │   ├── AddChapterPage.jsx
+│   │   └── AddChapterPage.scss
+│   ├── Auth
+│   │   ├── Auth.jsx
+│   │   ├── Auth.scss
+│   │   ├── AuthLayout.jsx
+│   │   ├── LoginForm.jsx
+│   │   ├── OtpVerification.jsx
+│   │   └── SignUpForm.jsx
+│   ├── AuthRoutes
+│   │   ├── ProtectedRoute.jsx
+│   │   └── PublicRoute.jsx
+│   ├── Bhavya.scss
+│   ├── bhavya.tsx
+│   ├── Book
+│   │   ├── BookHeader
+│   │   │   ├── BookHeader.jsx
+│   │   │   └── BookHeader.scss
+│   │   ├── CreateBook.jsx
+│   │   └── CreateBook.scss
+│   ├── ChapterManager
+│   │   ├── chapterComponent
+│   │   │   ├── addChapterModal.jsx
+│   │   │   ├── aIAssistantDrawer.jsx
+│   │   │   ├── chapterEditor.jsx
+│   │   │   ├── chapterEditor.scss
+│   │   │   ├── chpaterList.jsx
+│   │   │   ├── GrammarAssistant.jsx
+│   │   │   ├── GrammarAssistant.scss
+│   │   │   ├── toolbar.jsx
+│   │   │   └── uploadChapterModal.jsx
+│   │   ├── ChapterManager.jsx
+│   │   └── ChapterManager.scss
+│   ├── Dashboard
+│   │   ├── BooksSection.jsx
+│   │   ├── BooksSection.scss
+│   │   ├── Dashboard.jsx
+│   │   ├── Dashboard.scss
+│   │   ├── DashboardLayout.jsx
+│   │   ├── StatsSection.jsx
+│   │   ├── StatsSection.scss
+│   │   ├── WelcomeSection.jsx
+│   │   └── WelcomeSection.scss
+│   ├── Main.jsx
+│   ├── Main.scss
+│   ├── MyBookPage
+│   │   ├── MyBookPage.jsx
+│   │   └── MyBookPage.scss
+│   └── ProfilePage
+│       ├── ProfilePage.jsx
+│       └── ProfilePage.scss
+└── Sections
+    ├── CTABanner
+    │   ├── CTABanner.jsx
+    │   └── CTABanner.scss
+    ├── FeaturesSection
+    │   ├── FeaturesSection.jsx
+    │   └── FeaturesSection.scss
+    ├── HeroSection
+    │   ├── HeroSection.jsx
+    │   └── HeroSection.scss
+    ├── TestimonialsSection
+    │   ├── TestimonialsSection.jsx
+    │   └── TestimonialsSection.scss
+    └── WorkflowSection
+        ├── WorkflowSection.jsx
+        └── WorkflowSection.scss
+
+42 directories, 98 files

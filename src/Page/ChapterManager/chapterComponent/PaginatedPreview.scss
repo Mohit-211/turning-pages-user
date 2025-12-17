@@ -1,0 +1,102 @@
+/* =========================
+   Hidden measuring container
+   ========================= */
+.pagination-measure {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+  width: 720px;
+  padding: 70px 80px;
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.page-measure {
+  visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* =========================
+     Pages wrapper
+     ========================= */
+.pages-container {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  align-items: center;
+  padding: 24px 0 120px;
+}
+
+/* =========================
+     Single page shell
+     ========================= */
+.page {
+  width: 720px;
+  height: 1050px;
+  background: #ffffff;
+  position: relative;
+
+  /* Book-like depth */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05);
+
+  border-radius: 2px;
+}
+
+/* =========================
+     Page content (typography)
+     ========================= */
+.page-content {
+  padding: 70px 80px;
+  overflow: hidden;
+
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: 16px;
+  line-height: 1.65;
+  color: #1f1f1f;
+
+  /* Paragraph rhythm */
+  p {
+    margin: 0 0 1.1em;
+    page-break-inside: avoid;
+  }
+
+  h1,
+  h2,
+  h3 {
+    margin-top: 1.6em;
+    margin-bottom: 0.6em;
+    font-weight: 600;
+    page-break-after: avoid;
+  }
+
+  ul,
+  ol {
+    margin: 0 0 1.2em 1.4em;
+  }
+
+  blockquote {
+    margin: 1.2em 0;
+    padding-left: 16px;
+    border-left: 3px solid #ddd;
+    color: #555;
+    font-style: italic;
+  }
+}
+
+/* =========================
+     Page number
+     ========================= */
+.page-number {
+  position: absolute;
+  bottom: 28px;
+  left: 0;
+  right: 0;
+  text-align: center;
+
+  font-size: 12px;
+  color: #777;
+  letter-spacing: 0.5px;
+}
