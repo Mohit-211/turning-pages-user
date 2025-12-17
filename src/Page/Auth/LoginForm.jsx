@@ -11,7 +11,6 @@ const LoginForm = () => {
     setLoading(true);
     try {
       const response = await loginApi({ email, password });
-      console.log(response,"response")
       const token = response?.data?.data?.tokens?.access?.token;
       localStorage.setItem("book_publish_token", token);
       message.success("Login Successful! Welcome back.");

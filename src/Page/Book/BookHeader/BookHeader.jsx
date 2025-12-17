@@ -6,7 +6,6 @@ import { message } from "antd";
 export default function BookHeader({ bookId, title }) {
     const [loading, setLoading] = useState(false);
     const handleSave = async (status) => {
-        console.log(status, "status")
         try {
             const payload = {
                 book_id: bookId,
@@ -14,7 +13,6 @@ export default function BookHeader({ bookId, title }) {
             };
             setLoading(true);
             const res = await GetBooksByStatusApi(payload);
-            console.log("Saved:", res.data);
             message.success("Saved")
         } catch (err) {
             console.error(err);

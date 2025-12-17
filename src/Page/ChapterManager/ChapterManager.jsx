@@ -11,6 +11,8 @@ import AIAssistantDrawer from "./chapterComponent/aIAssistantDrawer";
 import AddChapterModal from "./chapterComponent/addChapterModal";
 import UploadChapterModal from "./chapterComponent/uploadChapterModal";
 import BookHeader from "../Book/BookHeader/BookHeader";
+import GrammarAssistant from "./chapterComponent/GrammarAssistant";
+import { useParams } from "react-router-dom";
 const { Sider, Content } = Layout;
 export default function ChapterManager() {
   const token = localStorage.getItem("book_publish_token");
@@ -27,7 +29,7 @@ export default function ChapterManager() {
   const [instruction, setInstruction] = useState("");
   const [streamedText, setStreamedText] = useState("");
   const [bookname, setBookName] = useState()
-  const bookId = 1;
+  const {bookId} =useParams()
   // Fetch chapters
   useEffect(() => {
     fetchChapters();
@@ -167,6 +169,9 @@ export default function ChapterManager() {
     setDrawerVisible(false);
     message.success("AI content inserted into editor");
   };
+  const userHasPermission = false; // ❌ cannot edit
+// const userHasPermission = true; // ✔ can edit
+
   return (
     <Layout className="chapter-manager">
       <Sider width={280} className="chapter-sider">
@@ -205,7 +210,15 @@ export default function ChapterManager() {
                 setContent={setEditorContent}
                 onSave={saveChapterContent}
                 saving={saving}
+  readOnly={!userHasPermission}   // ⬅️ ADD THIS
+
               />
+              
+              <GrammarAssistant
+  text={editorContent}
+  setText={setEditorContent}
+  token={token}
+/>
             </div>
           ) : (
             <div className="spin-wrapper">

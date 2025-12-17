@@ -21,10 +21,11 @@ const BooksSection = ({ books, onDeleteBook }) => {
   const isLoading = !books;
 
   const handleOpenProject = (bookId) => {
-    navigate("/dashboard/chaptermanager", { state: { bookId } });
+    navigate(`/dashboard/chaptermanager/${bookId}`);
   };
 
   const handleDelete = async (bookId) => {
+    console.log(bookId,"--->>")
     if (!onDeleteBook) {
       message.warning("Delete handler not provided!");
       return;
@@ -65,54 +66,54 @@ const BooksSection = ({ books, onDeleteBook }) => {
         {isLoading
           ? skeletonCards
           : books.map((book) => (
-              <Col span={8} key={book.id}>
-                <Card className="book-card">
-                  <div className="book-header">
-                    <div>
-                      <h4>{book?.title}</h4>
-                      <p className="genre">{book?.book_genre?.title}</p>
-                    </div>
-                    <div className="book-actions">
-                      {book.status && (
-                        <Tag
-                          className={`status-tag ${book?.status
-                            .toLowerCase()
-                            .replace(" ", "")}`}
-                        >
-                          {book.status}
-                        </Tag>
-                      )}
-                      <Dropdown overlay={menu(book.id)} trigger={["click"]}>
-                        <BsThreeDotsVertical className="menu-icon" />
-                      </Dropdown>
-                    </div>
+            <Col span={8} key={book.id}>
+              <Card className="book-card">
+                <div className="book-header">
+                  <div>
+                    <h4>{book?.title}</h4>
+                    <p className="genre">{book?.book_genre?.title}</p>
                   </div>
-
-                  <div className="progress-section">
-                    <p>Progress</p>
-                    <div className="book-meta">
-                      <span>
-                        Updated{" "}
-                        {book.updated_at
-                          ? formatDistanceToNow(new Date(book.updated_at), {
-                              addSuffix: true,
-                            })
-                          : "Not started"}
-                      </span>
-                    </div>
+                  <div className="book-actions">
+                    {book.status && (
+                      <Tag
+                        className={`status-tag ${book?.status
+                          .toLowerCase()
+                          .replace(" ", "")}`}
+                      >
+                        {book.status}
+                      </Tag>
+                    )}
+                    <Dropdown overlay={menu(book.id)} trigger={["click"]}>
+                      <BsThreeDotsVertical className="menu-icon" />
+                    </Dropdown>
                   </div>
+                </div>
 
-                  <Button
-                    type="primary"
-                    block
-                    className="open-btn"
-                    onClick={() => handleOpenProject(book.id)}
-                  >
-                    Open Project
-                  </Button>
-                </Card>
-              </Col>
-            ))}
+                <div className="progress-section">
+                  <p>Progress</p>
+                  <div className="book-meta">
+                    <span>
+                      Updated{" "}
+                      {book.updated_at
+                        ? formatDistanceToNow(new Date(book.updated_at), {
+                          addSuffix: true,
+                        })
+                        : "Not started"}
+                    </span>
+                  </div>
+                </div>
+
+                <Button
+                  type="primary"
+                  block
+                  className="open-btn"
+                  onClick={() => handleOpenProject(book.id)}
+                >
+                  Open Project
+                </Button>
+              </Card>
+            </Col>
+          ))}
       </Row>
     </>
   );

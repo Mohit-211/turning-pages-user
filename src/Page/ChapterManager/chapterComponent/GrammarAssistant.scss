@@ -1,0 +1,60 @@
+.grammar-container {
+  border-top: 1px solid #eee;
+  padding: 10px;
+}
+
+.grammar-btn {
+  background: #6c4be3;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.grammar-body {
+  display: flex;
+  margin-top: 12px;
+  gap: 14px;
+}
+
+.grammar-preview {
+  flex: 1;
+  border: 1px solid #ddd;
+  padding: 12px;
+  border-radius: 8px;
+  background: #fafafa;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.grammar-error {
+  background: rgba(255, 100, 100, 0.35);
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.grammar-sidebar {
+  width: 260px;
+  border-left: 1px solid #eee;
+  padding-left: 10px;
+}
+
+.grammar-item {
+  background: #fff5f5;
+  padding: 8px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+}
+
+.apply-btn {
+  background: #2a9d8f;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 6px;
+}

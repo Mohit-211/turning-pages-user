@@ -50,7 +50,6 @@ const SignUpForm = ({ signUpData = {}, setSignUpData = () => { } }) => {
         captcha: captchaValue, // ✅ send captcha token if needed in backend
       };
       const response = await registerApi(payload);
-      console.log(response, "response");
 
       if (response?.data?.success) {
         message.success(response?.data?.message);

@@ -33,7 +33,6 @@ const OtpVerification = () => {
         type
       };
       const response = await verifyOtpApi(payload);
-      console.log(response, "response")
       if (response?.data?.success) {
         message.success(response?.data?.message || "OTP verified successfully");
         navigate("/login");
