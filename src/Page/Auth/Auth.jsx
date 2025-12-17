@@ -17,7 +17,6 @@ const Auth = () => {
   }, [location.pathname]);
 
   const handleTabChange = (value) => {
-    console.log(value,"value")
     setActiveTab(value);
     navigate(value === "login" ? "/login" : "/signup");
   };

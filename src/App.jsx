@@ -16,8 +16,10 @@ import PublicRoute from './Page/AuthRoutes/PublicRoute';
 import ProtectedRoute from './Page/AuthRoutes/ProtectedRoute';
 import AddChapterPage from './Page/AddChapterPage/AddChapterPage';
 import ChapterManager from './Page/ChapterManager/ChapterManager';
+import Bhavya from './Page/bhavya';
 
 function App() {
+  
   return (
     <>
       <BrowserRouter>
@@ -74,7 +76,9 @@ function App() {
             }
           />
             <Route path="/dashboard/addchapter" element={<AddChapterPage/>} />
-            <Route path="/dashboard/chaptermanager" element={<ChapterManager/>} />
+             <Route path="/demo" element={<Bhavya />} />
+
+            <Route path="/dashboard/chaptermanager/:bookId" element={<ChapterManager/>} />
 
         </Routes>
         

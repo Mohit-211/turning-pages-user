@@ -11,7 +11,6 @@ const MyBookPage = () => {
   const loadData = async () => {
     try {
       const bookData = await GetAllBooksApi();
-      console.log(bookData,"bookdata")
       setBooks(bookData?.data?.data || []);
     } catch (error) {
       message.error("Failed to load books");

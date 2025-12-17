@@ -1,7 +1,6 @@
 import axios from "axios";
 import config from "../constants/config";
 import { handleApiError } from "../errors/ApiErrorHandler";
-console.log(config,"config")
 const client = axios.create({
   baseURL: config.API_BASE_URL,
   timeout: config.TIMEOUT,
@@ -15,7 +14,6 @@ const client = axios.create({
 client.interceptors.request.use(
   (req) => {
     const token = localStorage.getItem("book_publish_token");
-    console.log(token,"token")
     if (token) {
       req.headers['x-access-token'] = `${token}`;
     }

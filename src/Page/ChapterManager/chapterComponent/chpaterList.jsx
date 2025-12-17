@@ -25,7 +25,7 @@ export default function ChapterList({ chapters, selectedId, onSelect, onAdd }) {
               </Popconfirm>,
             ]}
           >
-            <List.Item.Meta title={item.title} description={`${item.wordCount || 0} words`} />
+            <List.Item.Meta title={item.title} description={`${item.word_count || 0} words`} />
           </List.Item>
         )}
       />

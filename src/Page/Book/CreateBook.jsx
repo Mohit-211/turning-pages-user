@@ -46,10 +46,8 @@ const CreateBook = () => {
       const values = await form.validateFields();
       const payload = { ...formValues, ...values }; // ✅ merge cached + latest
 
-      console.log(payload, "payload");
       setLoading(true);
       const response =await CreateBookApi(payload);
-console.log(response,"response===>>>")
       message.success(response?.data?.message);
       navigate("/dashboard");
     } catch (error) {

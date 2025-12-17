@@ -17,6 +17,8 @@
     "@ckeditor/ckeditor5-paragraph": "^47.2.0",
     "@ckeditor/ckeditor5-react": "^11.0.0",
     "@ckeditor/ckeditor5-style": "^47.2.0",
+    "@grammarly/editor-sdk-react": "^2.5.5",
+    "@saplingai/sapling-js": "^1.0.37",
     "antd": "^5.11.3-alpha.0",
     "axios": "^1.12.2",
     "date-fns": "^4.1.0",

@@ -55,7 +55,6 @@ export default function UploadChapterModal({ visible, onCancel, onUploadSuccess 
       const extractedText = await extractTextFromFile(file);
 
       if (extractedText) {
-        console.log("📘 Extracted Text:", extractedText.slice(0, 300)); // Preview in console
         onUploadSuccess?.(extractedText);
         onCancel();
       }
