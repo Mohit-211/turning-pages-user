@@ -4,7 +4,7 @@ import BackToDashboard from "../../component/BackToDashboard/BackToDashboard";
 import "./ChapterManager.scss";
 import ChapterEditor from "./chapterComponent/chapterEditor";
 import { GetBookByIdApi } from "../../api/operations/book.api";
-import { CreateChapterApi, UpdateChapterApi } from "../../api/operations/chapter.api";
+import { CreateChapterApi, DeleteChapterApi, UpdateChapterApi } from "../../api/operations/chapter.api";
 import ChapterList from "./chapterComponent/chpaterList";
 import Toolbar from "./chapterComponent/toolbar";
 import AIAssistantDrawer from "./chapterComponent/aIAssistantDrawer";
@@ -29,7 +29,7 @@ export default function ChapterManager() {
   const [instruction, setInstruction] = useState("");
   const [streamedText, setStreamedText] = useState("");
   const [bookname, setBookName] = useState()
-  const {bookId} =useParams()
+  const { bookId } = useParams()
   // Fetch chapters
   useEffect(() => {
     fetchChapters();
@@ -87,6 +87,19 @@ export default function ChapterManager() {
       setCreateLoading(false);
     }
   }
+
+  // Delete chapter
+   async function handleChapterDelete(chapterId) {
+  try {
+    await DeleteChapterApi({ chapter_id: chapterId });
+
+    setChapters((prev) => prev.filter((ch) => ch.id !== chapterId));
+
+    // optional: reset selected chapter
+    setSelectedId((prev) => (prev === chapterId ? null : prev));
+  } catch {
+    message.error("Failed to delete chapter");
+  }}
   // Upload file content
   const handleUploadSuccess = (uploadedText) => {
     if (!selectedId) {
@@ -170,7 +183,7 @@ export default function ChapterManager() {
     message.success("AI content inserted into editor");
   };
   const userHasPermission = false; // ❌ cannot edit
-// const userHasPermission = true; // ✔ can edit
+  // const userHasPermission = true; // ✔ can edit
 
   return (
     <Layout className="chapter-manager">
@@ -186,11 +199,12 @@ export default function ChapterManager() {
             selectedId={selectedId}
             onSelect={setSelectedId}
             onAdd={() => setModalVisible(true)}
+            onDelete={handleChapterDelete} 
           />
         )}
       </Sider>
       <Layout className="chapter-content-area">
-        <BookHeader title={bookname}  bookId={bookId}/>
+        <BookHeader title={bookname} bookId={bookId} />
         <Toolbar
           onOpenAIAssistant={() => {
             if (!selectedId) return message.warning("Select a chapter first");
@@ -210,15 +224,15 @@ export default function ChapterManager() {
                 setContent={setEditorContent}
                 onSave={saveChapterContent}
                 saving={saving}
-  readOnly={!userHasPermission}   // ⬅️ ADD THIS
+                readOnly={!userHasPermission}   // ⬅️ ADD THIS
 
               />
-              
-              <GrammarAssistant
+
+              {/* <GrammarAssistant
   text={editorContent}
   setText={setEditorContent}
   token={token}
-/>
+/> */}
             </div>
           ) : (
             <div className="spin-wrapper">
