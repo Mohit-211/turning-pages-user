@@ -66,3 +66,10 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+:where(.css-1ru20fs).ant-layout {
+  display: block !important;
+}
+:where(.css-dev-only-do-not-override-1ru20fs).ant-layout {
+  flex-direction: row !important;
+  display: block;
+}

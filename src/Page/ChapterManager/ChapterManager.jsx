@@ -1,30 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { Layout, Spin, message } from "antd";
 import { useParams } from "react-router-dom";
-
 import BackToDashboard from "../../component/BackToDashboard/BackToDashboard";
 import "./ChapterManager.scss";
-
 import ChapterEditor from "./chapterComponent/chapterEditor";
 import PaginatedPreview from "./chapterComponent/PaginatedPreview";
-
 import ChapterList from "./chapterComponent/chapterList";
 import Toolbar from "./chapterComponent/toolbar";
 import AIAssistantDrawer from "./chapterComponent/aIAssistantDrawer";
 import AddChapterModal from "./chapterComponent/addChapterModal";
 import UploadChapterModal from "./chapterComponent/uploadChapterModal";
 import GrammarAssistant from "./chapterComponent/GrammarAssistant";
-
 import BookHeader from "../Book/BookHeader/BookHeader";
-
 import { GetBookByIdApi } from "../../api/operations/book.api";
 import {
   CreateChapterApi,
   UpdateChapterApi,
 } from "../../api/operations/chapter.api";
-
+import ChapterHeader from "./chapterComponent/ChapterHeader";
 const { Sider, Content } = Layout;
-
 export default function ChapterManager() {
   // ========================
   // STATE
@@ -43,19 +37,15 @@ export default function ChapterManager() {
   const [instruction, setInstruction] = useState("");
   const [streamedText, setStreamedText] = useState("");
   const [bookName, setBookName] = useState("");
-
   const token = localStorage.getItem("book_publish_token");
   const { bookId } = useParams();
-
   const userHasPermission = false; // toggle later via roles
-
   // ========================
   // FETCH CHAPTERS
   // ========================
   useEffect(() => {
     fetchChapters();
   }, []);
-
   async function fetchChapters() {
     setLoading(true);
     try {
@@ -70,6 +60,17 @@ export default function ChapterManager() {
     }
   }
 
+    async function handleChapterDelete(chapterId) {
+  try {
+    await DeleteChapterApi({ chapter_id: chapterId });
+
+    setChapters((prev) => prev.filter((ch) => ch.id !== chapterId));
+
+    // optional: reset selected chapter
+    setSelectedId((prev) => (prev === chapterId ? null : prev));
+  } catch {
+    message.error("Failed to delete chapter");
+  }}
   // ========================
   // LOAD SELECTED CHAPTER
   // ========================
@@ -78,13 +79,19 @@ export default function ChapterManager() {
     const selected = chapters.find((c) => c.id === selectedId);
     setEditorContent(selected?.content || "");
   }, [selectedId, chapters]);
-
   // ========================
   // SAVE CHAPTER
   // ========================
+  const handlePreviewClick = () => {
+    console.log("Preview")
+    setViewMode("preview");
+  }
+  const handleEditClick = () => {
+    console.log("edit")
+    setViewMode("edit");
+  }
   async function saveChapterContent() {
     if (!selectedId) return message.warning("Please select a chapter first");
-
     setSaving(true);
     try {
       const selected = chapters.find((c) => c.id === selectedId);
@@ -94,7 +101,6 @@ export default function ChapterManager() {
         chapter_id: selectedId,
         content: editorContent,
       });
-
       message.success(`Chapter "${selected?.title}" saved`);
       await fetchChapters();
     } catch {
@@ -103,7 +109,6 @@ export default function ChapterManager() {
       setSaving(false);
     }
   }
-
   // ========================
   // CREATE CHAPTER
   // ========================
@@ -120,7 +125,6 @@ export default function ChapterManager() {
       setCreateLoading(false);
     }
   }
-
   // ========================
   // UPLOAD CONTENT
   // ========================
@@ -129,28 +133,23 @@ export default function ChapterManager() {
       message.warning("Select a chapter first");
       return;
     }
-
     setEditorContent(uploadedText);
     setChapters((prev) =>
       prev.map((ch) =>
         ch.id === selectedId ? { ...ch, content: uploadedText } : ch
       )
     );
-
     setUploadModalVisible(false);
     message.success("Content uploaded");
   };
-
   // ========================
   // AI GENERATION / EDITING
   // ========================
   const handleGenerateWithAI = async () => {
     if (!selectedId) return message.warning("Select a chapter first");
     if (!instruction.trim()) return message.warning("Enter an instruction");
-
     setAiLoading(true);
     setStreamedText("");
-
     try {
       const response = await fetch(
         "https://api.turningpages.io:9090/api/v1/chapters/generate/chapter/content",
@@ -168,21 +167,15 @@ export default function ChapterManager() {
           }),
         }
       );
-
       if (!response.ok || !response.body) throw new Error();
-
       const reader = response.body.getReader();
       const decoder = new TextDecoder("utf-8");
-
       let fullText = "";
-
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-
         const chunk = decoder.decode(value, { stream: true });
         const lines = chunk.split("\n").filter(Boolean);
-
         for (const line of lines) {
           if (!line.startsWith("data:")) continue;
           const data = JSON.parse(line.replace("data:", "").trim());
@@ -192,7 +185,6 @@ export default function ChapterManager() {
           }
         }
       }
-
       if (!fullText.trim()) {
         message.warning("AI returned no content");
       } else {
@@ -204,26 +196,21 @@ export default function ChapterManager() {
       setAiLoading(false);
     }
   };
-
   // ========================
   // APPLY AI SUGGESTION
   // ========================
   const handleInsertToEditor = () => {
     if (!streamedText) return;
-
     const selected = window.__TP_SELECTED_TEXT__;
-
     if (selected) {
       setEditorContent((prev) => prev.replace(selected, streamedText));
     } else {
       setEditorContent((prev) => `${prev}\n${streamedText}`);
     }
-
     window.__TP_SELECTED_TEXT__ = "";
     setDrawerVisible(false);
     message.success("AI suggestion applied");
   };
-
   // ========================
   // RENDER
   // ========================
@@ -241,13 +228,12 @@ export default function ChapterManager() {
             selectedId={selectedId}
             onSelect={setSelectedId}
             onAdd={() => setModalVisible(true)}
+            onDelete={handleChapterDelete}
           />
         )}
       </Sider>
-
       <Layout className="chapter-content-area">
         <BookHeader title={bookName} bookId={bookId} />
-
         <Toolbar
           viewMode={viewMode}
           onChangeViewMode={setViewMode}
@@ -260,31 +246,37 @@ export default function ChapterManager() {
             setUploadModalVisible(true);
           }}
         />
-
         <Content className="editor-container">
           {selectedId ? (
-            <div className="editor-scroll-container">
-              {viewMode === "edit" ? (
-                <>
-                  <ChapterEditor
-                    chapter={chapters.find((c) => c.id === selectedId)}
-                    content={editorContent}
-                    setContent={setEditorContent}
-                    onSave={saveChapterContent}
-                    saving={saving}
-                    readOnly={!userHasPermission}
-                  />
-
-                  {/* <GrammarAssistant
+            <>
+            <ChapterHeader
+              chapter={chapters.find((c) => c.id === selectedId)}
+              previewClick={handlePreviewClick}
+              editClick={handleEditClick}
+            />
+              <div className="editor-scroll-container">
+                {viewMode === "edit" ? (
+                  <>
+                    <ChapterEditor
+                      chapter={chapters.find((c) => c.id === selectedId)}
+                      content={editorContent}
+                      setContent={setEditorContent}
+                      onSave={saveChapterContent}
+                      saving={saving}
+                      readOnly={!userHasPermission}
+                      viewMode={viewMode}
+                    />
+                    {/* <GrammarAssistant
                     text={editorContent}
                     setText={setEditorContent}
                     token={token}
                   /> */}
-                </>
-              ) : (
-                <PaginatedPreview html={editorContent} />
-              )}
-            </div>
+                  </>
+                ) : (
+                  <PaginatedPreview html={editorContent} />
+                )}
+              </div>
+            </>
           ) : (
             <div className="spin-wrapper">
               <p>Please select a chapter to start editing</p>
@@ -292,7 +284,6 @@ export default function ChapterManager() {
           )}
         </Content>
       </Layout>
-
       <AIAssistantDrawer
         visible={drawerVisible}
         onClose={() => setDrawerVisible(false)}
@@ -304,14 +295,12 @@ export default function ChapterManager() {
         setStreamedText={setStreamedText}
         onInsertToEditor={handleInsertToEditor}
       />
-
       <AddChapterModal
         visible={modalVisible}
         onCancel={() => setModalVisible(false)}
         onCreate={createChapter}
         loading={createLoading}
       />
-
       <UploadChapterModal
         visible={uploadModalVisible}
         onCancel={() => setUploadModalVisible(false)}
