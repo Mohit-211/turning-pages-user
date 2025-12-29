@@ -1,13 +1,8 @@
-:where(.css-dev-only-do-not-override-1ru20fs).ant-layout {
-  flex-direction: row !important;
-  display: block;
-}
 .dashboard {
   background: #f9fafb;
   min-height: 100dvh;
   display: flex;
-
-
+  flex-direction: row !important;
   .dashboard-content {
     padding: 20px;
   }

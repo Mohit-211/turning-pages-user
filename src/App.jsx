@@ -1,3 +1,40 @@
+// import React, { useState } from "react";
+
+// import { pdfjs } from "react-pdf";
+// import HtmlEditor from "./Page/ChapterManager/PdfWriterPreview/HtmlEditor";
+// import PdfPreview from "./Page/ChapterManager/PdfWriterPreview/PdfWriterPreview";
+// import { generatePdfFromHtml } from "./Page/ChapterManager/PdfWriterPreview/generatePdf";
+// pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+//   "pdfjs-dist/build/pdf.worker.min.js",
+//   import.meta.url
+// ).toString();
+
+// export default function App() {
+//   const [html, setHtml] = useState(
+//     "<h1>Hello PDF</h1><p>This is a preview</p>"
+//   );
+//   const [pdfFile, setPdfFile] = useState(null);
+
+//   const handlePreview = async () => {
+//     const blob = await generatePdfFromHtml(html);
+//     setPdfFile(blob);
+//   };
+
+//   return (
+//     <div style={{ padding: "20px" }}>
+//       <h2>HTML to PDF Preview</h2>
+
+//       <HtmlEditor html={html} setHtml={setHtml} />
+
+//       <button onClick={handlePreview} style={{ margin: "10px 0" }}>
+//         Preview PDF
+//       </button>
+
+//       <PdfPreview file={pdfFile} />
+//     </div>
+//   );
+// }
+
 import { useState } from 'react'
 import './App.css'
 import Main from './Page/Main'
