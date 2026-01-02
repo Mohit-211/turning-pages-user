@@ -7,6 +7,7 @@ import WorkflowSection from "../Sections/WorkflowSection/WorkflowSection";
 import TestimonialsSection from "../Sections/TestimonialsSection/TestimonialsSection";
 import CTABanner from "../Sections/CTABanner/CTABanner";
 import Footer from "../component/Footer/Footer";
+import PricingCards from "../Sections/PaymentPage/PricingPage";
 const Main = () => {
     return (
         <div className="main-page">
@@ -17,9 +18,9 @@ const Main = () => {
                 <WorkflowSection />
                 <TestimonialsSection />
                 <CTABanner />
-             
+                <PricingCards />
             </main>
-            <Footer/>
+            <Footer />
         </div>
     );
 };

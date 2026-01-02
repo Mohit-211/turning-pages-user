@@ -54,6 +54,8 @@ import ProtectedRoute from './Page/AuthRoutes/ProtectedRoute';
 import AddChapterPage from './Page/AddChapterPage/AddChapterPage';
 import ChapterManager from './Page/ChapterManager/ChapterManager';
 import Bhavya from './Page/bhavya';
+import PaymentPage from './Sections/PaymentPage/PricingPage';
+import PricingCards from './Sections/PaymentPage/PricingPage';
 
 function App() {
   
@@ -116,6 +118,8 @@ function App() {
              <Route path="/demo" element={<Bhavya />} />
 
             <Route path="/dashboard/chaptermanager/:bookId" element={<ChapterManager/>} />
+            <Route path="/payment" element={<PricingCards/>} />
+
 
         </Routes>
         

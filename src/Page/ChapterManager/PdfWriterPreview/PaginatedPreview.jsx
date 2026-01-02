@@ -1,73 +1,50 @@
-import React, { useEffect, useRef, useState } from "react";
-// import "./PaginatedPreview.scss";
+import React, { useRef, useState } from "react";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { useReactToPrint } from "react-to-print";
+import PaginatedPreview from "./PaginatedPreview";
+import "./PdfWriterPreview.scss";
 
-const PAGE_HEIGHT = 1050;
+const PdfWriterPreview = () => {
+  const [content, setContent] = useState("");
+  const printRef = useRef(null);
 
-export default function PaginatedPreview({ html }) {
-  const measureRef = useRef(null);
-  const [pages, setPages] = useState([]);
-
-  useEffect(() => {
-    if (!measureRef.current) return;
-
-    const measure = measureRef.current;
-    measure.innerHTML = "";
-
-    // Create a page shell INSIDE the measuring container
-    const page = document.createElement("div");
-    page.className = "page page-measure";
-
-    const content = document.createElement("div");
-    content.className = "page-content";
-
-    page.appendChild(content);
-    measure.appendChild(page);
-
-    const temp = document.createElement("div");
-    temp.innerHTML = html;
-
-    const newPages = [];
-
-    Array.from(temp.childNodes).forEach((node) => {
-      content.appendChild(node.cloneNode(true));
-
-      if (page.scrollHeight > PAGE_HEIGHT) {
-        // remove overflowing node
-        content.removeChild(content.lastChild);
-
-        // save page
-        newPages.push(content.innerHTML);
-
-        // reset page
-        content.innerHTML = "";
-        content.appendChild(node.cloneNode(true));
-      }
-    });
-
-    if (content.innerHTML.trim()) {
-      newPages.push(content.innerHTML);
-    }
-
-    setPages(newPages);
-  }, [html]);
+  const handlePrint = useReactToPrint({
+    content: () => printRef.current,
+    documentTitle: "PDF-Document",
+  });
 
   return (
-    <>
-      {/* Hidden measurement container */}
-      <div className="pagination-measure" ref={measureRef} />
+    <div className="pdf-writer-layout">
+      {/* ✍️ Editor */}
+      <div className="editor-panel">
+        <h3>Write Content</h3>
 
-      {/* Visible pages */}
-      <div className="pages-container">
-        {pages.map((content, i) => (
-          <div className="page" key={i}>
-            <div
-              className="page-content"
-              dangerouslySetInnerHTML={{ __html: content }}
-            />
-            <div className="page-number">{i + 1}</div>
-          </div>
-        ))}
+        <CKEditor
+          editor={ClassicEditor}
+          data={content}
+          onChange={(event, editor) => {
+            setContent(editor.getData());
+          }}
+        />
       </div>
-    </>
+
+      {/* 📄 Preview */}
+      <div className="preview-panel">
+        <div className="preview-header">
+          <h3>PDF Preview</h3>
+          <button className="print-btn" onClick={handlePrint}>
+            Print / Save PDF
+          </button>
+        </div>
+
+        {/* Printable Area */}
+        <div ref={printRef}>
+          <PaginatedPreview html={content} />
+        </div>
+      </div>
+    </div>
   );
-}
+};
+
+export default PdfWriterPreview;
