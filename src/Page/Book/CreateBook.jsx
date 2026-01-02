@@ -1,20 +1,32 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, FileText } from "lucide-react";
-import { Form, Input, Select, Button, message } from "antd";
+import { Form, Input, Select, Button, message, Modal } from "antd";
 import "./CreateBook.scss";
+
 import { GetAllGenreApi } from "../../api/operations/genre.api";
 import { CreateBookApi } from "../../api/operations/book.api";
+import PricingCards from "../../Sections/PaymentPage/PricingPage";
 
 const { TextArea } = Input;
 
 const CreateBook = () => {
   const [form] = Form.useForm();
+  const navigate = useNavigate();
+
   const [currentStep, setCurrentStep] = useState(1);
   const [genres, setGenres] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [formValues, setFormValues] = useState({});
-  const navigate = useNavigate();
+  const [openPricing, setOpenPricing] = useState(false);
+
+  // ⚡ Track if retry after payment
+  const [hasRetried, setHasRetried] = useState(false);
+
+  const [formValues, setFormValues] = useState({
+    title: "",
+    description: "",
+    genre_id: "",
+  });
 
   const totalSteps = 2;
   const progress = (currentStep / totalSteps) * 100;
@@ -22,37 +34,48 @@ const CreateBook = () => {
   useEffect(() => {
     GetAllGenreApi()
       .then((res) => setGenres(res?.data?.data || []))
-      .catch((e) => console.error("Error fetching genres:", e));
+      .catch(() => message.error("Failed to load genres"));
   }, []);
 
   const handleNext = async () => {
     try {
       const values = await form.validateFields();
-      setFormValues((prev) => ({ ...prev, ...values })); // ✅ store values
-      setCurrentStep((prev) => prev + 1);
+      setFormValues(values);
+      setCurrentStep(2);
     } catch {
       message.error("Please fill all required fields.");
     }
   };
 
-  const handlePrevious = () => {
-    const values = form.getFieldsValue();
-    setFormValues((prev) => ({ ...prev, ...values }));
-    setCurrentStep((prev) => prev - 1);
-  };
+  const handlePrevious = () => setCurrentStep(1);
 
-  const handleCreateProject = async () => {
+  const handleCreateBook = async () => {
+    const payload = {
+      title: formValues.title,
+      description: formValues.description,
+      genre_id: formValues.genre_id,
+    };
+
+    if (!payload.title || !payload.description || !payload.genre_id) {
+      message.error("Missing required book details.");
+      return;
+    }
+
     try {
-      const values = await form.validateFields();
-      const payload = { ...formValues, ...values }; // ✅ merge cached + latest
-
       setLoading(true);
-      const response =await CreateBookApi(payload);
-      message.success(response?.data?.message);
+      const response = await CreateBookApi(payload);
+      message.success(response?.data?.message || "Book created successfully");
       navigate("/dashboard");
     } catch (error) {
-      console.error(error);
-      message.error("Failed to create book. Please try again.");
+      const apiMessage = error?.response?.data?.message;
+
+      // 🔹 If insufficient credits and not retried yet, open pricing modal
+      if (apiMessage === "Insufficient credit remaining." && !hasRetried) {
+        setHasRetried(true);
+        setOpenPricing(true);
+      } else {
+        message.error(apiMessage || "Failed to create book.");
+      }
     } finally {
       setLoading(false);
     }
@@ -60,7 +83,6 @@ const CreateBook = () => {
 
   return (
     <div className="create-book">
-      {/* Header */}
       <header className="header">
         <div className="container header-container">
           <Link to="/dashboard" className="back-link">
@@ -73,11 +95,9 @@ const CreateBook = () => {
         </div>
       </header>
 
-      {/* Main */}
       <main className="container main-content">
         <h1 className="page-title">Create a New Book</h1>
 
-        {/* Progress */}
         <div className="progress-bar">
           <div className="progress" style={{ width: `${progress}%` }} />
         </div>
@@ -86,14 +106,20 @@ const CreateBook = () => {
           {currentStep === 1 && (
             <div className="step-content">
               <h2>Book Details</h2>
-              <p className="description">Provide some basic information to get started</p>
+              <p className="description">
+                Provide some basic information to get started
+              </p>
 
-              <Form layout="vertical" form={form} initialValues={formValues}>
+              <Form
+                layout="vertical"
+                form={form}
+                initialValues={formValues}
+                onValuesChange={(_, allValues) => setFormValues(allValues)}
+              >
                 <Form.Item
                   label="Book Title *"
                   name="title"
-                  rules={[{ required: true, message: "Please enter a book title" }]}
-                  preserve={true}
+                  rules={[{ required: true, message: "Enter book title" }]}
                 >
                   <Input placeholder="Enter your book title" />
                 </Form.Item>
@@ -101,13 +127,12 @@ const CreateBook = () => {
                 <Form.Item
                   label="Genre *"
                   name="genre_id"
-                  rules={[{ required: true, message: "Please select a genre" }]}
-                  preserve={true}
+                  rules={[{ required: true, message: "Select genre" }]}
                 >
                   <Select placeholder="Select a genre">
-                    {genres.map((item) => (
-                      <Select.Option key={item.id} value={item.id}>
-                        {item.title}
+                    {genres.map((g) => (
+                      <Select.Option key={g.id} value={g.id}>
+                        {g.title}
                       </Select.Option>
                     ))}
                   </Select>
@@ -116,11 +141,10 @@ const CreateBook = () => {
                 <Form.Item
                   label="Short Description *"
                   name="description"
-                  rules={[{ required: true, message: "Please provide a description" }]}
-                  preserve={true}
+                  rules={[{ required: true, message: "Enter description" }]}
                 >
                   <TextArea
-                    placeholder="Describe your book in a few sentences..."
+                    placeholder="Describe your book..."
                     autoSize={{ minRows: 4, maxRows: 8 }}
                     maxLength={3000}
                   />
@@ -132,7 +156,7 @@ const CreateBook = () => {
           {currentStep === 2 && (
             <div className="step-content">
               <h2>Review Your Project</h2>
-              <p className="description">Confirm the details and create your book project</p>
+              <p className="description">Confirm details and create your book</p>
 
               <div className="review-section">
                 <h3>
@@ -154,8 +178,8 @@ const CreateBook = () => {
                 <Button
                   type="primary"
                   size="large"
-                  onClick={handleCreateProject}
                   loading={loading}
+                  onClick={handleCreateBook}
                 >
                   Create Project
                 </Button>
@@ -164,9 +188,12 @@ const CreateBook = () => {
           )}
         </div>
 
-        {/* Navigation */}
         <div className="navigation">
-          <Button onClick={handlePrevious} disabled={currentStep === 1} icon={<ArrowLeft />}>
+          <Button
+            onClick={handlePrevious}
+            disabled={currentStep === 1}
+            icon={<ArrowLeft />}
+          >
             Previous
           </Button>
 
@@ -177,6 +204,21 @@ const CreateBook = () => {
           )}
         </div>
       </main>
+
+      <Modal
+        open={openPricing}
+        footer={null}
+        onCancel={() => setOpenPricing(false)}
+        width={900}
+        destroyOnClose
+      >
+        <PricingCards
+          onPaymentDone={() => {
+            setOpenPricing(false);
+            handleCreateBook(); // retry automatically
+          }}
+        />
+      </Modal>
     </div>
   );
 };

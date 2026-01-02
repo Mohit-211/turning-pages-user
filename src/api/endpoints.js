@@ -35,3 +35,10 @@ export const Chapter_ENDPOINTS = {
   DELETE: "chapters/remove",
   GenerateChapterContent: "/chapters/generate/chapter/content"
 };
+
+// export const Payment_ENDPOINTS = {
+//   STRIPE: "payments/intent/generate",
+// };
+export const PAYMENT_ENDPOINTS = {
+  STRIPE: "payments/intent/generate",
+};
