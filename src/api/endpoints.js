@@ -26,7 +26,10 @@ export const Book_ENDPOINTS = {
   GET_BY_ID: (id) => `books/${id}`,
   GET_BY_STATUS: "books/status/update",
   SEARCH: "books/search",
-  DELETE: "books/remove"
+  DELETE: "books/remove",
+  UPDATE: "books",
+  GENERATE_COVER: "chapters/generate/cover"
+
 };
 export const Chapter_ENDPOINTS = {
   CREATE: "chapters",
