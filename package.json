@@ -19,6 +19,8 @@
     "@ckeditor/ckeditor5-style": "^47.2.0",
     "@grammarly/editor-sdk-react": "^2.5.5",
     "@saplingai/sapling-js": "^1.0.37",
+    "@stripe/react-stripe-js": "^3.1.1",
+    "@stripe/stripe-js": "^5.7.0",
     "antd": "^5.11.3-alpha.0",
     "axios": "^1.12.2",
     "date-fns": "^4.1.0",
@@ -30,9 +32,8 @@
     "react-google-recaptcha": "^3.1.0",
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.9.1",
+    "react-to-print": "^3.2.0",
     "react-toastify": "^11.0.5",
-    "@stripe/react-stripe-js": "^3.1.1",
-    "@stripe/stripe-js": "^5.7.0",
     "sass": "^1.69.5"
   },
   "devDependencies": {

@@ -49,9 +49,10 @@ export default function ChapterManager() {
   const [instruction, setInstruction] = useState("");
   const [streamedText, setStreamedText] = useState("");
   const [bookName, setBookName] = useState("");
-
+  const [bookIdDetails, setBookIdDetails] = useState(null);
   const token = localStorage.getItem("book_publish_token");
   const { bookId } = useParams();
+
   const userHasPermission = false;
 
   /* ========================
@@ -66,6 +67,8 @@ export default function ChapterManager() {
     try {
       const res = await GetBookByIdApi(bookId);
       const data = res?.data?.data;
+      setBookIdDetails(data);
+      console.log(data, "data")
       setBookDetails(data || {});
       setBookName(data?.title || "");
       setChapters(data?.book_chapters || []);
@@ -160,13 +163,12 @@ export default function ChapterManager() {
   /* ========================
      AI GENERATION
   ======================== */
-  const handleGenerateWithAI = async () => {
+ const handleGenerateWithAI = async () => {
     if (!selectedId) return message.warning("Select a chapter first");
-    if (!instruction.trim()) return message.warning("Enter instruction");
-
+    if (!instruction.trim())
+      return message.warning("Enter an instruction for AI");
     setAiLoading(true);
     setStreamedText("");
-
     try {
       const response = await fetch(
         "https://api.turningpages.io:9090/api/v1/chapters/generate/chapter/content",
@@ -179,32 +181,58 @@ export default function ChapterManager() {
           body: JSON.stringify({
             instruction,
             chapter_id: selectedId,
-            mode: "generate",
-            context: editorContent,
+            context: editorContent || "",
           }),
         }
       );
-
+      if (!response.ok) throw new Error("Request failed");
+      if (!response.body) throw new Error("No response body");
       const reader = response.body.getReader();
       const decoder = new TextDecoder("utf-8");
-
+      let fullText = "";
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         const chunk = decoder.decode(value, { stream: true });
-        setStreamedText((prev) => prev + chunk);
+        const lines = chunk.split("\n").filter((line) => line.trim() !== "");
+        for (const line of lines) {
+          if (!line.startsWith("data:")) continue;
+          const jsonStr = line.replace("data:", "").trim();
+          try {
+            const data = JSON.parse(jsonStr);
+            if (data.token !== undefined) {
+              fullText += data.token;
+              setStreamedText((prev) => prev + data.token);
+            }
+          } catch {
+            // ignore malformed chunks
+          }
+        }
       }
-    } catch {
-      message.error("AI generation failed");
+      // ✅ Show success only if text was generated
+      if (fullText.trim().length > 0) {
+        message.success("AI generation completed!");
+      } else {
+        message.warning("AI did not return any content.");
+      }
+    } catch (error) {
+      console.error("AI stream error:", error);
+      message.error("AI content generation failed");
     } finally {
       setAiLoading(false);
     }
   };
 
+   const handleInsertToEditor = () => {
+    if (!streamedText) return;
+    setEditorContent((prev) => `${prev}\n${streamedText}`);
+    setDrawerVisible(false);
+    message.success("AI content inserted into editor");
+  };
   /* ========================
      RENDER
   ======================== */
-  console.log(chapters,"===>>")
+  console.log(bookIdDetails, "===>>")
   return (
     <Layout className="chapter-manager">
       {/* LEFT SIDEBAR */}
@@ -226,6 +254,7 @@ export default function ChapterManager() {
       {/* RIGHT CONTENT */}
       <Layout className="chapter-content-area">
         <BookHeader
+          bookIdDetails={bookIdDetails}
           title={bookName}
           bookId={bookId}
           onEditCover={handleEditBookCover}
@@ -258,6 +287,8 @@ export default function ChapterManager() {
                 chapter={chapters.find((c) => c.id === selectedId)}
                 previewClick={() => setViewMode("preview")}
                 editClick={() => setViewMode("edit")}
+                onSave={saveChapterContent}
+
               />
 
               {viewMode === "edit" ? (
@@ -282,7 +313,7 @@ export default function ChapterManager() {
       </Layout>
 
       {/* DRAWERS / MODALS */}
-      <AIAssistantDrawer
+     <AIAssistantDrawer
         visible={drawerVisible}
         onClose={() => setDrawerVisible(false)}
         instruction={instruction}
@@ -291,6 +322,7 @@ export default function ChapterManager() {
         onGenerate={handleGenerateWithAI}
         streamedText={streamedText}
         setStreamedText={setStreamedText}
+        onInsertToEditor={handleInsertToEditor}
       />
 
       <AddChapterModal
