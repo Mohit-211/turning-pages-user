@@ -1,0 +1,185 @@
+/* =========================================================
+   Auth Layout – Shared Domain Styles
+   ========================================================= */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #f9fafb 0%, #ffffff 100%);
+}
+
+/* ---------------------------------------------------------
+     Utilities (kept for backward compatibility)
+  --------------------------------------------------------- */
+.signup-text,
+.login-text {
+  justify-self: center;
+}
+
+/* ---------------------------------------------------------
+     Header
+  --------------------------------------------------------- */
+.auth-header {
+  padding: 1rem 1.25rem;
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+    text-decoration: none;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #174f78;
+    }
+
+    .icon {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+/* ---------------------------------------------------------
+     Main Layout
+  --------------------------------------------------------- */
+.auth-main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem;
+
+  .auth-wrapper {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+}
+
+/* ---------------------------------------------------------
+     Brand Block
+  --------------------------------------------------------- */
+.auth-brand {
+  text-align: center;
+
+  .brand-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.25rem;
+
+    .logo {
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    .brand-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #111827;
+      letter-spacing: -0.02em;
+    }
+  }
+
+  .brand-sub {
+    font-size: 0.9rem;
+    color: #6b7280;
+    line-height: 1.4;
+  }
+}
+
+/* ---------------------------------------------------------
+     Card
+  --------------------------------------------------------- */
+.auth-card {
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  padding: 1.75rem 1.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05), 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* ---------------------------------------------------------
+     Tabs (used by Auth.jsx)
+  --------------------------------------------------------- */
+.tabs-list {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-bottom: 1.75rem;
+}
+
+/* ---------------------------------------------------------
+     Shared Auth Forms
+  --------------------------------------------------------- */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .form-footer {
+    display: flex;
+    justify-content: flex-end;
+
+    .forgot-link {
+      font-size: 0.85rem;
+      color: #174f78;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .btn-primary {
+    margin-top: 0.5rem;
+    background-color: #ed1c24;
+    color: #ffffff;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(237, 28, 36, 0.25);
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+  }
+
+  .terms {
+    margin-top: 0.75rem;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #6b7280;
+    line-height: 1.4;
+
+    a {
+      color: #174f78;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}

@@ -1,9 +1,66 @@
-.dashboard {
-  background: #f9fafb;
-  min-height: 100dvh;
+/* =========================================
+   Dashboard Layout & Page
+   Balanced #174f78 ↔ #ed1c24 editorial SaaS
+========================================= */
+
+.dashboard-layout {
   display: flex;
-  flex-direction: row !important;
-  .dashboard-content {
-    padding: 20px;
+  min-height: 100dvh;
+  background: #f8fafc;
+  overflow: hidden;
+}
+
+/* Sidebar is fixed/left — width controlled in DashboardSidebar.scss */
+.dashboard-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; // prevents flex children overflow
+}
+
+/* Header is fixed/sticky in DashboardHeader.scss */
+
+/* Main scrollable content area */
+.dashboard-content {
+  flex: 1;
+  padding: 32px 28px 40px;
+  overflow-y: auto;
+  background: #f8fafc;
+  scroll-behavior: smooth;
+
+  @media (max-width: 1024px) {
+    padding: 24px 20px;
   }
+
+  @media (max-width: 640px) {
+    padding: 16px 12px;
+  }
+}
+
+/* Dashboard page wrapper (used in Dashboard.jsx) */
+.dashboard-page {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+
+  > section {
+    background: white;
+    border-radius: 12px;
+    padding: 28px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    border: 1px solid #f1f5f9;
+
+    @media (max-width: 640px) {
+      padding: 20px 16px;
+      border-radius: 10px;
+    }
+  }
+}
+
+/* Optional global helpers for dashboard sections */
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 20px;
 }

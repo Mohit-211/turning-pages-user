@@ -1,0 +1,142 @@
+.chapter-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.9rem 1.5rem;
+  background: #ffffff;
+  border-bottom: 1px solid #f1f5f9; // lighter border
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  flex-wrap: wrap;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03); // very subtle shadow
+}
+
+/* Chapter title – secondary, smaller, less dominant */
+.chapter-title {
+  h2 {
+    margin: 0;
+    font-size: 1.15rem; // smaller than book title
+    font-weight: 600;
+    color: #475569;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px;
+  }
+}
+
+/* Action buttons – compact, elegant, not overwhelming */
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.1rem; // smaller padding
+  font-size: 0.88rem; // smaller font
+  font-weight: 500;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+  color: #64748b;
+
+  svg {
+    flex-shrink: 0;
+    stroke-width: 2.2px;
+  }
+
+  span {
+    display: inline; // show text
+  }
+
+  &:hover:not(:disabled) {
+    background: rgba(0, 0, 0, 0.04);
+    color: #0f172a;
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+/* Button variants – balanced blue/red */
+
+.upload-btn {
+  color: #174f78;
+
+  &:hover {
+    background: rgba(23, 79, 120, 0.08);
+  }
+}
+
+.ai-btn {
+  color: #ed1c24;
+
+  &:hover {
+    background: rgba(237, 28, 36, 0.1);
+  }
+
+  svg {
+    color: #ed1c24;
+  }
+}
+
+.preview-btn,
+.edit-btn {
+  color: #174f78;
+
+  &:hover {
+    background: rgba(23, 79, 120, 0.08);
+  }
+}
+
+.save-btn {
+  background: #174f78;
+  color: white;
+
+  &:hover:not(:disabled) {
+    background: #1e6091;
+  }
+}
+
+/* Responsive – stack gracefully on mobile */
+@media (max-width: 768px) {
+  .chapter-toolbar {
+    padding: 0.8rem 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+  }
+
+  .chapter-title h2 {
+    font-size: 1.05rem;
+    max-width: 100%;
+  }
+
+  .action-buttons {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .toolbar-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 0.6rem;
+    font-size: 0.85rem;
+
+    span {
+      display: none; // hide text on very small screens
+    }
+  }
+}

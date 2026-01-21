@@ -1,17 +1,22 @@
 import React from "react";
-import { Button } from "antd";
 import "./WelcomeSection.scss";
 
-const WelcomeSection = ({ user, onNewBook }) => (
-  <div className="welcome-section">
-    <div>
-      <h2>Welcome back, {user?.user_profile?.name}</h2>
-      <p>Continue writing your next masterpiece</p>
-    </div>
-    <Button type="primary" className="new-book-btn" onClick={onNewBook}>
-      + Start a New Book
-    </Button>
-  </div>
-);
+const WelcomeSection = ({ user, onNewBook }) => {
+  const displayName = user?.user_profile?.name?.split(" ")[0] || "Creator";
+
+  return (
+    <section className="welcome-section">
+      <div className="greeting">
+        <h2>Welcome back, {displayName}</h2>
+        <p>Continue shaping your next story</p>
+      </div>
+
+      <button className="new-book-button" onClick={onNewBook}>
+        <span className="plus">+</span>
+        Start a New Book
+      </button>
+    </section>
+  );
+};
 
 export default WelcomeSection;

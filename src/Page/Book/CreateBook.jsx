@@ -1,224 +1,260 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, FileText } from "lucide-react";
-import { Form, Input, Select, Button, message, Modal } from "antd";
-import "./CreateBook.scss";
-
+import { ArrowLeft, ArrowRight, FileText, X } from "lucide-react";
 import { GetAllGenreApi } from "../../api/operations/genre.api";
 import { CreateBookApi } from "../../api/operations/book.api";
-import PricingCards from "../../Sections/PaymentPage/PricingPage";
-
-const { TextArea } = Input;
+import PricingCards from "../../Sections/PaymentPage/PricingPage"; // keep your component
+import "./CreateBook.scss";
 
 const CreateBook = () => {
-  const [form] = Form.useForm();
   const navigate = useNavigate();
-
-  const [currentStep, setCurrentStep] = useState(1);
+  const [step, setStep] = useState(1);
   const [genres, setGenres] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [openPricing, setOpenPricing] = useState(false);
-
-  // ⚡ Track if retry after payment
+  const [loadingGenres, setLoadingGenres] = useState(true);
+  const [loadingCreate, setLoadingCreate] = useState(false);
+  const [showPricing, setShowPricing] = useState(false);
   const [hasRetried, setHasRetried] = useState(false);
 
-  const [formValues, setFormValues] = useState({
+  const [formData, setFormData] = useState({
     title: "",
-    description: "",
     genre_id: "",
+    description: "",
   });
 
+  const [errors, setErrors] = useState({});
+
   const totalSteps = 2;
-  const progress = (currentStep / totalSteps) * 100;
+  const progress = (step / totalSteps) * 100;
 
   useEffect(() => {
     GetAllGenreApi()
-      .then((res) => setGenres(res?.data?.data || []))
-      .catch(() => message.error("Failed to load genres"));
+      .then((res) => {
+        setGenres(res?.data?.data || []);
+      })
+      .catch(() => alert("Failed to load genres"))
+      .finally(() => setLoadingGenres(false));
   }, []);
 
-  const handleNext = async () => {
-    try {
-      const values = await form.validateFields();
-      setFormValues(values);
-      setCurrentStep(2);
-    } catch {
-      message.error("Please fill all required fields.");
+  const validateStep1 = () => {
+    const newErrors = {};
+    if (!formData.title.trim()) newErrors.title = "Book title is required";
+    if (!formData.genre_id) newErrors.genre_id = "Please select a genre";
+    if (!formData.description.trim())
+      newErrors.description = "Description is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleNext = () => {
+    if (validateStep1()) {
+      setStep(2);
+      setErrors({});
     }
   };
 
-  const handlePrevious = () => setCurrentStep(1);
+  const handlePrevious = () => setStep(1);
 
-  const handleCreateBook = async () => {
-    const payload = {
-      title: formValues.title,
-      description: formValues.description,
-      genre_id: formValues.genre_id,
-    };
-
-    if (!payload.title || !payload.description || !payload.genre_id) {
-      message.error("Missing required book details.");
-      return;
-    }
-
+  const handleCreate = async () => {
+    setLoadingCreate(true);
     try {
-      setLoading(true);
-      const response = await CreateBookApi(payload);
-      message.success(response?.data?.message || "Book created successfully");
-      navigate("/dashboard");
-    } catch (error) {
-      const apiMessage = error?.response?.data?.message;
+      const payload = {
+        title: formData.title.trim(),
+        description: formData.description.trim(),
+        genre_id: formData.genre_id,
+      };
 
-      // 🔹 If insufficient credits and not retried yet, open pricing modal
-      if (apiMessage === "Insufficient credit remaining." && !hasRetried) {
+      const res = await CreateBookApi(payload);
+      alert(res?.data?.message || "Book created successfully!");
+      navigate("/dashboard");
+    } catch (err) {
+      const msg = err?.response?.data?.message || "Failed to create book";
+
+      if (msg.includes("Insufficient credit") && !hasRetried) {
         setHasRetried(true);
-        setOpenPricing(true);
+        setShowPricing(true);
       } else {
-        message.error(apiMessage || "Failed to create book.");
+        alert(msg);
       }
     } finally {
-      setLoading(false);
+      setLoadingCreate(false);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
   return (
     <div className="create-book">
       <header className="header">
-        <div className="container header-container">
+        <div className="header-container">
           <Link to="/dashboard" className="back-link">
-            <ArrowLeft className="icon" /> Back to Dashboard
+            <ArrowLeft size={18} /> Back to Dashboard
           </Link>
-          <div className="title">
+          <div className="logo-title">
             <span className="emoji">📖</span>
-            <span className="text">Turning Pages</span>
+            <span>Turning Pages</span>
           </div>
         </div>
       </header>
 
-      <main className="container main-content">
-        <h1 className="page-title">Create a New Book</h1>
+      <main className="main-content">
+        <h1>Create a New Book</h1>
 
         <div className="progress-bar">
-          <div className="progress" style={{ width: `${progress}%` }} />
+          <div className="progress-fill" style={{ width: `${progress}%` }} />
         </div>
 
-        <div className="card">
-          {currentStep === 1 && (
-            <div className="step-content">
+        <div className="wizard-card">
+          {step === 1 && (
+            <div className="step">
               <h2>Book Details</h2>
-              <p className="description">
-                Provide some basic information to get started
-              </p>
+              <p className="step-desc">Let's start with the basics</p>
 
-              <Form
-                layout="vertical"
-                form={form}
-                initialValues={formValues}
-                onValuesChange={(_, allValues) => setFormValues(allValues)}
-              >
-                <Form.Item
-                  label="Book Title *"
-                  name="title"
-                  rules={[{ required: true, message: "Enter book title" }]}
-                >
-                  <Input placeholder="Enter your book title" />
-                </Form.Item>
+              {loadingGenres ? (
+                <div className="skeleton-form">
+                  <div className="skeleton-line long" />
+                  <div className="skeleton-line" />
+                  <div className="skeleton-line long" />
+                </div>
+              ) : (
+                <form className="book-form">
+                  <div className="form-field">
+                    <label>Book Title *</label>
+                    <input
+                      name="title"
+                      value={formData.title}
+                      onChange={handleInputChange}
+                      placeholder="Enter book title"
+                      className={errors.title ? "input-error" : ""}
+                    />
+                    {errors.title && (
+                      <span className="error">{errors.title}</span>
+                    )}
+                  </div>
 
-                <Form.Item
-                  label="Genre *"
-                  name="genre_id"
-                  rules={[{ required: true, message: "Select genre" }]}
-                >
-                  <Select placeholder="Select a genre">
-                    {genres.map((g) => (
-                      <Select.Option key={g.id} value={g.id}>
-                        {g.title}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
+                  <div className="form-field">
+                    <label>Genre *</label>
+                    <select
+                      name="genre_id"
+                      value={formData.genre_id}
+                      onChange={handleInputChange}
+                      className={errors.genre_id ? "input-error" : ""}
+                    >
+                      <option value="">Select genre</option>
+                      {genres.map((g) => (
+                        <option key={g.id} value={g.id}>
+                          {g.title}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.genre_id && (
+                      <span className="error">{errors.genre_id}</span>
+                    )}
+                  </div>
 
-                <Form.Item
-                  label="Short Description *"
-                  name="description"
-                  rules={[{ required: true, message: "Enter description" }]}
-                >
-                  <TextArea
-                    placeholder="Describe your book..."
-                    autoSize={{ minRows: 4, maxRows: 8 }}
-                    maxLength={3000}
-                  />
-                </Form.Item>
-              </Form>
+                  <div className="form-field">
+                    <label>Short Description *</label>
+                    <textarea
+                      name="description"
+                      value={formData.description}
+                      onChange={handleInputChange}
+                      placeholder="Describe your book in a few sentences..."
+                      rows={5}
+                      maxLength={3000}
+                      className={errors.description ? "input-error" : ""}
+                    />
+                    {errors.description && (
+                      <span className="error">{errors.description}</span>
+                    )}
+                  </div>
+                </form>
+              )}
             </div>
           )}
 
-          {currentStep === 2 && (
-            <div className="step-content">
-              <h2>Review Your Project</h2>
-              <p className="description">Confirm details and create your book</p>
+          {step === 2 && (
+            <div className="step">
+              <h2>Review & Create</h2>
+              <p className="step-desc">Confirm everything looks good</p>
 
-              <div className="review-section">
-                <h3>
-                  <FileText /> Book Details
-                </h3>
-                <p>
-                  <strong>Title:</strong> {formValues.title}
-                </p>
-                <p>
-                  <strong>Genre:</strong>{" "}
-                  {genres.find((g) => g.id === formValues.genre_id)?.title}
-                </p>
-                <p>
-                  <strong>Description:</strong> {formValues.description}
-                </p>
+              <div className="review-box">
+                <div className="review-item">
+                  <FileText size={18} />
+                  <div>
+                    <strong>Title</strong>
+                    <p>{formData.title || "—"}</p>
+                  </div>
+                </div>
+
+                <div className="review-item">
+                  <strong>Genre</strong>
+                  <p>
+                    {genres.find((g) => g.id === formData.genre_id)?.title ||
+                      "—"}
+                  </p>
+                </div>
+
+                <div className="review-item">
+                  <strong>Description</strong>
+                  <p>{formData.description || "—"}</p>
+                </div>
               </div>
 
-              <div className="center">
-                <Button
-                  type="primary"
-                  size="large"
-                  loading={loading}
-                  onClick={handleCreateBook}
+              <div className="create-action">
+                <button
+                  className="btn-create"
+                  onClick={handleCreate}
+                  disabled={loadingCreate}
                 >
-                  Create Project
-                </Button>
+                  {loadingCreate ? "Creating..." : "Create Project"}
+                </button>
               </div>
             </div>
           )}
         </div>
 
-        <div className="navigation">
-          <Button
+        <div className="wizard-controls">
+          <button
+            className="btn-nav prev"
             onClick={handlePrevious}
-            disabled={currentStep === 1}
-            icon={<ArrowLeft />}
+            disabled={step === 1}
           >
-            Previous
-          </Button>
+            <ArrowLeft size={18} /> Previous
+          </button>
 
-          {currentStep < totalSteps && (
-            <Button type="primary" onClick={handleNext} icon={<ArrowRight />}>
-              Next
-            </Button>
+          {step < totalSteps && (
+            <button className="btn-nav next" onClick={handleNext}>
+              Next <ArrowRight size={18} />
+            </button>
           )}
         </div>
       </main>
 
-      <Modal
-        open={openPricing}
-        footer={null}
-        onCancel={() => setOpenPricing(false)}
-        width={900}
-        destroyOnClose
-      >
-        <PricingCards
-          onPaymentDone={() => {
-            setOpenPricing(false);
-            handleCreateBook(); // retry automatically
-          }}
-        />
-      </Modal>
+      {/* Pricing overlay */}
+      {showPricing && (
+        <div className="pricing-overlay">
+          <div className="pricing-modal">
+            <button
+              className="close-pricing"
+              onClick={() => setShowPricing(false)}
+            >
+              <X size={24} />
+            </button>
+            <PricingCards
+              onPaymentDone={() => {
+                setShowPricing(false);
+                handleCreate(); // retry
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

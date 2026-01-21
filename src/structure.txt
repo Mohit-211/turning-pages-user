@@ -1,0 +1,166 @@
+.
+├── App.css
+├── App.jsx
+├── Page
+│   ├── AddChapterPage
+│   │   ├── AddChapterPage.jsx
+│   │   └── AddChapterPage.scss
+│   ├── Auth
+│   │   ├── Auth.jsx
+│   │   ├── AuthLayout.jsx
+│   │   ├── AuthLayout.scss
+│   │   └── forms
+│   │       ├── LoginForm.jsx
+│   │       ├── LoginForm.scss
+│   │       ├── OtpVerification.jsx
+│   │       ├── OtpVerification.scss
+│   │       ├── SignUpForm.jsx
+│   │       └── SignUpForm.scss
+│   ├── AuthRoutes
+│   │   ├── ProtectedRoute.jsx
+│   │   └── PublicRoute.jsx
+│   ├── Bhavya.scss
+│   ├── Book
+│   │   ├── BookHeader
+│   │   │   ├── BookCoverPanel.jsx
+│   │   │   ├── BookCoverPanel.scss
+│   │   │   ├── BookHeader.jsx
+│   │   │   └── BookHeader.scss
+│   │   ├── CreateBook.jsx
+│   │   └── CreateBook.scss
+│   ├── ChapterManager
+│   │   ├── ChapterManager.jsx
+│   │   ├── ChapterManager.scss
+│   │   ├── PdfWriterPreview
+│   │   │   ├── HtmlEditor.jsx
+│   │   │   ├── PaginatedPreview.jsx
+│   │   │   ├── PaginatedPreview.scss
+│   │   │   ├── PdfWriterPreview.jsx
+│   │   │   ├── PdfWriterPreview.scss
+│   │   │   └── generatePdf.jsx
+│   │   └── chapterComponent
+│   │       ├── ChapterHeader.jsx
+│   │       ├── GrammarAssistant.jsx
+│   │       ├── GrammarAssistant.scss
+│   │       ├── PaginatedPreview.jsx
+│   │       ├── PaginatedPreview.scss
+│   │       ├── aIAssistantDrawer.jsx
+│   │       ├── addChapterModal.jsx
+│   │       ├── chapterEditor.jsx
+│   │       ├── chapterEditor.scss
+│   │       ├── chapterList.jsx
+│   │       ├── toolbar.jsx
+│   │       └── uploadChapterModal.jsx
+│   ├── Dashboard
+│   │   ├── BooksSection.jsx
+│   │   ├── BooksSection.scss
+│   │   ├── Dashboard.jsx
+│   │   ├── Dashboard.scss
+│   │   ├── DashboardLayout.jsx
+│   │   ├── StatsSection.jsx
+│   │   ├── StatsSection.scss
+│   │   ├── WelcomeSection.jsx
+│   │   └── WelcomeSection.scss
+│   ├── Main.jsx
+│   ├── Main.scss
+│   ├── MyBookPage
+│   │   ├── MyBookPage.jsx
+│   │   └── MyBookPage.scss
+│   ├── ProfilePage
+│   │   ├── ProfilePage.jsx
+│   │   └── ProfilePage.scss
+│   └── bhavya.tsx
+├── Sections
+│   ├── CTABanner
+│   │   ├── CTABanner.jsx
+│   │   └── CTABanner.scss
+│   ├── FeaturesSection
+│   │   ├── FeaturesSection.jsx
+│   │   └── FeaturesSection.scss
+│   ├── HeroSection
+│   │   ├── HeroSection.jsx
+│   │   └── HeroSection.scss
+│   ├── PaymentPage
+│   │   ├── PricingPage.jsx
+│   │   └── PricingPage.scss
+│   ├── TestimonialsSection
+│   │   ├── TestimonialsSection.jsx
+│   │   └── TestimonialsSection.scss
+│   └── WorkflowSection
+│       ├── WorkflowSection.jsx
+│       └── WorkflowSection.scss
+├── api
+│   ├── auth
+│   │   └── auth.api.js
+│   ├── client.js
+│   ├── endpoints.js
+│   ├── operations
+│   │   ├── book.api.js
+│   │   ├── chapter.api.js
+│   │   ├── genre.api.js
+│   │   └── paymentApi.js
+│   └── users
+│       └── users.api.js
+├── assets
+│   ├── hero-illustration.jpg
+│   └── profileicon.jpg
+├── component
+│   ├── BackToDashboard
+│   │   ├── BackToDashboard.scss
+│   │   └── BackToDashboard.tsx
+│   ├── DashboardHeader
+│   │   ├── DashboardHeader.jsx
+│   │   └── DashboardHeader.scss
+│   ├── DashboardSidebar
+│   │   ├── DashboardSidebar.jsx
+│   │   └── DashboardSidebar.scss
+│   ├── Footer
+│   │   ├── Footer.jsx
+│   │   └── Footer.scss
+│   ├── Header
+│   │   ├── Header.jsx
+│   │   └── Header.scss
+│   ├── StripePayment
+│   │   ├── CheckoutForm.jsx
+│   │   └── StripePayment.jsx
+│   └── ui
+│       ├── Avatar
+│       │   ├── Avatar.jsx
+│       │   └── Avatar.scss
+│       ├── Card
+│       │   ├── Card.jsx
+│       │   └── Card.scss
+│       ├── Input
+│       │   ├── Input.jsx
+│       │   └── Input.scss
+│       ├── Label
+│       │   ├── Label.jsx
+│       │   └── Label.scss
+│       ├── Tabs
+│       │   ├── Tabs.jsx
+│       │   └── Tabs.scss
+│       ├── Toast
+│       │   ├── Toast.jsx
+│       │   └── Toast.scss
+│       ├── badge
+│       │   ├── badge.jsx
+│       │   └── badge.scss
+│       ├── button
+│       │   ├── button.jsx
+│       │   └── button.scss
+│       └── dropdown-menu
+│           ├── dropdown-menu.jsx
+│           └── dropdown-menu.scss
+├── constants
+│   └── config.js
+├── errors
+│   ├── ApiErrorHandler.js
+│   └── errorMessages.js
+├── folderstructure.txt
+├── hooks
+│   └── useToast.js
+├── index.css
+├── main.jsx
+└── structure.txt
+
+46 directories, 118 files

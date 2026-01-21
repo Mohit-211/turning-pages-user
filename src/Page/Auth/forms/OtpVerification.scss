@@ -1,0 +1,30 @@
+/* =========================================================
+   OTP Verification Form
+   ========================================================= */
+
+.otp-form {
+  .field {
+    margin-bottom: 1.25rem;
+  }
+
+  label {
+    font-weight: 500;
+    color: #111827;
+  }
+
+  .otp-email {
+    font-weight: 600;
+    color: #174f78;
+    word-break: break-all;
+  }
+
+  input {
+    text-align: center;
+    letter-spacing: 0.25em;
+    font-size: 1.05rem;
+  }
+
+  .btn-primary {
+    margin-top: 0.75rem;
+  }
+}

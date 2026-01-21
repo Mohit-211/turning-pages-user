@@ -15,7 +15,7 @@ const DashboardSidebar = () => {
   const location = useLocation();
   const currentPath = location.pathname;
 
-  // Load collapsed state from localStorage (default false)
+  // Load collapsed state from localStorage (default: false)
   const [collapsed, setCollapsed] = useState(() => {
     const stored = localStorage.getItem("sidebarCollapsed");
     return stored === "true";
@@ -28,7 +28,8 @@ const DashboardSidebar = () => {
   };
 
   const isActive = (path) =>
-    currentPath === path || (path === "/dashboard" && currentPath === "/dashboard");
+    currentPath === path ||
+    (path === "/dashboard" && currentPath === "/dashboard/");
 
   return (
     <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
@@ -39,6 +40,7 @@ const DashboardSidebar = () => {
 
       <div className="sidebar-group">
         {!collapsed && <div className="sidebar-label">Navigation</div>}
+
         <ul className="sidebar-menu">
           {menuItems.map((item) => {
             const Icon = item.icon;
@@ -46,7 +48,10 @@ const DashboardSidebar = () => {
               <li key={item.title} className="sidebar-menu-item">
                 <Link
                   to={item.url}
-                  className={`sidebar-menu-button ${isActive(item.url) ? "active" : ""}`}
+                  className={`sidebar-menu-button ${
+                    isActive(item.url) ? "active" : ""
+                  }`}
+                  data-tooltip={item.title}
                 >
                   <Icon className="icon" />
                   {!collapsed && <span className="title">{item.title}</span>}

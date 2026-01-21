@@ -1,135 +1,154 @@
-import React from "react";
-import { Layout, Badge, Dropdown, Avatar, Button, message } from "antd";
-import {
-  BellOutlined,
-  UserOutlined,
-  SettingOutlined,
-  LogoutOutlined,
-  MenuOutlined,
-} from "@ant-design/icons";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useState, useRef, useEffect } from "react";
+import { Bell, User, Settings, LogOut, ChevronDown } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import "./DashboardHeader.scss";
 import ProfileIcon from "../../assets/profileicon.jpg";
 import { logoutApi } from "../../api/auth/auth.api";
-const { Header } = Layout;
-const DashboardHeader = ({ user, notifications, unreadCount }) => {
-  const navigate = useNavigate();
-  const notificationItems =
-    notifications?.length > 0
-      ? notifications.map((n) => ({
-        key: n.id,
-        label: (
-          <div className="notification-item">
-            <div className="notification-top">
-              <p className="message">{n.message}</p>
-              {n.unread && <span className="dot" />}
-            </div>
-            <p className="time">{n.time}</p>
-          </div>
-        ),
-      }))
-      : [
-        {
-          key: "empty",
-          label: (
-            <div className="empty-notification">No notifications</div>
-          ),
-        },
-      ];
-  const profileItems = [
-    {
-      key: "profile-group",
-      label: (
-        <div className="profile-label">
-          <p className="name">{user?.user_profile?.name}</p>
-          <p className="email">{user?.email}</p>
-        </div>
-      ),
-      type: "group",
-    },
-    {
-      key: "profile",
-      icon: <UserOutlined />,
-      label: "Profile",
-    },
-    {
-      key: "settings",
-      icon: <SettingOutlined />,
-      label: "Settings",
-    },
-    {
-      type: "divider",
-    },
-    {
-      key: "logout",
-      icon: <LogoutOutlined />,
-      label: "Sign Out",
-    },
-  ];
-  const handleMenuClick = ({ key }) => {
-    if (key === "profile") {
-      navigate("/dashboard/profile");
-    } else if (key === "settings") {
-      navigate("/settings");
-    } else if (key === "logout") {
-      handleLogout()
+import CreditBar from "./CreditBar";
 
+const DashboardHeader = ({
+  user,
+  notifications = [],
+  unreadCount = 0,
+  credits = 120,
+  maxCredits = 200,
+}) => {
+  const navigate = useNavigate();
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+
+  const notifRef = useRef(null);
+  const profileRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        notifRef.current &&
+        !notifRef.current.contains(e.target) &&
+        profileRef.current &&
+        !profileRef.current.contains(e.target)
+      ) {
+        setShowNotifications(false);
+        setShowProfile(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      // await logoutApi();
+      localStorage.removeItem("book_publish_token");
+      navigate("/login");
+    } catch (err) {
+      console.error("Logout failed:", err);
+      alert("Logout failed. Please try again.");
     }
   };
-  const handleLogout = async () => {
-    message.success("Logged out successfully");
-    localStorage.removeItem("book_publish_token");
-    navigate("/login");
-    // try {
-    //   const response = await logoutApi(); // call your logout API
-    //   console.log(response, "==response for logout")
-    //   message.success("Logged out successfully");
-    //    localStorage.removeItem("book_publish_token");
-    //   navigate("/login"); // redirect to login page
-    // } catch (error) {
-    //   console.log(error, "error")
-    // }
-  };
+
   return (
-    <Header className="dashboard-header">
+    <header className="dashboard-header">
       <div className="left-section">
-        {/* <Button
-          type="text"
-          icon={<MenuOutlined />}
-          className="sidebar-trigger"
-        />
         <div className="logo">
           <span className="emoji">📖</span>
           <span className="title">Turning Pages</span>
-        </div> */}
+        </div>
       </div>
+
+      <div className="center-section">
+        <CreditBar
+          credits={credits}
+          maxCredits={maxCredits}
+          onMoreCredits={() => navigate("/dashboard/billing")}
+        />
+      </div>
+
       <div className="right-section">
-        <Dropdown
-          menu={{ items: notificationItems }}
-          placement="bottomRight"
-          trigger={["click"]}
-        >
-          <Badge count={unreadCount} size="small">
-            <Button type="text" icon={<BellOutlined />} />
-          </Badge>
-        </Dropdown>
-        <Dropdown
-          menu={{ items: profileItems, onClick: handleMenuClick }}
-          placement="bottomRight"
-          trigger={["click"]}
-        >
-          <div className="profile-trigger">
-            <Avatar src={ProfileIcon} size="small">
-              {user?.user_profile?.name
-                ?.split(" ")
-                .map((n) => n[0])
-                .join("")}
-            </Avatar>
-            <span className="username">{user?.user_profile?.name}</span>
+        {/* Notifications */}
+        <div className="dropdown-wrapper" ref={notifRef}>
+          <button
+            className="icon-btn"
+            onClick={() => {
+              setShowNotifications((s) => !s);
+              setShowProfile(false);
+            }}
+          >
+            <Bell size={20} />
+            {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
+          </button>
+
+          {showNotifications && (
+            <div className="dropdown notification-dropdown">
+              <div className="dropdown-header">Notifications</div>
+              {notifications.length > 0 ? (
+                notifications.map((n) => (
+                  <div
+                    key={n.id}
+                    className={`notification-item ${n.unread ? "unread" : ""}`}
+                  >
+                    <p className="message">{n.message}</p>
+                    <span className="time">{n.time}</span>
+                  </div>
+                ))
+              ) : (
+                <div className="empty">No new notifications</div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Profile */}
+        <div className="dropdown-wrapper" ref={profileRef}>
+          <div
+            className="profile-trigger"
+            onClick={() => {
+              setShowProfile((s) => !s);
+              setShowNotifications(false);
+            }}
+          >
+            <img src={ProfileIcon} alt="Profile" className="avatar" />
+            <span className="username">
+              {user?.user_profile?.name || "User"}
+            </span>
+            <ChevronDown size={16} />
           </div>
-        </Dropdown>
+
+          {showProfile && (
+            <div className="dropdown profile-dropdown">
+              {/* <div className="profile-header">
+                <p className="name">{user?.user_profile?.name || "User"}</p>
+                <p className="email">{user?.email || "—"}</p>
+              </div> */}
+
+              <div
+                className="dropdown-item"
+                onClick={() => navigate("/dashboard/profile")}
+              >
+                <User size={16} />
+                Profile
+              </div>
+
+              <div
+                className="dropdown-item"
+                onClick={() => navigate("/dashboard/settings")}
+              >
+                <Settings size={16} />
+                Settings
+              </div>
+
+              <div className="divider" />
+
+              <div className="dropdown-item danger" onClick={handleLogout}>
+                <LogOut size={16} />
+                Sign Out
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-    </Header>
+    </header>
   );
 };
+
 export default DashboardHeader;

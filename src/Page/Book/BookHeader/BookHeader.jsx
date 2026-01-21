@@ -1,53 +1,45 @@
 import React, { useState, useRef } from "react";
-import "./BookHeader.scss";
-import { Save, Send, Image, Download } from "lucide-react";
-import { GetBooksByStatusApi } from "../../../api/operations/book.api";
-import { message } from "antd";
+import { Save, Send, Image as ImageIcon, Download } from "lucide-react";
 import { useReactToPrint } from "react-to-print";
+import { GetBooksByStatusApi } from "../../../api/operations/book.api";
+import "./BookHeader.scss";
 
-export default function BookHeader({ bookId, title, onEditCover, bookIdDetails }) {
+export default function BookHeader({
+  bookId,
+  title,
+  onEditCover,
+  bookIdDetails,
+}) {
   const [loading, setLoading] = useState(false);
   const printRef = useRef(null);
 
   const handleSave = async (status) => {
+    setLoading(true);
     try {
-      setLoading(true);
       await GetBooksByStatusApi({ book_id: bookId, status });
-      message.success("Saved");
-    } catch {
-      message.error("Something went wrong");
+      alert("Saved successfully");
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Filter out empty / coming soon content
   const hasValidContent = (html) => {
     if (!html) return false;
-
     const text = html
-      .replace(/<[^>]*>/g, "") // remove HTML tags
+      .replace(/<[^>]*>/g, "")
       .replace(/&nbsp;/gi, "")
       .replace(/\s+/g, " ")
       .trim()
       .toLowerCase();
-
-    if (!text) return false;
-
-    if (
-      text === "coming soon" ||
-      text === "content coming soon" ||
-      text.includes("coming soon")
-    ) {
-      return false;
-    }
-
-    return true;
+    return !!text && !text.includes("coming soon");
   };
 
   const handleDownloadPdf = useReactToPrint({
-    contentRef: printRef, // ✅ v3 syntax
-    documentTitle: title || "book",
+    contentRef: printRef,
+    documentTitle: title || "My Book",
   });
 
   const coverUrl = bookIdDetails?.cover_img_name
@@ -55,21 +47,20 @@ export default function BookHeader({ bookId, title, onEditCover, bookIdDetails }
     : "";
 
   return (
-    <div className="book-header">
-      {/* HEADER UI */}
+    <header className="book-header">
       <div className="book-title">
         <span className="book-icon">📘</span>
-        <h3>{title}</h3>
+        <h3>{title || "Untitled Book"}</h3>
       </div>
 
       <div className="actions">
-        <button className="action-btn" onClick={onEditCover}>
-          <Image size={16} />
+        <button className="action-btn edit-cover" onClick={onEditCover}>
+          <ImageIcon size={16} />
           Edit Cover
         </button>
 
         <button
-          className="action-btn"
+          className="action-btn save-draft"
           onClick={() => handleSave("draft")}
           disabled={loading}
         >
@@ -78,7 +69,7 @@ export default function BookHeader({ bookId, title, onEditCover, bookIdDetails }
         </button>
 
         <button
-          className="submit-btn"
+          className="action-btn submit-editing"
           onClick={() => handleSave("in-editing")}
           disabled={loading}
         >
@@ -86,42 +77,35 @@ export default function BookHeader({ bookId, title, onEditCover, bookIdDetails }
           Submit for Editing
         </button>
 
-        <button className="action-btn" onClick={handleDownloadPdf}>
+        <button
+          className="action-btn download-pdf"
+          onClick={handleDownloadPdf}
+          disabled={loading}
+        >
           <Download size={16} />
-          Download Book PDF
+          Download PDF
         </button>
       </div>
 
-      {/* 🔒 PRINT CONTENT (ALWAYS MOUNTED) */}
-      <div style={{ position: "absolute", top: "-9999px", left: "-9999px" }}>
+      {/* Hidden print content */}
+      <div style={{ position: "absolute", left: "-9999px", top: "-9999px" }}>
         <div ref={printRef} className="print-book">
-          {/* 📘 COVER PAGE */}
+          {/* Cover Page */}
           <section className="print-page cover-page">
             {coverUrl && <img src={coverUrl} alt="Book Cover" />}
-            <h1>{title}</h1>
-            <h3>by {bookIdDetails?.author}</h3>
+            <h1>{title || "Untitled Book"}</h1>
+            <h3>by {bookIdDetails?.author || "Author"}</h3>
           </section>
 
-          {/* 📖 CHAPTERS */}
+          {/* Chapters */}
           {bookIdDetails?.book_chapters
-            ?.filter((chapter) => hasValidContent(chapter.content))
-            .map((chapter, index) => (
-              <section
-                key={chapter.id || index}
-                className="print-page chapter-page"
-              >
-                {chapter.title && (
-                  <>
-                    <h2>
-
-                      Chapter {index + 1}
-                    </h2>
-                    <h2 className="chapter-title">
-
-                      {chapter.title ? `${chapter.title}` : ""}
-                    </h2>
-                  </>
-                )}
+            ?.filter((ch) => hasValidContent(ch.content))
+            .map((chapter, idx) => (
+              <section key={chapter.id || idx} className="print-page">
+                <h2>
+                  Chapter {idx + 1}
+                  {chapter.title && ` – ${chapter.title}`}
+                </h2>
                 <div
                   className="chapter-content"
                   dangerouslySetInnerHTML={{ __html: chapter.content }}
@@ -130,6 +114,6 @@ export default function BookHeader({ bookId, title, onEditCover, bookIdDetails }
             ))}
         </div>
       </div>
-    </div>
+    </header>
   );
 }

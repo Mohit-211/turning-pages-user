@@ -1,30 +1,37 @@
 import React, { useEffect, useState } from "react";
-import { Layout } from "antd";
 import DashboardSidebar from "../../component/DashboardSidebar/DashboardSidebar";
 import DashboardHeader from "../../component/DashboardHeader/DashboardHeader";
-import "./Dashboard.scss";
 import { UserProfileApi } from "../../api/users/users.api";
-const { Content } = Layout;
+import "./Dashboard.scss";
+
 const DashboardLayout = ({ children }) => {
-  const [user, setUser] = useState()
-  const token = localStorage.getItem("book_publish_token");
+  const [user, setUser] = useState(null);
+
   useEffect(() => {
-    UserProfileApi().then((res) => {
-      setUser(res?.data?.data)
-    }).catch((error) => {
-      // console.log(error)
-    })
-  }, [])
+    UserProfileApi()
+      .then((res) => {
+        setUser(res?.data?.data || null);
+      })
+      .catch(() => {
+        // silent fail — user stays null → header can show fallback
+      });
+  }, []);
 
   return (
-    <Layout className="dashboard">
+    <div className="dashboard-layout">
       <DashboardSidebar />
-    
-      <Layout>
-        <DashboardHeader user={user} notifications={[]} unreadCount={2} />
-        <Content className="dashboard-content">{children}</Content>
-      </Layout>
-    </Layout>
+
+      <div className="dashboard-main">
+        <DashboardHeader
+          user={user}
+          notifications={[]} // ← replace with real data later
+          unreadCount={0} // ← dynamic later
+        />
+
+        <main className="dashboard-content">{children}</main>
+      </div>
+    </div>
   );
 };
+
 export default DashboardLayout;
