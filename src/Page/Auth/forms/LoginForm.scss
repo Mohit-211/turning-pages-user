@@ -1,0 +1,74 @@
+/* =========================================================
+   Login Form (Auth Domain)
+   ========================================================= */
+
+.login-form {
+  .ant-form-item {
+    margin-bottom: 1rem;
+  }
+
+  .ant-form-item-label > label {
+    font-weight: 500;
+    color: #111827;
+  }
+
+  .ant-input,
+  .ant-input-password {
+    border-radius: 0.5rem;
+    padding: 0.55rem 0.75rem;
+  }
+
+  .ant-input:focus,
+  .ant-input-password:focus-within {
+    border-color: #174f78;
+    box-shadow: 0 0 0 2px rgba(23, 79, 120, 0.15);
+  }
+
+  .form-meta {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+  }
+
+  .forgot-link {
+    font-size: 0.85rem;
+    color: #174f78;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .login-btn {
+    margin-top: 0.5rem;
+    height: 42px;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    background-color: #ed1c24;
+    border-color: #ed1c24;
+
+    &:hover,
+    &:focus {
+      background-color: #d91820;
+      border-color: #d91820;
+    }
+  }
+
+  .login-text {
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: #6b7280;
+
+    .signup-link {
+      color: #174f78;
+      font-weight: 500;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}

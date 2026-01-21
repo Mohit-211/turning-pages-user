@@ -1,47 +1,51 @@
 import React, { useState } from "react";
 import { Form, Input, Button, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
-import { loginApi } from "../../api/auth/auth.api";
-import "./Auth.scss";
+import { loginApi } from "../../../api/auth/auth.api";
+
+import "./LoginForm.scss";
+
 const LoginForm = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const onFinish = async (values) => {
-    const { email, password } = values;
+
+  const onFinish = async ({ email, password }) => {
     setLoading(true);
+
     try {
       const response = await loginApi({ email, password });
       const token = response?.data?.data?.tokens?.access?.token;
+
       localStorage.setItem("book_publish_token", token);
-      message.success("Login Successful! Welcome back.");
+      message.success("Login successful! Welcome back.");
       navigate("/dashboard");
     } catch (error) {
-
       const errorMessage = error?.response?.data?.message || "Login failed";
 
-      // Redirect only if user is not verified
       if (
-        errorMessage.includes("User is not verified yet.Please verify Your Otp First") ||
+        errorMessage.includes("not verified") ||
         errorMessage.includes("verify Your Otp")
       ) {
-        message.info(`${errorMessage} Redirecting to OTP verification...`);
+        message.info(`${errorMessage} Redirecting to OTP verification…`);
 
         const encodedEmail = btoa(email);
         const encodedType = btoa("email_varification");
+
         setTimeout(() => {
           navigate(`/otp-verify?email=${encodedEmail}&type=${encodedType}`);
-        }, 10000); // 10 seconds
+        }, 10000);
+
         return;
       }
 
-     
-
+      message.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
+
   return (
-    <div className="auth-form">
+    <div className="auth-form login-form">
       <Form
         name="login"
         layout="vertical"
@@ -52,39 +56,46 @@ const LoginForm = () => {
           label="Email"
           name="email"
           rules={[
-            { required: true, message: "Please input your email!" },
-            { type: "email", message: "Enter a valid email!" },
+            { required: true, message: "Please enter your email" },
+            { type: "email", message: "Enter a valid email address" },
           ]}
         >
-          <Input placeholder="Enter your email" />
+          <Input placeholder="you@example.com" />
         </Form.Item>
+
         <Form.Item
           label="Password"
           name="password"
-          rules={[{ required: true, message: "Please input your password!" }]}
+          rules={[{ required: true, message: "Please enter your password" }]}
         >
           <Input.Password placeholder="Enter your password" />
         </Form.Item>
-        <Form.Item>
+
+        <div className="form-meta">
           <Link to="/auth/forgot-password" className="forgot-link">
-            Forgot Password?
+            Forgot password?
           </Link>
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit" block loading={loading}>
-            Login
-          </Button>
-        </Form.Item>
-        <Form.Item>
-          <div className="login-text">
-            Don't have an account?{" "}
-            <Link to="/signup" className="signup-link">
-              Sign Up
-            </Link>
-          </div>
-        </Form.Item>
+        </div>
+
+        <Button
+          type="primary"
+          htmlType="submit"
+          block
+          loading={loading}
+          className="login-btn"
+        >
+          Login
+        </Button>
+
+        <div className="login-text">
+          Don’t have an account?{" "}
+          <Link to="/signup" className="signup-link">
+            Sign up
+          </Link>
+        </div>
       </Form>
     </div>
   );
 };
+
 export default LoginForm;

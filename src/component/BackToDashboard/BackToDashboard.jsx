@@ -4,7 +4,7 @@ import { LeftOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import "./BackToDashboard.scss";
 
-const BackToDashboard: React.FC = () => {
+const BackToDashboard = () => {
   const navigate = useNavigate();
 
   return (

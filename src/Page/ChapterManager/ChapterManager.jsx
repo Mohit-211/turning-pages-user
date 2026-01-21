@@ -1,19 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Layout, Spin, message } from "antd";
-import { useParams } from "react-router-dom";
-
-import BackToDashboard from "../../component/BackToDashboard/BackToDashboard";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { ArrowLeft, Plus } from "lucide-react";
 import "./ChapterManager.scss";
 
-import ChapterEditor from "./chapterComponent/chapterEditor";
+import ChapterEditor from "./chapterComponent/ChapterEditor";
 import PaginatedPreview from "./chapterComponent/PaginatedPreview";
-import ChapterList from "./chapterComponent/chapterList";
-import Toolbar from "./chapterComponent/toolbar";
-import AIAssistantDrawer from "./chapterComponent/aIAssistantDrawer";
-import AddChapterModal from "./chapterComponent/addChapterModal";
-import UploadChapterModal from "./chapterComponent/uploadChapterModal";
-import ChapterHeader from "./chapterComponent/ChapterHeader";
-
+import ChapterList from "./chapterComponent/ChapterList";
+import Toolbar from "./chapterComponent/Toolbar";
+import AIAssistantDrawer from "./chapterComponent/AIAssistantDrawer";
+import AddChapterModal from "./chapterComponent/AddChapterModal";
+import UploadChapterModal from "./chapterComponent/UploadChapterModal";
 import BookHeader from "../Book/BookHeader/BookHeader";
 import BookCoverPanel from "../../Page/Book/BookHeader/BookCoverPanel";
 
@@ -24,151 +20,122 @@ import {
   DeleteChapterApi,
 } from "../../api/operations/chapter.api";
 
-const { Sider, Content } = Layout;
-
 export default function ChapterManager() {
-  /* ========================
-     STATE
-  ======================== */
-  const [bookdetails, setBookDetails] = useState({});
-  const [showCoverPanel, setShowCoverPanel] = useState(false);
-  const [viewMode, setViewMode] = useState("edit");
+  const { bookId } = useParams();
+  const navigate = useNavigate();
+
+  const [bookDetails, setBookDetails] = useState({});
   const [chapters, setChapters] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [editorContent, setEditorContent] = useState("");
+  const [viewMode, setViewMode] = useState("edit");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [showCoverPanel, setShowCoverPanel] = useState(false);
 
+  // Drawer & Modal states
   const [drawerVisible, setDrawerVisible] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [addModalVisible, setAddModalVisible] = useState(false);
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
 
-  const [saving, setSaving] = useState(false);
-  const [createLoading, setCreateLoading] = useState(false);
-  const [aiLoading, setAiLoading] = useState(false);
-
+  // AI states
   const [instruction, setInstruction] = useState("");
   const [streamedText, setStreamedText] = useState("");
-  const [bookName, setBookName] = useState("");
-  const [bookIdDetails, setBookIdDetails] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
+
   const token = localStorage.getItem("book_publish_token");
-  const { bookId } = useParams();
 
-  const userHasPermission = false;
-
-  /* ========================
-     FETCH BOOK + CHAPTERS
-  ======================== */
   useEffect(() => {
-    fetchChapters();
-  }, []);
+    fetchBookAndChapters();
+  }, [bookId]);
 
-  async function fetchChapters() {
+  const fetchBookAndChapters = async () => {
     setLoading(true);
     try {
       const res = await GetBookByIdApi(bookId);
-      const data = res?.data?.data;
-      setBookIdDetails(data);
-      console.log(data, "data")
-      setBookDetails(data || {});
-      setBookName(data?.title || "");
-      setChapters(data?.book_chapters || []);
-    } catch {
-      message.error("Failed to fetch chapters");
+      const data = res?.data?.data || {};
+      setBookDetails(data);
+      setChapters(data.book_chapters || []);
+
+      if (!selectedId && data.book_chapters?.length > 0) {
+        setSelectedId(data.book_chapters[0].id);
+      }
+    } catch (err) {
+      console.error("Fetch error:", err);
+      alert("Failed to load book data");
     } finally {
       setLoading(false);
     }
-  }
-
-  /* ========================
-     EDIT BOOK COVER HANDLER
-  ======================== */
-  const handleEditBookCover = () => {
-    setSelectedId(null);
-    setEditorContent("");
-    setViewMode("edit");
-    setDrawerVisible(false);
-    setUploadModalVisible(false);
-    setShowCoverPanel(true);
   };
 
-  /* ========================
-     CHAPTER SELECT
-  ======================== */
-  const handleChapterSelect = (id) => {
-    setShowCoverPanel(false);
-    setSelectedId(id);
-  };
-
-  /* ========================
-     LOAD SELECTED CHAPTER
-  ======================== */
+  // Load chapter content
   useEffect(() => {
     if (!selectedId) return;
-    const selected = chapters.find((c) => c.id === selectedId);
-    setEditorContent(selected?.content || "");
+    const chapter = chapters.find((c) => c.id === selectedId);
+    setEditorContent(chapter?.content || "");
   }, [selectedId, chapters]);
 
-  /* ========================
-     DELETE CHAPTER
-  ======================== */
-  async function handleChapterDelete(chapterId) {
+  const handleChapterSelect = (id) => {
+    setSelectedId(id);
+    setShowCoverPanel(false);
+  };
+
+  const handleChapterDelete = async (chapterId) => {
+    if (!window.confirm("Delete this chapter permanently?")) return;
     try {
       await DeleteChapterApi({ chapter_id: chapterId });
       setChapters((prev) => prev.filter((c) => c.id !== chapterId));
       if (selectedId === chapterId) setSelectedId(null);
-    } catch {
-      message.error("Failed to delete chapter");
+    } catch (err) {
+      alert("Failed to delete chapter");
     }
-  }
+  };
 
-  /* ========================
-     SAVE CHAPTER
-  ======================== */
-  async function saveChapterContent() {
-    if (!selectedId) return message.warning("Select a chapter first");
+  const handleSaveChapter = async () => {
+    if (!selectedId) return alert("No chapter selected");
     setSaving(true);
     try {
-      const selected = chapters.find((c) => c.id === selectedId);
+      const chapter = chapters.find((c) => c.id === selectedId);
       await UpdateChapterApi({
-        title: selected?.title,
+        title: chapter?.title,
         book_id: bookId,
         chapter_id: selectedId,
         content: editorContent,
       });
-      message.success("Chapter saved");
-      fetchChapters();
-    } catch {
-      message.error("Failed to save chapter");
+      alert("Chapter saved successfully");
+      fetchBookAndChapters();
+    } catch (err) {
+      alert("Failed to save chapter");
     } finally {
       setSaving(false);
     }
-  }
+  };
 
-  /* ========================
-     CREATE CHAPTER
-  ======================== */
-  async function createChapter(title) {
-    setCreateLoading(true);
+  const handleCreateChapter = async (title) => {
     try {
       await CreateChapterApi({ title, book_id: bookId });
-      fetchChapters();
-      setModalVisible(false);
-    } catch {
-      message.error("Failed to create chapter");
-    } finally {
-      setCreateLoading(false);
+      fetchBookAndChapters();
+      setAddModalVisible(false);
+    } catch (err) {
+      alert("Failed to create chapter");
     }
-  }
+  };
 
-  /* ========================
-     AI GENERATION
-  ======================== */
- const handleGenerateWithAI = async () => {
-    if (!selectedId) return message.warning("Select a chapter first");
-    if (!instruction.trim())
-      return message.warning("Enter an instruction for AI");
+  const handleAIInsert = () => {
+    if (!streamedText) return;
+    setEditorContent((prev) => prev + "\n\n" + streamedText);
+    setDrawerVisible(false);
+    setStreamedText(""); // clear after insert
+  };
+
+  // ── AI Generation Handler ──
+  const handleGenerateWithAI = async () => {
+    if (!selectedId) return alert("Select a chapter first");
+    if (!instruction.trim()) return alert("Enter an instruction");
+
     setAiLoading(true);
-    setStreamedText("");
+    setStreamedText(""); // reset output
+
     try {
       const response = await fetch(
         "https://api.turningpages.io:9090/api/v1/chapters/generate/chapter/content",
@@ -185,16 +152,20 @@ export default function ChapterManager() {
           }),
         }
       );
+
       if (!response.ok) throw new Error("Request failed");
-      if (!response.body) throw new Error("No response body");
+
       const reader = response.body.getReader();
       const decoder = new TextDecoder("utf-8");
       let fullText = "";
+
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
+
         const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split("\n").filter((line) => line.trim() !== "");
+        const lines = chunk.split("\n").filter((line) => line.trim());
+
         for (const line of lines) {
           if (!line.startsWith("data:")) continue;
           const jsonStr = line.replace("data:", "").trim();
@@ -204,116 +175,109 @@ export default function ChapterManager() {
               fullText += data.token;
               setStreamedText((prev) => prev + data.token);
             }
-          } catch {
-            // ignore malformed chunks
-          }
+          } catch {}
         }
       }
-      // ✅ Show success only if text was generated
-      if (fullText.trim().length > 0) {
-        message.success("AI generation completed!");
+
+      if (fullText.trim()) {
+        alert("AI generation completed!");
       } else {
-        message.warning("AI did not return any content.");
+        alert("AI returned no content");
       }
-    } catch (error) {
-      console.error("AI stream error:", error);
-      message.error("AI content generation failed");
+    } catch (err) {
+      console.error("AI generation error:", err);
+      alert("Failed to generate content");
     } finally {
       setAiLoading(false);
     }
   };
 
-   const handleInsertToEditor = () => {
-    if (!streamedText) return;
-    setEditorContent((prev) => `${prev}\n${streamedText}`);
-    setDrawerVisible(false);
-    message.success("AI content inserted into editor");
-  };
-  /* ========================
-     RENDER
-  ======================== */
-  console.log(bookIdDetails, "===>>")
   return (
-    <Layout className="chapter-manager">
-      {/* LEFT SIDEBAR */}
-      <Sider width={280} className="chapter-sider">
-        <BackToDashboard />
+    <div className="chapter-manager">
+      {/* Left Sidebar */}
+      <aside className="chapter-sider">
+        <div className="sider-header">
+          <Link to="/dashboard" className="back-btn">
+            <ArrowLeft size={18} /> Dashboard
+          </Link>
+        </div>
+
         {loading ? (
-          <Spin />
+          <div className="skeleton-list">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="skeleton-item" />
+            ))}
+          </div>
         ) : (
           <ChapterList
             chapters={chapters}
             selectedId={selectedId}
             onSelect={handleChapterSelect}
-            onAdd={() => setModalVisible(true)}
+            onAdd={() => setAddModalVisible(true)}
             onDelete={handleChapterDelete}
           />
         )}
-      </Sider>
+      </aside>
 
-      {/* RIGHT CONTENT */}
-      <Layout className="chapter-content-area">
+      {/* Main Content */}
+      <main className="chapter-content-area">
         <BookHeader
-          bookIdDetails={bookIdDetails}
-          title={bookName}
+          bookIdDetails={bookDetails}
+          title={bookDetails.title || "Untitled Book"}
           bookId={bookId}
-          onEditCover={handleEditBookCover}
+          onEditCover={() => setShowCoverPanel(true)}
         />
 
         <Toolbar
+          chapterTitle={chapters.find((c) => c.id === selectedId)}
+          onSave={handleSaveChapter}
+          saving={saving}
           viewMode={viewMode}
-          onChangeViewMode={setViewMode}
+          setViewMode={setViewMode}
           onOpenAIAssistant={() => {
-            if (!selectedId) return message.warning("Select a chapter first");
+            if (!selectedId) return alert("Select a chapter first");
             setDrawerVisible(true);
           }}
           onOpenUploadModal={() => {
-            if (!selectedId) return message.warning("Select a chapter first");
+            if (!selectedId) return alert("Select a chapter first");
             setUploadModalVisible(true);
           }}
         />
 
-        <Content className="editor-container">
+        <div className="editor-container">
           {showCoverPanel ? (
             <BookCoverPanel
-              // bookId={bookId}
-              defaultTitle={bookName}
+              bookdetails={bookDetails}
               onClose={() => setShowCoverPanel(false)}
-              bookdetails={bookdetails}
             />
           ) : selectedId ? (
-            <>
-              <ChapterHeader
+            viewMode === "edit" ? (
+              <ChapterEditor
                 chapter={chapters.find((c) => c.id === selectedId)}
-                previewClick={() => setViewMode("preview")}
-                editClick={() => setViewMode("edit")}
-                onSave={saveChapterContent}
-
+                content={editorContent}
+                setContent={setEditorContent}
+                onSave={handleSaveChapter}
+                saving={saving}
               />
-
-              {viewMode === "edit" ? (
-                <ChapterEditor
-                  chapter={chapters.find((c) => c.id === selectedId)}
-                  content={editorContent}
-                  setContent={setEditorContent}
-                  onSave={saveChapterContent}
-                  saving={saving}
-                  readOnly={!userHasPermission}
-                />
-              ) : (
-                <PaginatedPreview html={editorContent} />
-              )}
-            </>
+            ) : (
+              <PaginatedPreview html={editorContent} />
+            )
           ) : (
-            <div className="spin-wrapper">
-              <p>Select a chapter or edit book cover</p>
+            <div className="empty-state">
+              <p>Select a chapter to start editing</p>
+              <button
+                className="add-chapter-btn"
+                onClick={() => setAddModalVisible(true)}
+              >
+                <Plus size={18} /> Add First Chapter
+              </button>
             </div>
           )}
-        </Content>
-      </Layout>
+        </div>
+      </main>
 
-      {/* DRAWERS / MODALS */}
-     <AIAssistantDrawer
+      {/* AI Drawer */}
+      {/* <AIAssistantDrawer
         visible={drawerVisible}
         onClose={() => setDrawerVisible(false)}
         instruction={instruction}
@@ -322,14 +286,37 @@ export default function ChapterManager() {
         onGenerate={handleGenerateWithAI}
         streamedText={streamedText}
         setStreamedText={setStreamedText}
-        onInsertToEditor={handleInsertToEditor}
+        onInsertToEditor={() => {
+          if (streamedText) {
+            setEditorContent((prev) => prev + "\n\n" + streamedText);
+            setStreamedText("");
+            setDrawerVisible(false);
+          }
+        }}
+      /> */}
+
+      <AIAssistantDrawer
+        visible={drawerVisible}
+        onClose={() => setDrawerVisible(false)}
+        instruction={instruction}
+        setInstruction={setInstruction}
+        aiLoading={aiLoading}
+        onGenerate={handleGenerateWithAI}
+        streamedText={streamedText}
+        setStreamedText={setStreamedText}
+        onInsertToEditor={() => {
+          if (streamedText) {
+            setEditorContent((prev) => prev + "\n\n" + streamedText);
+            setStreamedText("");
+            setDrawerVisible(false);
+          }
+        }}
       />
 
       <AddChapterModal
-        visible={modalVisible}
-        onCancel={() => setModalVisible(false)}
-        onCreate={createChapter}
-        loading={createLoading}
+        visible={addModalVisible}
+        onCancel={() => setAddModalVisible(false)}
+        onCreate={handleCreateChapter}
       />
 
       <UploadChapterModal
@@ -337,6 +324,6 @@ export default function ChapterManager() {
         onCancel={() => setUploadModalVisible(false)}
         onUploadSuccess={(text) => setEditorContent(text)}
       />
-    </Layout>
+    </div>
   );
 }

@@ -1,32 +1,64 @@
 import React from "react";
-import { Row, Col, Card, Skeleton } from "antd";
 import "./StatsSection.scss";
 
-const StatsSection = ({ stats }) => {
-  const isLoading = !stats || stats.length === 0;
+const StatsSection = ({ stats = [], isLoading = false }) => {
+  // Default/fallback stats shown during loading or when data is empty
+  const displayStats =
+    isLoading || stats.length === 0
+      ? [
+          { title: "Total Books", value: "—" },
+          { title: "Published", value: "—" },
+          { title: "Submissions", value: "—" },
+          { title: "Views", value: "—" },
+        ]
+      : stats;
 
-  // Skeleton placeholders
-  const skeletonCards = Array.from({ length: 4 }, (_, i) => (
-    <Col span={6} key={i}>
-      <Card className="stat-card">
-        <Skeleton active title paragraph={false} />
-      </Card>
-    </Col>
-  ));
+  const getValueStyle = (title) => {
+    const lower = title.toLowerCase();
+
+    if (lower.includes("published") || lower.includes("completed")) {
+      return "value-positive"; // blue
+    }
+
+    if (
+      lower.includes("draft") ||
+      lower.includes("in progress") ||
+      lower.includes("pending") ||
+      lower.includes("submissions") ||
+      lower.includes("views")
+    ) {
+      return "value-warning"; // red
+    }
+
+    // default to blue for most neutral / positive stats
+    return "value-positive";
+  };
 
   return (
-    <Row gutter={16} className="stats-section">
-      {isLoading
-        ? skeletonCards
-        : stats.map((stat, index) => (
-            <Col span={6} key={index}>
-              <Card className="stat-card">
-                <p className="stat-title">{stat.title}</p>
-                <h2 className="stat-value">{stat.value}</h2>
-              </Card>
-            </Col>
-          ))}
-    </Row>
+    <section className="stats-section">
+      <div className="stats-grid">
+        {displayStats.map((stat, index) => (
+          <div
+            key={index}
+            className={`stat-card ${isLoading ? "loading" : ""}`}
+          >
+            <div className="stat-content">
+              <p className="stat-title">{stat.title}</p>
+              <h3 className={`stat-value ${getValueStyle(stat.title)}`}>
+                {isLoading ? null : stat.value}
+              </h3>
+            </div>
+
+            {isLoading && (
+              <div className="skeleton-overlay">
+                <div className="skeleton-title" />
+                <div className="skeleton-value" />
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
   );
 };
 

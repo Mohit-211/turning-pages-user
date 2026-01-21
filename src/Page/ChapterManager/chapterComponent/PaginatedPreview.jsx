@@ -1,94 +1,108 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./PaginatedPreview.scss";
 
-const PAGE_HEIGHT = 1020; // content-only height (buffer included)
+const PAGE_HEIGHT_PX = 1050; // ~A4 content height in pixels (adjust if needed)
 
-export default function PaginatedPreview({ html }) {
-  const measureRef = useRef(null);
+export default function PaginatedPreview({ html, isOpen, onClose }) {
   const [pages, setPages] = useState([]);
+  const containerRef = useRef(null);
 
   useEffect(() => {
-    const paginate = async () => {
-      if (!measureRef.current) return;
+    if (!isOpen || !html) {
+      setPages([]);
+      return;
+    }
 
-      // ✅ wait for fonts to avoid reflow issues
-      if (document.fonts?.ready) {
-        await document.fonts.ready;
-      }
+    const paginateContent = () => {
+      if (!containerRef.current) return;
 
-      const measure = measureRef.current;
-      measure.innerHTML = "";
-
-      // page shell for measuring
-      const page = document.createElement("div");
-      page.className = "page page-measure";
-
-      const content = document.createElement("div");
-      content.className = "page-content";
-
-      page.appendChild(content);
-      measure.appendChild(page);
-
+      // Create temporary container for measurement
       const temp = document.createElement("div");
       temp.innerHTML = html;
+      temp.style.position = "absolute";
+      temp.style.visibility = "hidden";
+      temp.style.width = "720px";
+      temp.style.padding = "70px 80px";
+      temp.style.fontFamily = '"Georgia", "Times New Roman", serif';
+      temp.style.fontSize = "16px";
+      temp.style.lineHeight = "1.65";
+      document.body.appendChild(temp);
 
-      const newPages = [];
+      const pageElements = [];
+      let currentPage = document.createElement("div");
+      currentPage.className = "page-content";
 
-      Array.from(temp.childNodes).forEach((node) => {
-        // ✅ ignore empty text nodes
-        if (
-          node.nodeType === Node.TEXT_NODE &&
-          !node.textContent.trim()
-        ) {
-          return;
-        }
+      const walker = document.createTreeWalker(
+        temp,
+        NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT
+      );
+      let currentNode = walker.nextNode();
 
-        content.appendChild(node.cloneNode(true));
+      while (currentNode) {
+        const clone = currentNode.cloneNode(true);
+        currentPage.appendChild(clone);
 
-        // ✅ measure content only
-        if (content.scrollHeight > PAGE_HEIGHT) {
-          // remove overflowing node
-          content.removeChild(content.lastChild);
-
-          // save page
-          if (content.innerHTML.trim()) {
-            newPages.push(content.innerHTML);
+        // Check overflow
+        if (currentPage.scrollHeight > PAGE_HEIGHT_PX) {
+          // Remove the overflowing node and start new page
+          currentPage.removeChild(clone);
+          if (currentPage.innerHTML.trim()) {
+            pageElements.push(currentPage.innerHTML);
           }
-
-          // reset page
-          content.innerHTML = "";
-          content.appendChild(node.cloneNode(true));
+          currentPage = document.createElement("div");
+          currentPage.className = "page-content";
+          currentPage.appendChild(clone);
         }
-      });
 
-      // push last page if content exists
-      if (content.innerHTML.trim()) {
-        newPages.push(content.innerHTML);
+        currentNode = walker.nextNode();
       }
 
-      setPages(newPages);
+      // Push last page
+      if (currentPage.innerHTML.trim()) {
+        pageElements.push(currentPage.innerHTML);
+      }
+
+      document.body.removeChild(temp);
+      setPages(pageElements);
     };
 
-    paginate();
-  }, [html]);
+    paginateContent();
+  }, [html, isOpen]);
+
+  if (!isOpen) return null;
 
   return (
-    <>
-      {/* Hidden measurement container */}
-      <div className="pagination-measure" ref={measureRef} />
+    <div className="preview-modal-overlay" onClick={onClose}>
+      <div className="preview-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>Book Preview</h2>
+          <button
+            className="close-btn"
+            onClick={onClose}
+            aria-label="Close preview"
+          >
+            <X size={24} />
+          </button>
+        </div>
 
-      {/* Visible paginated preview */}
-      <div className="pages-container">
-        {pages.map((content, i) => (
-          <div className="page" key={i}>
-            <div
-              className="page-content"
-              dangerouslySetInnerHTML={{ __html: content }}
-            />
-            <div className="page-number">{i + 1}</div>
-          </div>
-        ))}
+        <div className="pages-wrapper">
+          {pages.length === 0 ? (
+            <div className="empty-preview">
+              <p>No content to preview yet</p>
+            </div>
+          ) : (
+            pages.map((pageHtml, index) => (
+              <div key={index} className="preview-page">
+                <div
+                  className="page-content"
+                  dangerouslySetInnerHTML={{ __html: pageHtml }}
+                />
+                <div className="page-number">{index + 1}</div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
-    </>
+    </div>
   );
 }

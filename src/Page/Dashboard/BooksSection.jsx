@@ -1,121 +1,116 @@
 import React from "react";
-import {
-  Row,
-  Col,
-  Card,
-  Button,
-  Input,
-  Tag,
-  Skeleton,
-  Dropdown,
-  Menu,
-  message,
-} from "antd";
 import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import "./BooksSection.scss";
 
-const BooksSection = ({ books, onDeleteBook }) => {
+const BooksSection = ({ books = [], onDeleteBook }) => {
   const navigate = useNavigate();
-  const isLoading = !books;
+  const isLoading = books.length === 0;
 
   const handleOpenProject = (bookId) => {
     navigate(`/dashboard/chaptermanager/${bookId}`);
   };
 
   const handleDelete = async (bookId) => {
-    console.log(bookId,"--->>")
     if (!onDeleteBook) {
-      message.warning("Delete handler not provided!");
+      alert("Delete handler not provided!"); // → replace with proper toast
       return;
     }
-
     try {
       await onDeleteBook(bookId);
     } catch (error) {
       console.error("Error deleting book:", error);
-      message.error("Failed to delete book!");
+      alert("Failed to delete book!");
     }
   };
 
-  const menu = (bookId) => (
-    <Menu>
-      <Menu.Item key="delete" danger onClick={() => handleDelete(bookId)}>
-        Delete Book
-      </Menu.Item>
-    </Menu>
-  );
-
-  const skeletonCards = Array.from({ length: 6 }, (_, i) => (
-    <Col span={8} key={i}>
-      <Card className="book-card">
-        <Skeleton active title paragraph={{ rows: 4 }} />
-      </Card>
-    </Col>
-  ));
-
   return (
-    <>
+    <section className="books-section-wrapper">
       <div className="books-header">
         <h3>My Books</h3>
-        <Input.Search placeholder="Search" style={{ width: 200 }} />
+        <input
+          type="search"
+          placeholder="Search books..."
+          className="search-input"
+        />
       </div>
 
-      <Row gutter={[16, 16]} className="books-section">
+      <div className="books-grid">
         {isLoading
-          ? skeletonCards
-          : books.map((book) => (
-            <Col span={8} key={book.id}>
-              <Card className="book-card">
-                <div className="book-header">
-                  <div>
-                    <h4>{book?.title}</h4>
-                    <p className="genre">{book?.book_genre?.title}</p>
-                  </div>
-                  <div className="book-actions">
-                    {book.status && (
-                      <Tag
-                        className={`status-tag ${book?.status
-                          .toLowerCase()
-                          .replace(" ", "")}`}
-                      >
-                        {book.status}
-                      </Tag>
-                    )}
-                    <Dropdown overlay={menu(book.id)} trigger={["click"]}>
-                      <BsThreeDotsVertical className="menu-icon" />
-                    </Dropdown>
-                  </div>
+          ? Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="book-card skeleton">
+                <div className="skeleton-overlay">
+                  <div className="skeleton-title" />
+                  <div className="skeleton-text" />
+                  <div className="skeleton-text short" />
+                  <div className="skeleton-status" />
+                  <div className="skeleton-button" />
                 </div>
+              </div>
+            ))
+          : books.map((book) => (
+              <div key={book.id} className="book-card">
+                <div className="book-content">
+                  <div className="book-header">
+                    <div className="book-info">
+                      <h4 className="book-title">
+                        {book.title || "Untitled Book"}
+                      </h4>
+                      <p className="book-genre">
+                        {book.book_genre?.title || "No genre"}
+                      </p>
+                    </div>
 
-                <div className="progress-section">
-                  <p>Progress</p>
-                  <div className="book-meta">
-                    <span>
-                      Updated{" "}
+                    <div className="book-actions">
+                      {book.status && (
+                        <span
+                          className={`status-tag status-${book.status
+                            .toLowerCase()
+                            .replace(/\s+/g, "-")}`}
+                        >
+                          {book.status}
+                        </span>
+                      )}
+
+                      <div className="dropdown-wrapper">
+                        <button className="menu-btn">
+                          <BsThreeDotsVertical />
+                        </button>
+                        <div className="dropdown-menu">
+                          <button
+                            className="dropdown-item danger"
+                            onClick={() => handleDelete(book.id)}
+                          >
+                            Delete Book
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="progress-section">
+                    <p className="progress-label">Last updated</p>
+                    <p className="last-updated">
                       {book.updated_at
                         ? formatDistanceToNow(new Date(book.updated_at), {
-                          addSuffix: true,
-                        })
-                        : "Not started"}
-                    </span>
+                            addSuffix: true,
+                          })
+                        : "Not started yet"}
+                    </p>
                   </div>
-                </div>
 
-                <Button
-                  type="primary"
-                  block
-                  className="open-btn"
-                  onClick={() => handleOpenProject(book.id)}
-                >
-                  Open Project
-                </Button>
-              </Card>
-            </Col>
-          ))}
-      </Row>
-    </>
+                  <button
+                    className="open-button"
+                    onClick={() => handleOpenProject(book.id)}
+                  >
+                    Open Project
+                  </button>
+                </div>
+              </div>
+            ))}
+      </div>
+    </section>
   );
 };
 

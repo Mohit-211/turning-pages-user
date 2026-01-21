@@ -1,15 +1,11 @@
 import React, { useState } from "react";
-import { Button } from "antd";
-import {
-  SaveOutlined,
-  EyeOutlined,
-  EditOutlined,
-} from "@ant-design/icons";
+import { Save, Eye, Edit } from "lucide-react";
+import "./ChapterHeader.scss";
 
 const ChapterHeader = ({
   chapter,
   onSave,
-  saving,
+  saving = false,
   previewClick,
   editClick,
 }) => {
@@ -17,47 +13,55 @@ const ChapterHeader = ({
 
   const handlePreview = () => {
     setMode("preview");
-    previewClick("preview");
+    previewClick?.("preview");
   };
 
   const handleEdit = () => {
     setMode("edit");
-    editClick("edit");
+    editClick?.("edit");
   };
 
   return (
-    <div className="editor-header">
-      <h2>{chapter?.title}</h2>
+    <div className="chapter-header">
+      <h2 className="chapter-title">{chapter?.title || "Untitled Chapter"}</h2>
 
-      <div className="btn-group-preview">
-        {/* SHOW PREVIEW BUTTON ONLY IN EDIT MODE */}
+      <div className="action-buttons">
+        {/* Preview button — shown only in edit mode */}
         {mode === "edit" && (
-          <Button
-            icon={<EyeOutlined />}
+          <button
+            className="btn btn-preview"
             onClick={handlePreview}
+            disabled={saving}
+            aria-label="Preview chapter"
           >
-            Preview
-          </Button>
+            <Eye size={18} />
+            <span>Preview</span>
+          </button>
         )}
 
-        {/* SHOW EDIT BUTTON ONLY IN PREVIEW MODE */}
+        {/* Edit button — shown only in preview mode */}
         {mode === "preview" && (
-          <Button
-            icon={<EditOutlined />}
+          <button
+            className="btn btn-edit"
             onClick={handleEdit}
+            disabled={saving}
+            aria-label="Edit chapter"
           >
-            Edit
-          </Button>
+            <Edit size={18} />
+            <span>Edit</span>
+          </button>
         )}
 
-        {/* SAVE BUTTON ALWAYS VISIBLE */}
-        <Button
-          icon={<SaveOutlined />}
-          loading={saving}
+        {/* Save button — always visible */}
+        <button
+          className="btn btn-save"
           onClick={onSave}
+          disabled={saving}
+          aria-label="Save chapter"
         >
-          Save
-        </Button>
+          <Save size={18} />
+          <span>{saving ? "Saving..." : "Save"}</span>
+        </button>
       </div>
     </div>
   );

@@ -2,23 +2,26 @@ import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Typography, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
-import ReCAPTCHA from "react-google-recaptcha";   // ✅ import captcha
-import { registerApi } from "../../api/auth/auth.api";
-import "./Auth.scss";
+import ReCAPTCHA from "react-google-recaptcha";
+import { registerApi } from "../../../api/auth/auth.api";
+
+import "./SignUpForm.scss";
 
 const { Text } = Typography;
 
-const SignUpForm = ({ signUpData = {}, setSignUpData = () => { } }) => {
+const SignUpForm = ({ signUpData = {}, setSignUpData = () => {} }) => {
   const navigate = useNavigate();
+
   const [loading, setLoading] = useState(false);
   const [passwordError, setPasswordError] = useState("");
-  const [captchaValue, setCaptchaValue] = useState(null); // ✅ captcha state
+  const [captchaValue, setCaptchaValue] = useState(null);
 
   useEffect(() => {
     if (!signUpData?.confirmPassword) {
       setPasswordError("");
       return;
     }
+
     if (signUpData?.password !== signUpData?.confirmPassword) {
       setPasswordError("Passwords do not match");
     } else {
@@ -27,17 +30,13 @@ const SignUpForm = ({ signUpData = {}, setSignUpData = () => { } }) => {
   }, [signUpData?.password, signUpData?.confirmPassword]);
 
   const onFinish = async (values) => {
-    // if (!captchaValue) {
-    //   message.error("Please verify the reCAPTCHA");
-    //   return;
-    // }
-
     const { name, email, mobile, password, confirmPassword } = values;
+
     if (password !== confirmPassword) {
       setPasswordError("Passwords do not match");
       return;
     }
-    setPasswordError("");
+
     setLoading(true);
 
     try {
@@ -47,23 +46,28 @@ const SignUpForm = ({ signUpData = {}, setSignUpData = () => { } }) => {
         mobile,
         password,
         confirm_password: confirmPassword,
-        captcha: captchaValue, // ✅ send captcha token if needed in backend
+        captcha: captchaValue,
       };
+
       const response = await registerApi(payload);
 
       if (response?.data?.success) {
         message.success(response?.data?.message);
+
         const encodedEmail = btoa(email);
         const encodedType = btoa("email_varification");
+
         navigate(`/otp-verify?email=${encodedEmail}&type=${encodedType}`);
       } else {
         setPasswordError(response?.data?.message || "Registration failed");
       }
     } catch (error) {
       const errorMsg = error?.response?.data?.message;
-      if (errorMsg?.includes("User is not verified yet")) {
+
+      if (errorMsg?.includes("not verified")) {
         const encodedEmail = btoa(values.email);
         const encodedType = btoa("email_varification");
+
         navigate(`/otp-verify?email=${encodedEmail}&type=${encodedType}`);
       } else {
         setPasswordError(errorMsg || "Something went wrong");
@@ -74,28 +78,21 @@ const SignUpForm = ({ signUpData = {}, setSignUpData = () => { } }) => {
   };
 
   return (
-    <div className="signup-container">
-      <Form
-        layout="vertical"
-        onFinish={onFinish}
-        className="signup-form"
-        initialValues={signUpData}
-      >
-        {/* Full Name */}
+    <div className="auth-form signup-form">
+      <Form layout="vertical" onFinish={onFinish} initialValues={signUpData}>
         <Form.Item
           label="Full Name"
           name="name"
           rules={[{ required: true, message: "Please enter your full name" }]}
         >
           <Input
-            placeholder="Enter your full name"
+            placeholder="Your full name"
             onChange={(e) =>
               setSignUpData({ ...signUpData, name: e.target.value })
             }
           />
         </Form.Item>
 
-        {/* Email */}
         <Form.Item
           label="Email"
           name="email"
@@ -105,24 +102,23 @@ const SignUpForm = ({ signUpData = {}, setSignUpData = () => { } }) => {
           ]}
         >
           <Input
-            placeholder="Enter your email"
+            placeholder="you@example.com"
             onChange={(e) =>
               setSignUpData({ ...signUpData, email: e.target.value })
             }
           />
         </Form.Item>
 
-        {/* Mobile */}
         <Form.Item
           label="Mobile"
           name="mobile"
           rules={[
             { required: true, message: "Please enter your mobile number" },
-            { pattern: /^\d{10}$/, message: "Mobile number must be 10 digits" },
+            { pattern: /^\d{10}$/, message: "Mobile must be 10 digits" },
           ]}
         >
           <Input
-            placeholder="Enter your mobile number"
+            placeholder="10-digit mobile number"
             maxLength={10}
             onChange={(e) => {
               const value = e.target.value.replace(/\D/g, "");
@@ -131,7 +127,6 @@ const SignUpForm = ({ signUpData = {}, setSignUpData = () => { } }) => {
           />
         </Form.Item>
 
-        {/* Password */}
         <Form.Item
           label="Password"
           name="password"
@@ -141,20 +136,15 @@ const SignUpForm = ({ signUpData = {}, setSignUpData = () => { } }) => {
             {
               validator: (_, value) => {
                 if (!value) return Promise.resolve();
-                if (value.includes(" ")) {
-                  return Promise.reject("Password cannot contain spaces");
-                }
-                if (value.length < 8) {
-                  return Promise.reject(
-                    "Password must be at least 8 characters long"
-                  );
-                }
-                const digitMatches = value.match(/\d/g) || [];
-                if (digitMatches.length < 2) {
-                  return Promise.reject(
-                    "Password must contain at least 2 digits"
-                  );
-                }
+                if (value.includes(" "))
+                  return Promise.reject("No spaces allowed");
+                if (value.length < 8)
+                  return Promise.reject("At least 8 characters required");
+
+                const digits = value.match(/\d/g) || [];
+                if (digits.length < 2)
+                  return Promise.reject("At least 2 digits required");
+
                 return Promise.resolve();
               },
             },
@@ -171,23 +161,11 @@ const SignUpForm = ({ signUpData = {}, setSignUpData = () => { } }) => {
           />
         </Form.Item>
 
-        {/* Confirm Password */}
         <Form.Item
           label="Confirm Password"
           name="confirmPassword"
           dependencies={["password"]}
           hasFeedback
-          rules={[
-            { required: true, message: "Please confirm your password!" },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue("password") === value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(new Error("Passwords do not match!"));
-              },
-            }),
-          ]}
         >
           <Input.Password
             placeholder="Confirm your password"
@@ -195,25 +173,36 @@ const SignUpForm = ({ signUpData = {}, setSignUpData = () => { } }) => {
               visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
             }
             onChange={(e) =>
-              setSignUpData({ ...signUpData, confirmPassword: e.target.value })
+              setSignUpData({
+                ...signUpData,
+                confirmPassword: e.target.value,
+              })
             }
           />
         </Form.Item>
 
-        {/* ✅ ReCAPTCHA */}
-        <Form.Item style={{ justifySelf: "center", textAlign: "center" }}>
+        {passwordError && (
+          <Text type="danger" className="password-error">
+            {passwordError}
+          </Text>
+        )}
+
+        <div className="captcha-wrap">
           <ReCAPTCHA
             sitekey="6LdpsOgrAAAAAPx-8vWg-L8aBFYI_K2Y-eHzoutI"
             onChange={(value) => setCaptchaValue(value)}
           />
-        </Form.Item>
+        </div>
 
-        {/* Submit Button */}
-        <Form.Item>
-          <Button type="primary" htmlType="submit" block loading={loading}>
-            Sign Up
-          </Button>
-        </Form.Item>
+        <Button
+          type="primary"
+          htmlType="submit"
+          block
+          loading={loading}
+          className="signup-btn"
+        >
+          Sign Up
+        </Button>
 
         <p className="signup-text">
           Already have an account? <Link to="/login">Login</Link>

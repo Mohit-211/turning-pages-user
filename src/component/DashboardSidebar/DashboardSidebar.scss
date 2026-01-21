@@ -1,55 +1,72 @@
+/* =========================================
+   Dashboard Sidebar – Modern Editorial SaaS
+   Final – Jan 2026 style
+========================================= */
+
 .sidebar {
   width: 240px;
-  background: #fff;
-  border-right: 1px solid #e5e7eb;
-  height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
-  padding-top: 0.5rem;
-  transition: width 0.3s ease;
+  background-color: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  flex-shrink: 0;
+  padding-top: 8px;
+  user-select: none;
 }
 
 .sidebar.collapsed {
-  width: 60px;
+  width: 68px;
 }
 
+/* ── Toggle Button ── */
 .sidebar-toggle {
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem;
+  margin: 8px 12px;
+  border-radius: 10px;
   cursor: pointer;
-  color: #374151;
+  color: #6b7280;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  align-self: flex-start;
 }
 
 .sidebar-toggle:hover {
-  background: #f3f4f6;
+  background-color: #f6f8fa;
+  color: #174f78;
+  transform: rotate(90deg);
 }
 
 .toggle-icon {
-  height: 20px;
   width: 20px;
+  height: 20px;
 }
 
+/* ── Navigation Group ── */
 .sidebar-group {
   display: flex;
   flex-direction: column;
+  gap: 4px;
 }
 
 .sidebar-label {
-  font-size: 0.85rem;
+  padding: 8px 16px;
+  font-size: 0.69rem;
   font-weight: 600;
-  padding: 0.5rem 1rem;
-  color: #6b7280;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
-  transition: opacity 0.2s ease;
+  color: #9ca3af;
 }
 
 .sidebar.collapsed .sidebar-label {
   display: none;
 }
 
+/* ── Menu List ── */
 .sidebar-menu {
   list-style: none;
   margin: 0;
@@ -57,46 +74,116 @@
 }
 
 .sidebar-menu-item {
-  margin: 0;
+  margin: 2px 0;
 }
 
+/* ── Menu Button ── */
 .sidebar-menu-button {
   display: flex;
   align-items: center;
-  padding: 0.6rem 1rem;
+  gap: 12px;
+  padding: 11px 16px;
   text-decoration: none;
   color: #374151;
-  border-left: 3px solid transparent;
-  transition: background 0.2s, color 0.2s, padding 0.3s;
+  font-size: 0.94rem;
+  font-weight: 500;
+  border-radius: 10px;
+  margin: 0 8px;
+  position: relative;
+  transition: all 0.24s ease;
 }
 
 .sidebar.collapsed .sidebar-menu-button {
   justify-content: center;
-  padding: 0.6rem 0;
+  padding: 12px 0;
+  margin: 2px 8px;
+  border-radius: 10px;
 }
 
+/* Icon */
 .sidebar-menu-button .icon {
-  height: 18px;
-  width: 18px;
+  width: 19px;
+  height: 19px;
   flex-shrink: 0;
+  color: #6b7280;
+  transition: all 0.25s ease;
 }
 
+/* Title */
 .sidebar-menu-button .title {
-  margin-left: 0.75rem;
-  font-size: 0.95rem;
+  white-space: nowrap;
 }
 
 .sidebar.collapsed .sidebar-menu-button .title {
   display: none;
 }
 
+/* Hover */
 .sidebar-menu-button:hover {
-  background: #f3f4f6;
+  background-color: #f8fafc;
+  color: #111827;
+  transform: translateX(2px);
 }
 
+.sidebar-menu-button:hover .icon {
+  color: #174f78;
+  transform: scale(1.12) translateY(-1px);
+}
+
+/* ── Active State ── */
 .sidebar-menu-button.active {
-  background: rgba(59, 130, 246, 0.1); // primary/10
-  color: #3b82f6; // primary
+  background-color: rgba(23, 79, 120, 0.06);
+  color: #174f78;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.sidebar-menu-button.active .icon {
+  color: #174f78;
+  transform: scale(1.12) translateY(-1px);
+}
+
+/* Elegant vertical accent bar */
+.sidebar-menu-button.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 38px;
+  background: linear-gradient(180deg, #ef4444, #b91c1c);
+  border-radius: 0 4px 4px 0;
+}
+
+/* ── Collapsed Tooltips ── */
+.sidebar.collapsed .sidebar-menu-button {
+  position: relative;
+}
+
+.sidebar.collapsed .sidebar-menu-button::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%) translateX(14px);
+  background: #1f2937;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.82rem;
   font-weight: 500;
-  border-left: 3px solid #3b82f6;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  z-index: 30;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
+}
+
+.sidebar.collapsed .sidebar-menu-button:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-50%) translateX(18px);
 }
