@@ -10,10 +10,11 @@ const DashboardHeader = ({
   user,
   notifications = [],
   unreadCount = 0,
-  credits = 120,
+ 
   maxCredits = 200,
 }) => {
   const navigate = useNavigate();
+  console.log(user,"user")
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
 
@@ -58,7 +59,7 @@ const DashboardHeader = ({
 
       <div className="center-section">
         <CreditBar
-          credits={credits}
+          credits={user?.total_credit}
           maxCredits={maxCredits}
           onMoreCredits={() => navigate("/dashboard/billing")}
         />
