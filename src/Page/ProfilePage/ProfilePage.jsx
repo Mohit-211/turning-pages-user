@@ -194,7 +194,7 @@ if (loading) {
             <th>Date</th>
             <th>Payment Type</th>
             <th>Mode</th>
-            <th>Gateway</th>
+            {/* <th>Gateway</th> */}
             <th>Credits</th>
             <th>Amount</th>
             <th>Transaction ID</th>
@@ -211,7 +211,7 @@ if (loading) {
 
               <td>{p.payment_type}</td>
               <td className="capitalize">{p.payment_mode}</td>
-              <td className="capitalize">{p.payment_gateway}</td>
+              {/* <td className="capitalize">{p.payment_gateway}</td> */}
 
               <td>{p.credit}</td>
 
