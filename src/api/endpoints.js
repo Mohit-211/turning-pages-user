@@ -44,4 +44,6 @@ export const Chapter_ENDPOINTS = {
 // };
 export const PAYMENT_ENDPOINTS = {
   STRIPE: "payments/intent/generate",
+  GET_ALL: "payments/all",
+
 };

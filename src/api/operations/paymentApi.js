@@ -3,3 +3,7 @@ import { PAYMENT_ENDPOINTS } from "../endpoints";
 
 export const stripePaymentApi = (payload) =>
   client.post(PAYMENT_ENDPOINTS.STRIPE, payload);
+
+// Get All Payments
+export const GetAllPaymentsApi = () =>
+  client.get(PAYMENT_ENDPOINTS.GET_ALL);
