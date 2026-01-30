@@ -28,7 +28,9 @@ export const Book_ENDPOINTS = {
   SEARCH: "books/search",
   DELETE: "books/remove",
   UPDATE: "books",
-  GENERATE_COVER: "chapters/generate/cover"
+  GENERATE_COVER: "chapters/generate/cover",
+  SUBMITTION: "books/submission/update",
+  GET_SUBMITTION_HISTORY: "books/all/book/submission/history",
 
 };
 export const Chapter_ENDPOINTS = {
@@ -46,4 +48,10 @@ export const PAYMENT_ENDPOINTS = {
   STRIPE: "payments/intent/generate",
   GET_ALL: "payments/all",
 
+};
+export const SUPPORT_ENDPOINTS = {
+  CREATE_TICKET: "support",
+  GET_ALL_TICKETS: "support",
+  GET_TICKET_BY_ID: (id) => `support/${id}`,
+  // ADD_MESSAGE: "support/tickets/message/add",
 };

@@ -27,6 +27,7 @@ import ProtectedRoute from "./Page/AuthRoutes/ProtectedRoute";
 
 /* Payments */
 import PricingCards from "./Sections/PaymentPage/PricingPage";
+import SupportDashboard from "./Page/Support/Support";
 
 function App() {
   return (
@@ -118,6 +119,16 @@ function App() {
             <ProtectedRoute>
               <DashboardLayout>
                 <Submissions />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/support"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <SupportDashboard />
               </DashboardLayout>
             </ProtectedRoute>
           }

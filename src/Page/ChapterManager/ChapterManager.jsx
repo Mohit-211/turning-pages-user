@@ -13,12 +13,14 @@ import UploadChapterModal from "./chapterComponent/UploadChapterModal";
 import BookHeader from "../Book/BookHeader/BookHeader";
 import BookCoverPanel from "../../Page/Book/BookHeader/BookCoverPanel";
 
-import { GetBookByIdApi } from "../../api/operations/book.api";
+import { GetBookByIdApi, GetBooksBySubmittion } from "../../api/operations/book.api";
 import {
   CreateChapterApi,
   UpdateChapterApi,
   DeleteChapterApi,
 } from "../../api/operations/chapter.api";
+import TurnPreview from "./chapterComponent/PaginatedPreview";
+import { message } from "antd";
 
 export default function ChapterManager() {
   const { bookId } = useParams();
@@ -191,6 +193,35 @@ export default function ChapterManager() {
       setAiLoading(false);
     }
   };
+const handleSubmitBook = async (event_name) => {
+  try {
+    await GetBooksBySubmittion({
+      book_id: bookId,
+      event_name,
+    });
+
+    // ensure message renders
+    message.success({
+      content: "Saved successfully",
+      duration: 2,
+    });
+
+    await new Promise((res) => setTimeout(res, 100));
+
+    setLoading(true);
+
+    await new Promise((res) => setTimeout(res, 2000));
+
+    const response = await GetBookByIdApi(bookId);
+    setBookDetails(response?.data?.data || response?.data || response);
+
+  } catch (error) {
+    console.error("Submit error:", error);
+    message.error("Something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="chapter-manager">
@@ -226,6 +257,7 @@ export default function ChapterManager() {
           title={bookDetails.title || "Untitled Book"}
           bookId={bookId}
           onEditCover={() => setShowCoverPanel(true)}
+           onSubmit={handleSubmitBook}
         />
 
         <Toolbar
@@ -260,7 +292,8 @@ export default function ChapterManager() {
                 saving={saving}
               />
             ) : (
-              <PaginatedPreview html={editorContent} />
+             
+              <TurnPreview html={editorContent} isOpen={true} onClose={() => {}}/>
             )
           ) : (
             <div className="empty-state">
