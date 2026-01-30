@@ -1,108 +1,62 @@
-import React, { useEffect, useRef, useState } from "react";
-import "./PaginatedPreview.scss";
+import React, { useEffect, useState } from "react";
+import { Document, Page, pdfjs } from "react-pdf";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
-const PAGE_HEIGHT_PX = 1050; // ~A4 content height in pixels (adjust if needed)
+import "react-pdf/dist/Page/AnnotationLayer.css";
+import "react-pdf/dist/Page/TextLayer.css";
 
-export default function PaginatedPreview({ html, isOpen, onClose }) {
-  const [pages, setPages] = useState([]);
-  const containerRef = useRef(null);
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.js",
+  import.meta.url
+).toString();
+export default function HtmlBookViewer({ html, isOpen }) {
+  const [pdfUrl, setPdfUrl] = useState(null);
+  const [numPages, setNumPages] = useState(0);
 
   useEffect(() => {
-    if (!isOpen || !html) {
-      setPages([]);
-      return;
-    }
+    if (!isOpen || !html) return;
 
-    const paginateContent = () => {
-      if (!containerRef.current) return;
+    const generatePdf = async () => {
+      const container = document.createElement("div");
+      container.style.width = "794px"; // A4 width
+      container.style.padding = "40px";
+      container.style.background = "#fff";
+      container.innerHTML = html;
+      document.body.appendChild(container);
 
-      // Create temporary container for measurement
-      const temp = document.createElement("div");
-      temp.innerHTML = html;
-      temp.style.position = "absolute";
-      temp.style.visibility = "hidden";
-      temp.style.width = "720px";
-      temp.style.padding = "70px 80px";
-      temp.style.fontFamily = '"Georgia", "Times New Roman", serif';
-      temp.style.fontSize = "16px";
-      temp.style.lineHeight = "1.65";
-      document.body.appendChild(temp);
+      const canvas = await html2canvas(container, {
+        scale: 2,
+        backgroundColor: "#ffffff",
+      });
 
-      const pageElements = [];
-      let currentPage = document.createElement("div");
-      currentPage.className = "page-content";
+      const imgData = canvas.toDataURL("image/jpeg", 1.0);
+      const pdf = new jsPDF("p", "px", "a4");
 
-      const walker = document.createTreeWalker(
-        temp,
-        NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT
-      );
-      let currentNode = walker.nextNode();
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
-      while (currentNode) {
-        const clone = currentNode.cloneNode(true);
-        currentPage.appendChild(clone);
+      pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
 
-        // Check overflow
-        if (currentPage.scrollHeight > PAGE_HEIGHT_PX) {
-          // Remove the overflowing node and start new page
-          currentPage.removeChild(clone);
-          if (currentPage.innerHTML.trim()) {
-            pageElements.push(currentPage.innerHTML);
-          }
-          currentPage = document.createElement("div");
-          currentPage.className = "page-content";
-          currentPage.appendChild(clone);
-        }
+      const blob = pdf.output("blob");
+      setPdfUrl(URL.createObjectURL(blob));
 
-        currentNode = walker.nextNode();
-      }
-
-      // Push last page
-      if (currentPage.innerHTML.trim()) {
-        pageElements.push(currentPage.innerHTML);
-      }
-
-      document.body.removeChild(temp);
-      setPages(pageElements);
+      document.body.removeChild(container);
     };
 
-    paginateContent();
+    generatePdf();
   }, [html, isOpen]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !pdfUrl) return null;
 
   return (
-    <div className="preview-modal-overlay" onClick={onClose}>
-      <div className="preview-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2>Book Preview</h2>
-          <button
-            className="close-btn"
-            onClick={onClose}
-            aria-label="Close preview"
-          >
-            <X size={24} />
-          </button>
+    <div style={{ display: "flex", justifyContent: "center" }}>
+      <Document file={pdfUrl} onLoadSuccess={({ numPages }) => setNumPages(numPages)}>
+        <div style={{ display: "flex", gap: 16 }}>
+          <Page pageNumber={1} width={500} />
+          {numPages > 1 && <Page pageNumber={2} width={500} />}
         </div>
-
-        <div className="pages-wrapper">
-          {pages.length === 0 ? (
-            <div className="empty-preview">
-              <p>No content to preview yet</p>
-            </div>
-          ) : (
-            pages.map((pageHtml, index) => (
-              <div key={index} className="preview-page">
-                <div
-                  className="page-content"
-                  dangerouslySetInnerHTML={{ __html: pageHtml }}
-                />
-                <div className="page-number">{index + 1}</div>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
+      </Document>
     </div>
   );
 }

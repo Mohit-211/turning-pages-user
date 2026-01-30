@@ -42,3 +42,10 @@ export const UpdateBookCoverApi = (formData) =>
 ============================ */
 export const GenerateBookCoverApi = (payload) =>
   client.post(Book_ENDPOINTS.GENERATE_COVER, payload);
+
+// book submit 
+export const GetBooksBySubmittion = (payload) =>
+  client.post(Book_ENDPOINTS.SUBMITTION, payload);
+
+export const GetBookSubmittionHistoryApi = () =>
+  client.get(Book_ENDPOINTS.GET_SUBMITTION_HISTORY);

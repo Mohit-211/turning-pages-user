@@ -5,36 +5,21 @@
 
 .dashboard-layout {
   display: flex;
-  min-height: 100dvh;
-  background: #f8fafc;
-  overflow: hidden;
+  min-height: 100vh; // full viewport
 }
 
-/* Sidebar is fixed/left — width controlled in DashboardSidebar.scss */
 .dashboard-main {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  min-width: 0; // prevents flex children overflow
+  flex: 1; // take remaining width
+  height: 100vh; // full viewport height
 }
 
-/* Header is fixed/sticky in DashboardHeader.scss */
-
-/* Main scrollable content area */
 .dashboard-content {
-  flex: 1;
-  padding: 32px 28px 40px;
-  overflow-y: auto;
-  background: #f8fafc;
-  scroll-behavior: smooth;
-
-  @media (max-width: 1024px) {
-    padding: 24px 20px;
-  }
-
-  @media (max-width: 640px) {
-    padding: 16px 12px;
-  }
+  flex: 1; // take remaining vertical space below header
+  overflow-y: auto; // scroll if content exceeds height
+  padding: 24px; // optional spacing
+  background: #f5f7fb; // optional background
 }
 
 /* Dashboard page wrapper (used in Dashboard.jsx) */
@@ -43,7 +28,8 @@
   flex-direction: column;
   gap: 40px;
 
-  > section {
+
+  >section {
     background: white;
     border-radius: 12px;
     padding: 28px;

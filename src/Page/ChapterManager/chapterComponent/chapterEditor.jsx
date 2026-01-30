@@ -59,7 +59,7 @@ export default function ChapterEditor({
       />
 
       {/* Floating Save button (optional – can be moved to header if preferred) */}
-      {onSave && (
+      {/* {onSave && (
         <button
           className="floating-save-btn"
           onClick={onSave}
@@ -74,7 +74,7 @@ export default function ChapterEditor({
             </>
           )}
         </button>
-      )}
+      )} */}
     </div>
   );
 }

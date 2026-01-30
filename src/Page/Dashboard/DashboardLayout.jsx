@@ -24,10 +24,11 @@ const DashboardLayout = ({ children }) => {
       <div className="dashboard-main">
         <DashboardHeader
           user={user}
-          notifications={[]} // ← replace with real data later
-          unreadCount={0} // ← dynamic later
+          notifications={[]} 
+          unreadCount={0} 
         />
 
+        {/* Make content scrollable */}
         <main className="dashboard-content">{children}</main>
       </div>
     </div>

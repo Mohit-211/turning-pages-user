@@ -1,7 +1,6 @@
-import React, { useState, useRef } from "react";
-import { Save, Send, Image as ImageIcon, Download } from "lucide-react";
+import React, { useRef } from "react";
+import { Send, Image as ImageIcon, Download } from "lucide-react";
 import { useReactToPrint } from "react-to-print";
-import { GetBooksByStatusApi } from "../../../api/operations/book.api";
 import "./BookHeader.scss";
 
 export default function BookHeader({
@@ -9,21 +8,13 @@ export default function BookHeader({
   title,
   onEditCover,
   bookIdDetails,
+  onSubmit,
+  loading,
 }) {
-  const [loading, setLoading] = useState(false);
   const printRef = useRef(null);
 
-  const handleSave = async (status) => {
-    setLoading(true);
-    try {
-      await GetBooksByStatusApi({ book_id: bookId, status });
-      alert("Saved successfully");
-    } catch (err) {
-      console.error(err);
-      alert("Something went wrong");
-    } finally {
-      setLoading(false);
-    }
+  const handleSave = (event_name) => {
+    onSubmit(event_name);
   };
 
   const hasValidContent = (html) => {
@@ -46,6 +37,8 @@ export default function BookHeader({
     ? `${import.meta.env.VITE_BOOK_IMAGE_URL}${bookIdDetails.cover_img_name}`
     : "";
 
+  const isSubmitted = bookIdDetails?.book_submissions?.length > 0;
+
   return (
     <header className="book-header">
       <div className="book-title">
@@ -60,21 +53,12 @@ export default function BookHeader({
         </button>
 
         <button
-          className="action-btn save-draft"
-          onClick={() => handleSave("draft")}
-          disabled={loading}
-        >
-          <Save size={16} />
-          Save Draft
-        </button>
-
-        <button
           className="action-btn submit-editing"
-          onClick={() => handleSave("in-editing")}
-          disabled={loading}
+          onClick={() => handleSave("submit")}
+          disabled={loading || isSubmitted}
         >
           <Send size={16} />
-          Submit for Editing
+          {loading ? "Submitting..." : "Submit for Editing"}
         </button>
 
         <button
@@ -87,27 +71,24 @@ export default function BookHeader({
         </button>
       </div>
 
-      {/* Hidden print content */}
+      {/* Hidden print */}
       <div style={{ position: "absolute", left: "-9999px", top: "-9999px" }}>
         <div ref={printRef} className="print-book">
-          {/* Cover Page */}
           <section className="print-page cover-page">
             {coverUrl && <img src={coverUrl} alt="Book Cover" />}
             <h1>{title || "Untitled Book"}</h1>
             <h3>by {bookIdDetails?.author || "Author"}</h3>
           </section>
 
-          {/* Chapters */}
           {bookIdDetails?.book_chapters
             ?.filter((ch) => hasValidContent(ch.content))
             .map((chapter, idx) => (
-              <section key={chapter.id || idx} className="print-page">
+              <section key={idx} className="print-page">
                 <h2>
                   Chapter {idx + 1}
                   {chapter.title && ` – ${chapter.title}`}
                 </h2>
                 <div
-                  className="chapter-content"
                   dangerouslySetInnerHTML={{ __html: chapter.content }}
                 />
               </section>

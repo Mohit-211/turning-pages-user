@@ -1,0 +1,144 @@
+/* PAGE */
+.support-page {
+  min-height: 100vh;
+  background: #f5f7fb;
+  padding: 32px;
+  font-family: Inter, sans-serif;
+}
+
+/* HEADER */
+.support-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  h1 {
+    font-size: 28px;
+    color: #111827;
+  }
+}
+
+/* BUTTON */
+.raise-btn {
+  background: #2563eb;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+
+  &:hover {
+    background: #1d4ed8;
+  }
+}
+
+/* TICKETS */
+.ticket-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ticket-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+
+  h3 {
+    color: #111827;
+    margin-bottom: 6px;
+  }
+
+  p {
+    font-size: 13px;
+    color: #6b7280;
+  }
+}
+
+/* STATUS */
+.status {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.status.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status.in-progress {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+/* MODAL */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal {
+  background: #fff;
+  padding: 24px;
+  border-radius: 14px;
+  width: 420px;
+  position: relative;
+  z-index: 1000;
+
+  h2 {
+    margin-bottom: 16px;
+    color: #111827;
+  }
+
+  label {
+    font-size: 14px;
+    color: #374151;
+    margin-top: 10px;
+    display: block;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    margin-top: 6px;
+  }
+}
+
+/* MODAL ACTIONS */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.cancel {
+  background: #e5e7eb;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.submit {
+  background: #2563eb;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
