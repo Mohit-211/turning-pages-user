@@ -5,19 +5,19 @@
   gap: 1.5rem;
   padding: 0.9rem 1.5rem;
   background: #ffffff;
-  border-bottom: 1px solid #f1f5f9; // lighter border
+  border-bottom: 1px solid #f1f5f9;
   position: sticky;
   top: 0;
   z-index: 15;
   flex-wrap: wrap;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03); // very subtle shadow
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
-/* Chapter title – secondary, smaller, less dominant */
+/* Chapter title */
 .chapter-title {
   h2 {
     margin: 0;
-    font-size: 1.15rem; // smaller than book title
+    font-size: 1.15rem;
     font-weight: 600;
     color: #475569;
     white-space: nowrap;
@@ -27,7 +27,7 @@
   }
 }
 
-/* Action buttons – compact, elegant, not overwhelming */
+/* Action buttons container */
 .action-buttons {
   display: flex;
   align-items: center;
@@ -35,12 +35,13 @@
   flex-wrap: wrap;
 }
 
+/* Default button style */
 .toolbar-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.55rem 1.1rem; // smaller padding
-  font-size: 0.88rem; // smaller font
+  padding: 0.55rem 1.1rem;
+  font-size: 0.88rem;
   font-weight: 500;
   border-radius: 6px;
   border: none;
@@ -55,7 +56,7 @@
   }
 
   span {
-    display: inline; // show text
+    display: inline;
   }
 
   &:hover:not(:disabled) {
@@ -70,7 +71,7 @@
   }
 }
 
-/* Button variants – balanced blue/red */
+/* Button Variants */
 
 .upload-btn {
   color: #174f78;
@@ -110,7 +111,89 @@
   }
 }
 
-/* Responsive – stack gracefully on mobile */
+/* ================= AI PANEL TOGGLE BUTTON ================= */
+
+.ai-panel-btn {
+  color: #7c3aed;
+  background: linear-gradient(135deg, #e0d1ff, #d4c0ff);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &.active {
+    background: linear-gradient(135deg, #7c3aed, #4f46e5);
+    color: #fff;
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+    opacity: 0.95;
+  }
+
+  svg {
+    flex-shrink: 0;
+    stroke-width: 2.2px;
+  }
+}
+
+/* ================= AI TOOL DROPDOWN ================= */
+
+.ai-tool-select {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  background: #f8fafc;
+  overflow: hidden;
+  height: 36px;
+  transition: border 0.2s ease;
+
+  &:hover {
+    border-color: #174f78;
+  }
+
+  select {
+    border: none;
+    outline: none;
+    padding: 0 0.9rem;
+    font-size: 0.88rem;
+    font-weight: 500;
+    background: transparent;
+    color: #475569;
+    cursor: pointer;
+    height: 100%;
+    appearance: none;
+  }
+
+  .run-ai-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 100%;
+    border: none;
+    background: #174f78;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s ease;
+
+    svg {
+      stroke-width: 2.2px;
+    }
+
+    &:hover {
+      background: #1e6091;
+    }
+  }
+}
+
+/* ================= Responsive ================= */
+
 @media (max-width: 768px) {
   .chapter-toolbar {
     padding: 0.8rem 1rem;
@@ -127,6 +210,7 @@
   .action-buttons {
     width: 100%;
     justify-content: space-between;
+    flex-wrap: wrap;
   }
 
   .toolbar-btn {
@@ -136,7 +220,16 @@
     font-size: 0.85rem;
 
     span {
-      display: none; // hide text on very small screens
+      display: none;
+    }
+  }
+
+  .ai-tool-select {
+    width: 100%;
+    height: 38px;
+
+    select {
+      flex: 1;
     }
   }
 }
