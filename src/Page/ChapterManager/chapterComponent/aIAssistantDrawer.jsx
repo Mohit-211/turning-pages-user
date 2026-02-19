@@ -15,6 +15,7 @@ export default function AIAssistantDrawer({
 }) {
   const textareaRef = useRef(null);
 
+  // Focus textarea when drawer opens
   useEffect(() => {
     if (visible && textareaRef.current) {
       textareaRef.current.focus();
@@ -22,6 +23,7 @@ export default function AIAssistantDrawer({
   }, [visible]);
 
   const handleKeyDown = (e) => {
+    // Enter triggers generation, Shift+Enter for newline
     if (e.key === "Enter" && !e.shiftKey && !aiLoading && instruction.trim()) {
       e.preventDefault();
       onGenerate();
@@ -33,6 +35,7 @@ export default function AIAssistantDrawer({
   return (
     <div className="ai-drawer-overlay" onClick={onClose}>
       <div className="ai-drawer" onClick={(e) => e.stopPropagation()}>
+        {/* Header */}
         <div className="drawer-header">
           <h2>AI Assistant</h2>
           <button className="close-btn" onClick={onClose} aria-label="Close">
@@ -40,13 +43,14 @@ export default function AIAssistantDrawer({
           </button>
         </div>
 
+        {/* Body */}
         <div className="drawer-body">
+          {/* Instruction */}
           <label htmlFor="ai-instruction">Instruction</label>
           <p className="hint">
             Describe what you want the AI to write (e.g., "Write an introduction
             for Chapter 1 about magic.")
           </p>
-
           <textarea
             ref={textareaRef}
             id="ai-instruction"
@@ -59,6 +63,7 @@ export default function AIAssistantDrawer({
             className="ai-textarea"
           />
 
+          {/* Generate Button */}
           <button
             className="generate-btn"
             onClick={onGenerate}
@@ -74,7 +79,7 @@ export default function AIAssistantDrawer({
             )}
           </button>
 
-          {/* Output Area */}
+          {/* Output / Streamed Text */}
           <div className="ai-output">
             {aiLoading && streamedText === "" ? (
               <div className="loading-state">

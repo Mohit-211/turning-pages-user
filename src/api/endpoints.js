@@ -18,7 +18,6 @@ export const USER_ENDPOINTS = {
 // };
 export const Genre_ENDPOINTS = {
   GET_ALL: "genres",
-
 };
 export const Book_ENDPOINTS = {
   CREATE: "books",
@@ -31,23 +30,28 @@ export const Book_ENDPOINTS = {
   GENERATE_COVER: "chapters/generate/cover",
   SUBMITTION: "books/submission/update",
   GET_SUBMITTION_HISTORY: "books/all/book/submission/history",
-
 };
+
 export const Chapter_ENDPOINTS = {
   CREATE: "chapters",
   GET_ALL: (id) => `chapters/${id}`,
   UPDATE: "chapters",
   DELETE: "chapters/remove",
-  GenerateChapterContent: "/chapters/generate/chapter/content"
+  GENERATE_CHAPTER_CONTENT: "chapters/generate/chapter/content",
+  PLAGIARISM_CHECK: "books/plagiarism/check",
+  CONSISTENCY_CHECK: "books/consistency/check",
+  GENERATE_SUMMARY: "books/chapter/summerize",
+  FACT_CHECK: "books/fact/check",
 };
+
 
 // export const Payment_ENDPOINTS = {
 //   STRIPE: "payments/intent/generate",
 // };
+
 export const PAYMENT_ENDPOINTS = {
   STRIPE: "payments/intent/generate",
   GET_ALL: "payments/all",
-
 };
 export const SUPPORT_ENDPOINTS = {
   CREATE_TICKET: "support",
