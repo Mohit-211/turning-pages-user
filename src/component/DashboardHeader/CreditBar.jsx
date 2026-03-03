@@ -1,15 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
-import { Modal, InputNumber, Button } from "antd";
-import StripePayment from "../StripePayment/StripePayment"; // adjust path
+import { Modal, InputNumber, Button, Spin } from "antd";
+import StripePayment from "../StripePayment/StripePayment";
 import "./CreditBar.scss";
+import { UserProfileApi } from "../../api/users/users.api";
 
-const CreditBar = ({ credits = 0, maxCredits = 100 }) => {
+const CreditBar = ({ maxCredits = 100 }) => {
   const [open, setOpen] = useState(false);
   const [creditInput, setCreditInput] = useState(10);
+  const [credits, setCredits] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  /* ================= FETCH PROFILE ================= */
+  const fetchUserProfile = async () => {
+    try {
+      setLoading(true);
+      const res = await UserProfileApi();
+      const userData = res?.data?.data;
+      setCredits(userData?.total_credit || 0);
+    } catch (error) {
+      console.log("Profile fetch failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserProfile();
+  }, []);
 
   const creditPercent = Math.min((credits / maxCredits) * 100, 100);
-  const amount = creditInput; // 1 credit = 1 price
+  const amount = creditInput;
 
   return (
     <>
@@ -17,7 +38,7 @@ const CreditBar = ({ credits = 0, maxCredits = 100 }) => {
         <div className="credit-info">
           <span className="label">Credits</span>
           <span className="count">
-            {credits} / {maxCredits}
+            {loading ? <Spin size="small" /> : `${credits} / ${maxCredits}`}
           </span>
         </div>
 
@@ -34,7 +55,7 @@ const CreditBar = ({ credits = 0, maxCredits = 100 }) => {
         </button>
       </div>
 
-      {/* 💳 Simple Buy Credits Modal */}
+      {/* 💳 Buy Credits Modal */}
       <Modal
         open={open}
         footer={null}
@@ -48,7 +69,7 @@ const CreditBar = ({ credits = 0, maxCredits = 100 }) => {
             min={1}
             max={1000}
             value={creditInput}
-            onChange={setCreditInput}
+            onChange={(value) => setCreditInput(value || 1)}
             style={{ width: "100%", marginTop: 8 }}
           />
         </div>
@@ -63,7 +84,7 @@ const CreditBar = ({ credits = 0, maxCredits = 100 }) => {
           onPaymentSuccess={() => {
             setOpen(false);
             setCreditInput(10);
-            // 🔄 refresh credits from backend
+            fetchUserProfile(); // 🔄 refresh credits after payment
           }}
           onCloseModal={() => setOpen(false)}
         />

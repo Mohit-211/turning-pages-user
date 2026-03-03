@@ -6,7 +6,9 @@ export default function AddChapterModal({
   visible,
   onCancel,
   onCreate,
+  bookId,     
   loading = false,
+
 }) {
   const [title, setTitle] = useState("");
   const [error, setError] = useState("");
@@ -18,14 +20,19 @@ export default function AddChapterModal({
     }
   }, [visible]);
 
-  const handleSubmit = () => {
-    if (!title.trim()) {
-      setError("Chapter title is required");
-      return;
-    }
-    onCreate(title.trim());
-    setTitle("");
-  };
+const handleSubmit = () => {
+  if (!title.trim()) {
+    setError("Chapter title is required");
+    return;
+  }
+
+  onCreate({
+    title: title.trim(),
+    book_id: bookId,
+  });
+
+  setTitle("");
+};
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !loading) {
