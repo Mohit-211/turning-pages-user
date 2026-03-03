@@ -3,7 +3,6 @@ import { Link, useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import "./ChapterManager.scss";
 
-import ChapterEditor from "./chapterComponent/ChapterEditor";
 import ChapterList from "./chapterComponent/ChapterList";
 import AddChapterModal from "./chapterComponent/AddChapterModal";
 import UploadChapterModal from "./chapterComponent/UploadChapterModal";
@@ -26,6 +25,7 @@ import {
 
 import { message } from "antd";
 import Toolbar from "./chapterComponent/toolbar";
+import ChapterEditor from "./chapterComponent/chapterEditor";
 
 export default function ChapterManager() {
   const { bookId } = useParams();
@@ -212,6 +212,26 @@ export default function ChapterManager() {
       setSaving(false);
     }
   };
+ const handleCreateChapter = async (payload) => {
+  try {
+    const res = await CreateChapterApi(payload);
+
+    const backendMessage =
+      res?.data?.message || "Chapter created successfully";
+
+    message.success(backendMessage);   // ✅ show backend message
+
+    setAddModalVisible(false);
+
+    await fetchBookAndChapters();      // ✅ auto refresh list
+
+  } catch (error) {
+    message.error(
+      error?.response?.data?.message || "Failed to create chapter"
+    );
+  }
+};
+console.log(chapters,"chapters")
   return (
     <div className="chapter-manager">
       <aside className="chapter-sider">
@@ -280,10 +300,11 @@ export default function ChapterManager() {
       </main>
 
       <AddChapterModal
-        visible={addModalVisible}
-        onCancel={() => setAddModalVisible(false)}
-        onCreate={CreateChapterApi}
-      />
+  visible={addModalVisible}
+  onCancel={() => setAddModalVisible(false)}
+  onCreate={handleCreateChapter}
+  bookId={bookId}   
+/>
 
       <UploadChapterModal
         visible={uploadModalVisible}

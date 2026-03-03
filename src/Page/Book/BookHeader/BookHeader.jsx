@@ -36,7 +36,7 @@ export default function BookHeader({
   const coverUrl = bookIdDetails?.cover_img_name
     ? `${import.meta.env.VITE_BOOK_IMAGE_URL}${bookIdDetails.cover_img_name}`
     : "";
-
+console.log(bookIdDetails,"bookIdDetails")
   const isSubmitted = bookIdDetails?.book_submissions?.length > 0;
 
   return (
