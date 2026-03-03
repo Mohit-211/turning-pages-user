@@ -21,7 +21,7 @@ export default function ChapterEditor({
       )}
 
       <Editor
-        apiKey="mibv7kc74dumv3uazcc6tu9xu601iqybxjb0qnglj1fn1258"
+        apiKey="l8z8itk8wu9fzhh5rycablwg5569p08i4rnr84vdohk2wh3m"
         value={content || chapter?.content || ""}
         init={{
           height: 580,
