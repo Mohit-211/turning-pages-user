@@ -59,3 +59,19 @@ export const SUPPORT_ENDPOINTS = {
   GET_TICKET_BY_ID: (id) => `support/${id}`,
   // ADD_MESSAGE: "support/tickets/message/add",
 };
+export const FEED_ENDPOINTS = {
+  CREATE: "feeds",
+  CREATE_COMMENT: "feeds/comment",
+  GET_ALL: "feeds",
+  REPLAY_COMMENT:"feeds/comment",
+  LIKE: (feedId) => `feeds/${feedId}/like`
+
+  //   GET_ALL: (id) => `chapters/${id}`,
+  //   UPDATE: "chapters",
+  //   DELETE: "chapters/remove",
+  //   GENERATE_CHAPTER_CONTENT: "chapters/generate/chapter/content",
+  //   PLAGIARISM_CHECK: "books/plagiarism/check",
+  //   CONSISTENCY_CHECK: "books/consistency/check",
+  //   GENERATE_SUMMARY: "books/chapter/summerize",
+  //   FACT_CHECK: "books/fact/check",
+};

@@ -1,0 +1,402 @@
+// ─── Inline tokens (no @use dependency) ───────────────────────────────────────
+// Drop _variables.scss and _mixins.scss in src/styles/ for other components,
+// but ComposeBox.scss is self-contained to avoid path resolution issues.
+
+$c-primary:      #7c3aed;
+$c-primary-dark: #4f46e5;
+$c-primary-light:#ede9fe;
+$c-primary-mid:  #6d28d9;
+$c-border:       #e5e7eb;
+$c-border-light: #f3f4f6;
+$c-surface:      #ffffff;
+$c-text-primary: #111827;
+$c-text-body:    #374151;
+$c-text-muted:   #6b7280;
+$c-text-faint:   #9ca3af;
+$c-text-ghost:   #d1d5db;
+$c-danger:       #e11d48;
+$c-success:      #059669;
+
+$sp-xs:  4px;
+$sp-sm:  8px;
+$sp-md:  12px;
+$sp-lg:  16px;
+$sp-xl:  20px;
+
+$r-sm:   8px;
+$r-md:   12px;
+$r-full: 9999px;
+
+$shadow-card: 0 1px 8px rgba(0, 0, 0, 0.06);
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+.compose-box {
+  background: $c-surface;
+  border: 1px solid $c-border;
+  border-radius: 20px;
+  box-shadow: $shadow-card;
+  padding: $sp-lg;
+  margin-bottom: $sp-xl;
+  transition: box-shadow 0.2s ease;
+
+  &--expanded {
+    box-shadow: 0 4px 24px rgba($c-primary, 0.08);
+    border-color: rgba($c-primary, 0.2);
+  }
+
+  &__inner {
+    display: flex;
+    align-items: flex-start;
+    gap: $sp-md;
+  }
+
+  &__avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: $r-full;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+    color: white;
+    background: linear-gradient(135deg, $c-primary, $c-primary-dark);
+  }
+
+  &__body { flex: 1; min-width: 0; }
+
+  // ── Title ──────────────────────────────────────────────────
+  &__title {
+    width: 100%;
+    font-size: 14px;
+    font-weight: 600;
+    color: $c-text-primary;
+    border: none;
+    border-bottom: 1px solid $c-border;
+    outline: none;
+    background: transparent;
+    padding: 0 0 $sp-sm 0;
+    margin-bottom: $sp-sm;
+    font-family: inherit;
+
+    &::placeholder { color: $c-text-ghost; font-weight: 400; }
+    &:focus { border-bottom-color: $c-primary; }
+  }
+
+  // ── Textarea ───────────────────────────────────────────────
+  &__textarea {
+    width: 100%;
+    font-size: 13px;
+    outline: none;
+    resize: none;
+    background: transparent;
+    border: none;
+    color: $c-text-body;
+    font-family: inherit;
+    line-height: 1.65;
+
+    &::placeholder { color: $c-text-ghost; }
+  }
+
+  // ── Meta fields ────────────────────────────────────────────
+  &__meta {
+    display: flex;
+    flex-direction: column;
+    gap: $sp-md;
+    margin-top: $sp-md;
+    padding-top: $sp-md;
+    border-top: 1px solid $c-border-light;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__label {
+    font-size: 11px;
+    font-weight: 600;
+    color: $c-text-faint;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  &__required {
+    color: $c-danger;
+    margin-left: 2px;
+  }
+
+  &__optional {
+    color: $c-text-ghost;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 11px;
+  }
+
+  // ── Genre select ───────────────────────────────────────────
+  &__select {
+    font-size: 13px;
+    color: $c-text-body;
+    background: #f9fafb;
+    border: 1px solid $c-border;
+    border-radius: $r-sm;
+    padding: $sp-sm $sp-md;
+    outline: none;
+    font-family: inherit;
+    cursor: pointer;
+    width: 100%;
+    max-width: 240px;
+
+    &:focus { border-color: rgba($c-primary, 0.5); }
+  }
+
+  // ── Visibility toggle ──────────────────────────────────────
+  &__visibility {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  &__vis-btn {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 5px $sp-md;
+    border-radius: $r-full;
+    border: 1px solid $c-border;
+    background: white;
+    color: $c-text-muted;
+    cursor: pointer;
+    text-transform: capitalize;
+    font-family: inherit;
+    transition: all 0.15s ease;
+
+    &:hover { border-color: $c-primary; color: $c-primary; }
+
+    &--active {
+      background: $c-primary-light;
+      border-color: rgba($c-primary, 0.4);
+      color: $c-primary-mid;
+      font-weight: 600;
+    }
+  }
+
+  // ── Tags ───────────────────────────────────────────────────
+  &__tags-wrap {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: $sp-sm $sp-md;
+    border: 1px solid $c-border;
+    border-radius: $r-sm;
+    background: #f9fafb;
+    min-height: 38px;
+
+    &:focus-within {
+      border-color: rgba($c-primary, 0.5);
+      background: white;
+    }
+  }
+
+  &__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: $c-primary-mid;
+    background: $c-primary-light;
+    padding: 2px $sp-sm;
+    border-radius: $r-full;
+    white-space: nowrap;
+  }
+
+  &__tag-remove {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: $c-primary-mid;
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    opacity: 0.6;
+    transition: opacity 0.1s;
+
+    &:hover { opacity: 1; }
+  }
+
+  &__tag-input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 11px;
+    color: $c-text-body;
+    font-family: inherit;
+    flex: 1;
+    min-width: 80px;
+
+    &::placeholder { color: $c-text-ghost; }
+    &:disabled { cursor: not-allowed; }
+  }
+
+  &__tag-hint {
+    font-size: 11px;
+    color: $c-text-ghost;
+    margin-top: 2px;
+  }
+
+  // ── Image upload ───────────────────────────────────────────
+  &__img-btn {
+    font-size: 11px;
+    color: $c-text-muted;
+    padding: $sp-sm $sp-md;
+    border-radius: $r-sm;
+    border: 1px dashed $c-border;
+    background: #f9fafb;
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.15s ease, color 0.15s ease;
+
+    &:hover {
+      border-color: $c-primary;
+      color: $c-primary;
+    }
+  }
+
+  &__img-preview {
+    display: flex;
+    align-items: center;
+    gap: $sp-md;
+    padding: $sp-sm;
+    border: 1px solid $c-border;
+    border-radius: $r-sm;
+    background: #f9fafb;
+    width: fit-content;
+  }
+
+  &__img-thumb {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: $r-sm;
+    flex-shrink: 0;
+  }
+
+  &__img-remove {
+    font-size: 11px;
+    color: $c-danger;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 2px $sp-sm;
+    border-radius: $r-sm;
+    transition: background 0.15s ease;
+
+    &:hover { background: #fef2f2; }
+  }
+
+  // ── Footer ─────────────────────────────────────────────────
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: $sp-md;
+    padding-top: $sp-sm;
+    border-top: 1px solid $c-border-light;
+  }
+
+  &__tools {
+    display: flex;
+    align-items: center;
+    gap: $sp-sm;
+  }
+
+  &__tool-btn {
+    font-size: 11px;
+    color: $c-text-faint;
+    padding: 4px $sp-sm;
+    border-radius: $r-sm;
+    background: #f9fafb;
+    border: 1px solid $c-border;
+    cursor: pointer;
+    font-family: inherit;
+    transition: color 0.15s ease;
+
+    &:hover { color: $c-text-body; }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: $sp-sm;
+  }
+
+  &__cancel {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 6px $sp-md;
+    border-radius: $r-sm;
+    border: 1px solid $c-border;
+    background: white;
+    color: $c-text-muted;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s ease;
+
+    &:hover {
+      border-color: $c-text-faint;
+      color: $c-text-body;
+    }
+  }
+
+  &__submit {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 6px $sp-lg;
+    border-radius: $r-sm;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    background: linear-gradient(135deg, $c-primary, $c-primary-dark);
+    color: white;
+    transition: opacity 0.2s ease, transform 0.15s ease;
+
+    &:hover { opacity: 0.9; transform: translateY(-1px); }
+    &:active { transform: translateY(0); }
+
+    &--disabled {
+      background: $c-border !important;
+      color: $c-text-faint !important;
+      cursor: not-allowed;
+      transform: none !important;
+      opacity: 1 !important;
+    }
+  }
+
+  // ── Feedback ───────────────────────────────────────────────
+  &__error {
+    font-size: 11px;
+    color: $c-danger;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: $r-sm;
+    padding: $sp-sm $sp-md;
+    margin-top: $sp-sm;
+  }
+
+  &__success {
+    font-size: 11px;
+    color: $c-success;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: $r-sm;
+    padding: $sp-sm $sp-md;
+    margin-top: $sp-sm;
+  }
+}

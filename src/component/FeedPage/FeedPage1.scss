@@ -1,0 +1,44 @@
+// .feed-page {
+//   min-height: 100vh;
+//   background: #f6f7fb;
+//   font-family: "Inter", sans-serif;
+
+//   &__body {
+//     max-width: 720px;
+//     margin: auto;
+//     padding: 30px 16px;
+//   }
+
+//   &__main {
+//     display: flex;
+//     flex-direction: column;
+//     gap: 18px;
+//   }
+
+//   p {
+//     // text-align: center;
+//     color: #6b7280;
+//     font-size: 14px;
+//   }
+// }
+@use 'variables' as v;
+
+.feed-page {
+  min-height: 100vh;
+  background: v.$bg-page;
+  font-family: v.$font-serif;
+
+  &__layout {
+    max-width: 1024px;
+    margin: 0 auto;
+    padding: 24px 16px;
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+  }
+
+  &__main {
+    flex: 1;
+    min-width: 0;
+  }
+}

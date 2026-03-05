@@ -1,0 +1,23 @@
+.feed-page {
+  min-height: 100vh;
+  background: #f6f7fb;
+  font-family: "Inter", sans-serif;
+
+  &__body {
+    max-width: 720px;
+    margin: auto;
+    padding: 30px 16px;
+  }
+
+  &__main {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  p {
+    // text-align: center;
+    color: #6b7280;
+    font-size: 14px;
+  }
+}
