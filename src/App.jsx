@@ -28,6 +28,8 @@ import ProtectedRoute from "./Page/AuthRoutes/ProtectedRoute";
 /* Payments */
 import PricingCards from "./Sections/PaymentPage/PricingPage";
 import SupportDashboard from "./Page/Support/Support";
+import FeedPage from "./component/FeedPage/FeedPage";
+import FeedPage1 from "./component/FeedPage/FeedPage1";
 
 function App() {
   return (
@@ -147,6 +149,10 @@ function App() {
         <Route path="/create-book" element={<CreateBook />} />
         <Route path="/payment" element={<PricingCards />} />
         <Route path="/demo" element={<Bhavya />} />
+        <Route path="/feed-page" element={<FeedPage/>} />
+        {/* <Route path="/feed-page-1" element={<FeedPage1/>} /> */}
+
+
       </Routes>
     </BrowserRouter>
   );

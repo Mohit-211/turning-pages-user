@@ -1,0 +1,45 @@
+@use 'variables' as v;
+
+.book-progress {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: v.$radius-lg;
+  background: #f5f3ff;
+  border: 1px solid v.$primary-light;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  &__title {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: v.$text-secondary;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__pct {
+    font-size: 0.7rem;
+    color: v.$text-muted;
+    margin-left: 8px;
+    flex-shrink: 0;
+  }
+
+  &__track {
+    height: 6px;
+    border-radius: 999px;
+    background: v.$border;
+    overflow: hidden;
+  }
+
+  &__fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 1s ease;
+  }
+}
