@@ -1,48 +1,41 @@
 import { useEffect, useState } from "react";
-import { Home, BookOpen, Send, Settings, User, Menu } from "lucide-react";
+import { Home, BookOpen, Send, Settings, User, Menu, Rss, LayoutList, Headset, Quote } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import "./DashboardSidebar.scss";
-
 const menuItems = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
   { title: "My Books", url: "/dashboard/books", icon: BookOpen },
   { title: "Submissions", url: "/dashboard/submissions", icon: Send },
   { title: "Settings", url: "/dashboard/settings", icon: Settings },
   { title: "Profile", url: "/dashboard/profile", icon: User },
-  { title: "Support", url: "/dashboard/support", icon: User },
-
+  { title: "My Feed", url: "/dashboard/feed-page", icon: LayoutList },
+  { title: "Quotes", url: "/dashboard/quotes", icon: Quote},
+  { title: "Support", url: "/dashboard/support", icon: Headset },
 ];
-
 const DashboardSidebar = () => {
   const location = useLocation();
   const currentPath = location.pathname;
-
   // Load collapsed state from localStorage (default: false)
   const [collapsed, setCollapsed] = useState(() => {
     const stored = localStorage.getItem("sidebarCollapsed");
     return stored === "true";
   });
-
   const toggleSidebar = () => {
     const newValue = !collapsed;
     setCollapsed(newValue);
     localStorage.setItem("sidebarCollapsed", String(newValue));
   };
-
   const isActive = (path) =>
     currentPath === path ||
     (path === "/dashboard" && currentPath === "/dashboard/");
-
   return (
     <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
       {/* Collapse Toggle */}
       <div className="sidebar-toggle" onClick={toggleSidebar}>
         <Menu className="toggle-icon" />
       </div>
-
       <div className="sidebar-group">
         {!collapsed && <div className="sidebar-label">Navigation</div>}
-
         <ul className="sidebar-menu">
           {menuItems.map((item) => {
             const Icon = item.icon;
@@ -66,5 +59,4 @@ const DashboardSidebar = () => {
     </aside>
   );
 };
-
 export default DashboardSidebar;

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./FeedCard1.scss";
+import "./SampleFeedCard.scss";
 import TypeBadge from "./TypeBadge";
 import CoverPreview from "./CoverPreview";
 import BookProgress from "./BookProgress";
@@ -10,7 +10,7 @@ import {
   ReplayCommentOnFeedApi,
 } from "../../api/operations/feed.api";
 
-export default function FeedCard1({ post }) {
+export default function SampleFeedCard({ post }) {
   const IMAGE_BASE = import.meta.env.VITE_BOOK_IMAGE_URL;
 
   const [liked, setLiked] = useState(post.is_liked || false);

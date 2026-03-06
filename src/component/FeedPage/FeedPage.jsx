@@ -8,42 +8,24 @@ import { GetAllFeedApi } from "../../api/operations/feed.api";
 import { GetAllGenreApi } from "../../api/operations/genre.api";
 
 export default function FeedPage() {
-
-  const [posts, setPosts] = useState([]);
+  const [feeds, setfeeds] = useState([]);
   const [genres, setGenres] = useState({});
   const [loading, setLoading] = useState(true);
-
-  // ───────────────
-  // Load Feeds
-  // ───────────────
 
   const loadFeeds = async () => {
     try {
       const res = await GetAllFeedApi();
-      const data = res?.data?.data?.rows;
-
-      setPosts(data || []);
+      setfeeds(res?.data?.data?.rows || []);
     } catch (err) {
       console.error("Feed fetch error", err);
     }
   };
 
-  // ───────────────
-  // Load Genres
-  // ───────────────
-
   const loadGenres = async () => {
     try {
       const res = await GetAllGenreApi();
-      console.log(res,"res")
-      const list = res?.data?.data || [];
-
       const map = {};
-
-      list.forEach((g) => {
-        map[g.id] = g.title;
-      });
-
+      (res?.data?.data || []).forEach((g) => { map[g.id] = g.title; });
       setGenres(map);
     } catch (err) {
       console.error("Genre fetch error", err);
@@ -56,34 +38,51 @@ export default function FeedPage() {
       await Promise.all([loadFeeds(), loadGenres()]);
       setLoading(false);
     };
-
     load();
   }, []);
 
-  const handlePostCreated = (newPost) => {
-    setPosts((prev) => [newPost, ...prev]);
+  const handlefeedCreated = (newfeed) => {
+    setfeeds((prev) => [newfeed, ...prev]);
   };
-console.log(genres,"genreName")
+
   return (
     <div className="feed-page">
-      <div className="feed-page__body">
+      {/* STICKY HEADER */}
+      {/* <header className="feed-page__header">
+        <div className="header-inner">
+          <div className="header-wordmark">
+            Read<span>·</span>Feed
+          </div>
+        </div>
+      </header> */}
 
+      <div className="feed-page__body">
         <main className="feed-page__main">
 
-          <ComposeBox onPostCreated={handlePostCreated} />
+          <ComposeBox onfeedCreated={handlefeedCreated}  
+               reloadFeeds={loadFeeds}  
+          
+          />
 
-          {loading && <p>Loading posts...</p>}
+          {loading && <p>Loading feeds…</p>}
 
-          {!loading && posts?.map((post) => (
+          {!loading && feeds.length === 0 && (
+            <div className="feed-page__empty">
+              <div className="empty-icon">📭</div>
+              <p>No feeds yet. Be the first to share something.</p>
+            </div>
+          )}
+
+          {!loading && feeds.map((feed) => (
             <FeedCard
-              key={post.id}
-              post={post}
-              genreName={genres[post.genre_id]}
+              key={feed.id}
+              feed={feed}
+              genreName={genres[feed.genre_id]}
+               reloadFeeds={loadFeeds}  
             />
           ))}
 
         </main>
-
       </div>
     </div>
   );

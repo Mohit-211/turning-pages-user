@@ -64,14 +64,18 @@ export const FEED_ENDPOINTS = {
   CREATE_COMMENT: "feeds/comment",
   GET_ALL: "feeds",
   REPLAY_COMMENT:"feeds/comment",
-  LIKE: (feedId) => `feeds/${feedId}/like`
+  LIKE: (feedId) => `feeds/${feedId}/like`,
+  ALL_Comment:(feedId)=>`feeds/${feedId}/comments`
+};
 
-  //   GET_ALL: (id) => `chapters/${id}`,
-  //   UPDATE: "chapters",
-  //   DELETE: "chapters/remove",
-  //   GENERATE_CHAPTER_CONTENT: "chapters/generate/chapter/content",
-  //   PLAGIARISM_CHECK: "books/plagiarism/check",
-  //   CONSISTENCY_CHECK: "books/consistency/check",
-  //   GENERATE_SUMMARY: "books/chapter/summerize",
-  //   FACT_CHECK: "books/fact/check",
+
+export const Quote_ENDPOINTS = {
+  GET_TAGS: (page = 1, limit = 20) =>
+    `/quotes/tags/list?page=${page}&limit=${limit}`,
+
+  GET_ALL_QUOTES: (page = 1, limit = 10) =>
+    `/quotes?page=${page}&limit=${limit}`,
+
+  GET_QUOTES_BY_TAG: (slug, page = 1, limit = 10) =>
+    `/quotes?tag=${slug}&page=${page}&limit=${limit}`,
 };
