@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
-import "./FeedPage.scss";
+import "./SampleFeedPage.scss";
 
 import ComposeBox from "./ComposeBox";
 
 import { GetAllFeedApi } from "../../api/operations/feed.api";
 import { GetAllGenreApi } from "../../api/operations/genre.api";
+import SampleFeedCard from "./SampleFeedCard";
 
-export default function FeedPage() {
+export default function SampleFeedPage() {
 
   const [posts, setPosts] = useState([]);
   const [genres, setGenres] = useState([]);
@@ -36,7 +37,7 @@ export default function FeedPage() {
       <ComposeBox />
 
       {posts.map((post) => (
-        <FeedCard1
+        <SampleFeedCard
           key={post.id}
           post={post}
           genres={genres}

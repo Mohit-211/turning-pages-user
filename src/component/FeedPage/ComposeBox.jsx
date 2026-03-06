@@ -3,7 +3,7 @@ import "./ComposeBox.scss";
 import { GetAllGenreApi } from "../../api/operations/genre.api";
 import { CreateFeedApi } from "../../api/operations/feed.api";
 
-export default function ComposeBox({ onPostCreated }) {
+export default function ComposeBox({ onPostCreated,reloadFeeds }) {
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const [genreId, setGenreId] = useState("");
@@ -86,39 +86,38 @@ export default function ComposeBox({ onPostCreated }) {
   // ─────────────────────────────────
 
   const handleSubmit = async () => {
-    if (!isReady) return;
+  if (!isReady) return;
 
-    setLoading(true);
-    setError("");
-    setSuccess(false);
+  setLoading(true);
+  setError("");
+  setSuccess(false);
 
-    try {
-      const formData = new FormData();
+  try {
+    const formData = new FormData();
 
-      formData.append("title", title.trim());
-      formData.append("content", text.trim());
-      formData.append("genre_id", genreId);
+    formData.append("title", title.trim());
+    formData.append("content", text.trim());
+    formData.append("genre_id", genreId);
 
-      
-
-      if (image) {
-        formData.append("images", image, image.name);
-      }
-
-      const data = await CreateFeedApi(formData);
-
-      setSuccess(true);
-      resetForm();
-
-      onPostCreated?.(data);
-
-      setTimeout(() => setSuccess(false), 3000);
-    } catch (err) {
-      setError(err.message ?? "Something went wrong.");
-    } finally {
-      setLoading(false);
+    if (image) {
+      formData.append("images", image); // binary file
     }
-  };
+
+    const data = await CreateFeedApi(formData);
+
+    setSuccess(true);
+    resetForm();
+    await reloadFeeds();
+
+    onPostCreated?.(data);
+
+    setTimeout(() => setSuccess(false), 3000);
+  } catch (err) {
+    setError(err.message ?? "Something went wrong.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className={`compose-box${expanded ? " compose-box--expanded" : ""}`}>

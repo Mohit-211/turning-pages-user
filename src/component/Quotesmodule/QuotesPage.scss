@@ -1,0 +1,407 @@
+// ============================================================
+// QuotesPage.scss
+// Editorial magazine-style Quotes UI
+// ============================================================
+
+// --- Google Fonts ---
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap');
+
+// ============================================================
+// Variables
+// ============================================================
+
+$bg-base:        #f5f0e8;
+$bg-card:        #fffdf8;
+$bg-footer:      #f0ebe0;
+$ink:            #2a2118;
+$ink-muted:      #9a8e80;
+$border:         #d8d0c0;
+$border-card:    #e0d8c8;
+
+$font-display:   'Playfair Display', serif;
+$font-ui:        'DM Sans', sans-serif;
+
+// Tag accent colors
+$accents: (
+  'all':         #c8a96e,
+  'motivation':  #e07b5d,
+  'wisdom':      #6b9080,
+  'life':        #8b7bb5,
+  'inspiration': #c8a96e,
+  'love':        #d96d8a,
+);
+
+// ============================================================
+// Mixins
+// ============================================================
+
+@mixin font-label($size: 11px, $spacing: 0.1em) {
+  font-family: $font-ui;
+  font-size: $size;
+  font-weight: 500;
+  letter-spacing: $spacing;
+  text-transform: uppercase;
+}
+
+@mixin smooth($props: all, $dur: 0.3s, $ease: ease) {
+  transition: $props $dur $ease;
+}
+
+@mixin card-shadow-hover {
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba($ink, 0.1);
+  }
+}
+
+// ============================================================
+// Reset & Base
+// ============================================================
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+// ============================================================
+// Animations
+// ============================================================
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ============================================================
+// Page Wrapper
+// ============================================================
+
+.quotes-page {
+  min-height: 100vh;
+  // background: $bg-base;
+  font-family: $font-display;
+}
+
+// ============================================================
+// Header
+// ============================================================
+
+.quotes-header {
+  text-align: center;
+  padding: 64px 40px 48px;
+  // background: $bg-base;
+  border-bottom: 1px solid $border;
+  margin-bottom: 48px;
+
+  &__eyebrow {
+    @include font-label(11px, 0.2em);
+    color: var(--accent, #c8a96e);
+    margin-bottom: 16px;
+    @include smooth(color, 0.4s);
+  }
+
+  &__title {
+    font-family: $font-display;
+    font-size: clamp(40px, 6vw, 72px);
+    font-weight: 900;
+    color: $ink;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+
+    em {
+      font-style: italic;
+      font-weight: 400;
+    }
+  }
+
+  &__rule {
+    width: 60px;
+    height: 3px;
+    background: var(--accent, #c8a96e);
+    margin: 12px auto 0;
+    @include smooth(background, 0.4s);
+  }
+}
+
+// ============================================================
+// Main Content
+// ============================================================
+
+.quotes-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px 80px;
+}
+
+// ============================================================
+// Tag Tabs
+// ============================================================
+
+.quotes-tags {
+  margin-bottom: 40px;
+  overflow-x: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &__inner {
+    display: flex;
+    gap: 10px;
+    // width: max-content;
+    width: 145dvh;
+    padding: 4px 0;
+    overflow: scroll;
+        scrollbar-width: none;
+  }
+}
+
+.tag-btn {
+  border: 1.5px solid $ink;
+  background: transparent;
+  color: $ink;
+  @include font-label(12px, 0.12em);
+  padding: 8px 20px;
+  cursor: pointer;
+  border-radius: 2px;
+  @include smooth();
+  white-space: nowrap;
+
+  &__dot {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    background: var(--accent, #c8a96e);
+    border-radius: 50%;
+    margin-left: 8px;
+    vertical-align: middle;
+    @include smooth(background, 0.4s);
+  }
+
+  &:hover,
+  &--active {
+    background: $ink;
+    color: $bg-base;
+  }
+}
+
+// ============================================================
+// Divider
+// ============================================================
+
+.quotes-divider {
+  border: none;
+  border-top: 1px solid $border;
+  margin-bottom: 40px;
+}
+
+// ============================================================
+// Count Bar
+// ============================================================
+
+.quotes-count {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 32px;
+
+  &__number {
+    font-family: $font-display;
+    font-size: 32px;
+    font-weight: 700;
+    color: $ink;
+  }
+
+  &__label {
+    @include font-label(13px, 0.1em);
+    color: $ink-muted;
+  }
+}
+
+// ============================================================
+// Masonry Grid
+// ============================================================
+
+.quotes-grid {
+  columns: 3;
+  column-gap: 20px;
+
+  @media (max-width: 900px) {
+    columns: 2;
+  }
+
+  @media (max-width: 560px) {
+    columns: 1;
+  }
+}
+
+// ============================================================
+// Quote Card
+// ============================================================
+
+.quote-card {
+  background: $bg-card;
+  border: 1px solid $border-card;
+  border-radius: 3px;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  break-inside: avoid;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+  @include smooth(transform box-shadow, 0.3s, ease);
+  animation: fadeUp 0.4s ease both;
+
+  @include card-shadow-hover;
+
+  // Decorative opening quote mark
+  &::before {
+    content: '\201C';
+    position: absolute;
+    top: -10px;
+    left: 16px;
+    font-family: $font-display;
+    font-size: 120px;
+    color: var(--accent, #c8a96e);
+    opacity: 0.12;
+    line-height: 1;
+    pointer-events: none;
+    @include smooth(color, 0.4s);
+  }
+
+  &--tall {
+    padding: 40px 28px;
+  }
+
+  // Staggered animation delays
+  @for $i from 1 through 6 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{($i - 1) * 0.06}s;
+    }
+  }
+}
+
+.quote-text {
+  font-family: $font-display;
+  font-size: 17px;
+  font-style: italic;
+  line-height: 1.75;
+  color: $ink;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.quote-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.quote-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.quote-author {
+  @include font-label(12px, 0.08em);
+  color: $ink;
+}
+
+.quote-tag {
+  @include font-label(11px, 0.06em);
+  font-weight: 400;
+  color: var(--accent, #c8a96e);
+  @include smooth(color, 0.4s);
+}
+
+// ============================================================
+// Copy Button
+// ============================================================
+
+.copy-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid $border;
+  background: transparent;
+  color: $ink-muted;
+  @include font-label(11px, 0.08em);
+  padding: 7px 14px;
+  cursor: pointer;
+  border-radius: 2px;
+  @include smooth();
+  flex-shrink: 0;
+
+  &:hover {
+    background: var(--accent, #c8a96e);
+    border-color: var(--accent, #c8a96e);
+    color: $bg-card;
+  }
+
+  &--copied {
+    background: map-get($accents, 'wisdom'); // sage green for "done"
+    border-color: map-get($accents, 'wisdom');
+    color: $bg-card;
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+// ============================================================
+// Footer
+// ============================================================
+
+.quotes-footer {
+  border-top: 1px solid $border;
+  padding: 32px 40px;
+  text-align: center;
+  background: $bg-footer;
+
+  p {
+    @include font-label(12px, 0.1em);
+    color: $ink-muted;
+  }
+  .quote-card--skeleton {
+  background: #f3f3f3;
+  position: relative;
+  overflow: hidden;
+}
+
+.quote-card--skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,0.6),
+    transparent
+  );
+  animation: skeleton 1.2s infinite;
+}
+
+@keyframes skeleton {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+}
