@@ -26,6 +26,7 @@ import {
 import { message } from "antd";
 import Toolbar from "./chapterComponent/toolbar";
 import ChapterEditor from "./chapterComponent/chapterEditor";
+import PdfViewer from "./PdfViewer/PdfViewer";
 
 export default function ChapterManager() {
   const { bookId } = useParams();
@@ -151,6 +152,7 @@ export default function ChapterManager() {
 
     try {
       const response = await PlagiarismCheck(text);
+      console.log(response,"response")
       const resultData = response?.data?.data || null;
 
       setAiResults((prev) => ({
@@ -282,7 +284,7 @@ console.log(chapters,"chapters")
                 setContent={setEditorContent}
               />
             ) : (
-              <TurnPreview html={editorContent} />
+              <PdfViewer htmlContent={editorContent} />
             )}
           </div>
 
