@@ -232,7 +232,7 @@ export default function AIReportPanel({
   if (loading) {
     return (
       <div className="ai-report-panel">
-        <div className="loader">Running AI analysis...</div>
+        <div className="loader">Running Tav Analysis...</div>
       </div>
     );
   }

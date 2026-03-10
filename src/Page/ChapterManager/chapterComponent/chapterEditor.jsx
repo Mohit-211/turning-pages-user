@@ -58,6 +58,9 @@ export default function ChapterEditor({
         onEditorChange={(newContent) => setContent(newContent)}
       />
 
+
+
+
       {/* Floating Save button (optional – can be moved to header if preferred) */}
       {/* {onSave && (
         <button
