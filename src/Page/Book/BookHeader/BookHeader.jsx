@@ -16,20 +16,12 @@ const PAGE_SIZES = {
   SQUARE: { label: "Square", w: 756, h: 756, desc: "7.87 × 7.87 in" },
 };
 
-const PAD_RATIO_X = 0.091;
-const PAD_RATIO_TOP = 0.053;
-const PAD_RATIO_BOT = 0.043;
-
 function getLayout(sizeKey) {
   const s = PAGE_SIZES[sizeKey];
-  const padX = Math.round(s.w * PAD_RATIO_X);
-  const padTop = Math.round(s.h * PAD_RATIO_TOP);
-  const padBot = Math.round(s.h * PAD_RATIO_BOT);
   return {
     ...s,
-    padX, padTop, padBot,
-    contentW: s.w - padX * 2,
-    contentH: s.h - padTop - padBot,
+    contentW: s.w - 86 - 58,   // inside(86) + outside(58)
+    contentH: s.h - 72 - 96,   // top(72) + bottom(96)
     fontSize: Math.max(10, Math.round(s.w * 0.017)),
   };
 }
@@ -136,8 +128,7 @@ function hasValidContent(html) {
 
 // ─── Size Selector Dropdown ───────────────────────────────────────────────────
 function SizeDropdown({ current, onSelect, onClose }) {
-  // All 10 sizes — B5 & Half Letter moved to Standard; Trade/Pocket/Square stay in Books
-  const standard = ["A3", "A4", "A5", "LETTER", "LEGAL", "B5", "HALFLETTER",];
+  const standard = ["A3", "A4", "A5", "LETTER", "LEGAL", "B5", "HALFLETTER"];
   const books = ["TRADE", "POCKET", "SQUARE"];
 
   return (
@@ -198,17 +189,14 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
     ? `${import.meta.env.VITE_BOOK_IMAGE_URL}${bookIdDetails.cover_img_name}`
     : "";
 
-  // Build all pages: cover + chapter pages
   useEffect(() => {
     setStatus("building");
     const id = setTimeout(() => {
       try {
         const allPages = [];
 
-        // Cover page (always 1 page)
         allPages.push({ type: "cover" });
 
-        // Chapter pages
         const chapters = (bookIdDetails?.book_chapters || []).filter(ch => hasValidContent(ch.content));
         chapters.forEach((chapter, chIdx) => {
           const titleHTML = `<h2>Chapter ${chIdx + 1}${chapter.title ? ` – ${chapter.title}` : ""}</h2>${chapter.content || ""}`;
@@ -228,94 +216,190 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
     return () => clearTimeout(id);
   }, [sizeKey]);
 
-  const handlePrint = useCallback(() => {
-    if (!printRef.current) return;
-    const win = window.open("", "_blank");
-    if (!win) return;
+const handlePrint = useCallback(() => {
+  if (!printRef.current) return;
 
-    win.document.write(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>${title || "My Book"}</title>
-        <style>
-          @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400&display=swap');
-          * { box-sizing: border-box; margin: 0; padding: 0; }
-          body { background: white; }
-          .print-page {
-            width: ${layout.w}px;
-            min-height: ${layout.h}px;
-            background: white;
-            page-break-after: always;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: relative;
-          }
-          .print-page:last-child { page-break-after: avoid; }
-          .print-rhead {
-            display: flex; align-items: center; gap: 8px;
-            padding: ${Math.round(layout.padTop * 0.4)}px ${layout.padX}px 8px;
-          }
-          .print-rhead-label {
-            font-family: 'DM Sans', sans-serif; font-size: 7px; font-weight: 700;
-            letter-spacing: .22em; color: #aaa; text-transform: uppercase; white-space: nowrap;
-          }
-          .print-rhead-rule { flex: 1; height: .5px; background: #e4e4e4; }
-          .print-rhead-size { font-family: 'DM Mono', monospace; font-size: 7px; color: #ccc; }
-          .print-body {
-            flex: 1;
-            padding: 0 ${layout.padX}px;
-            font-size: ${layout.fontSize}px;
-            line-height: 1.8; color: #1c1c1c;
-            font-family: 'Lora', serif;
-            word-break: break-word; overflow-wrap: break-word; overflow: hidden;
-          }
-          .print-body p  { margin: 0 0 .7em; }
-          .print-body h1 { font-size: 2em; font-weight: bold; line-height: 1.2; margin: .2em 0 .35em; }
-          .print-body h2 { font-size: 1.5em; font-weight: bold; line-height: 1.25; margin: .25em 0 .3em; }
-          .print-body h3 { font-size: 1.17em; font-weight: bold; margin: .3em 0 .25em; }
-          .print-body strong, .print-body b { font-weight: bold; }
-          .print-body em, .print-body i { font-style: italic; }
-          .print-body ul { list-style: disc; padding-left: 1.5em; margin: .4em 0; }
-          .print-body ol { list-style: decimal; padding-left: 1.5em; margin: .4em 0; }
-          .print-body blockquote { border-left: 3px solid #c8973a; margin: .7em 0; padding: .5em 1em; background: #fdf9f2; font-style: italic; color: #555; }
-          .print-body table { border-collapse: collapse; width: 100%; margin: .6em 0; }
-          .print-body td, .print-body th { border: 1px solid #ddd; padding: 4px 8px; }
-          .print-body th { background: #f5f5f5; font-weight: 600; }
-          .print-body img { max-width: 100%; height: auto; display: block; margin: .4em auto; }
-          .print-folio {
-            display: flex; align-items: center; gap: 10px;
-            padding: 8px ${layout.padX}px 16px;
-          }
-          .print-folio-rule { flex: 1; height: .5px; background: #e4e4e4; }
-          .print-folio-num { font-family: 'DM Sans', sans-serif; font-size: 9px; color: #aaa; letter-spacing: .07em; }
-          .cover-page {
-            display: flex; flex-direction: column; align-items: center;
-            justify-content: center; gap: 24px;
-            padding: 60px ${layout.padX}px;
-            text-align: center;
-          }
-          .cover-page img { max-width: 60%; max-height: 400px; object-fit: contain; border-radius: 4px; }
-          .cover-page h1 { font-family: 'Lora', serif; font-size: ${Math.round(layout.fontSize * 2.2)}px; font-weight: 700; color: #1a2f4a; }
-          .cover-page h3 { font-family: 'DM Sans', sans-serif; font-size: ${Math.round(layout.fontSize * 1.1)}px; font-weight: 400; color: #666; }
-          @media print {
-            @page { size: ${sz.w}px ${sz.h}px; margin: 0; }
-            body { width: ${sz.w}px; }
-          }
-        </style>
-      </head>
-      <body>
-        ${printRef.current.innerHTML}
-      </body>
-      </html>
-    `);
-    win.document.close();
-    win.onload = () => {
-      win.focus();
-      win.print();
-    };
-  }, [layout, sz, title]);
+  const iframe = document.createElement("iframe");
+  iframe.style.cssText = "position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:0;";
+  document.body.appendChild(iframe);
+
+  const win = iframe.contentWindow;
+  if (!win) return;
+
+  win.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>${title || "My Book"}</title>
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: white; }
+        .print-page {
+          width: ${layout.w}px;
+          min-height: ${layout.h}px;
+          background: white;
+          page-break-after: always;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+          position: relative;
+        }
+        .print-page:last-child { page-break-after: avoid; }
+        .print-rhead {
+          display: flex; align-items: center; gap: 8px;
+          padding: 72px 58px 0 86px;
+        }
+        .print-rhead-label {
+          font-family: 'DM Sans', sans-serif; font-size: 7px; font-weight: 700;
+          letter-spacing: .22em; color: #aaa; text-transform: uppercase; white-space: nowrap;
+        }
+        .print-rhead-rule { flex: 1; height: .5px; background: #e4e4e4; }
+        .print-rhead-size { font-family: 'DM Mono', monospace; font-size: 7px; color: #ccc; }
+        .print-body {
+          flex: 1;
+          padding: 16px 58px 16px 86px;
+          font-size: ${layout.fontSize}px;
+          line-height: 1.8; color: #1c1c1c;
+          font-family: 'Lora', serif;
+          word-break: break-word; overflow-wrap: break-word; overflow: hidden;
+        }
+        .print-body p  { margin: 0 0 .7em; }
+        .print-body h1 { font-size: 2em; font-weight: bold; line-height: 1.2; margin: .2em 0 .35em; }
+        .print-body h2 { font-size: 1.5em; font-weight: bold; line-height: 1.25; margin: .25em 0 .3em; }
+        .print-body h3 { font-size: 1.17em; font-weight: bold; margin: .3em 0 .25em; }
+        .print-body strong, .print-body b { font-weight: bold; }
+        .print-body em, .print-body i { font-style: italic; }
+        .print-body ul { list-style: disc; padding-left: 1.5em; margin: .4em 0; }
+        .print-body ol { list-style: decimal; padding-left: 1.5em; margin: .4em 0; }
+        .print-body blockquote { border-left: 3px solid #c8973a; margin: .7em 0; padding: .5em 1em; background: #fdf9f2; font-style: italic; color: #555; }
+        .print-body table { border-collapse: collapse; width: 100%; margin: .6em 0; }
+        .print-body td, .print-body th { border: 1px solid #ddd; padding: 4px 8px; }
+        .print-body th { background: #f5f5f5; font-weight: 600; }
+        .print-body img { max-width: 100%; height: auto; display: block; margin: .4em auto; }
+        .print-folio {
+          display: flex; align-items: center; gap: 10px;
+          padding: 0 58px 96px 86px;
+        }
+        .print-folio-rule { flex: 1; height: .5px; background: #e4e4e4; }
+        .print-folio-num { font-family: 'DM Sans', sans-serif; font-size: 9px; color: #aaa; letter-spacing: .07em; }
+        .cover-page {
+          display: flex; flex-direction: column; align-items: center;
+          justify-content: center; gap: 24px;
+          padding: 72px 58px 96px 86px;
+          text-align: center;
+        }
+        .cover-page img { max-width: 60%; max-height: 400px; object-fit: contain; border-radius: 4px; }
+        .cover-page h1 { font-family: 'Lora', serif; font-size: ${Math.round(layout.fontSize * 2.2)}px; font-weight: 700; color: #1a2f4a; }
+        .cover-page h3 { font-family: 'DM Sans', sans-serif; font-size: ${Math.round(layout.fontSize * 1.1)}px; font-weight: 400; color: #666; }
+        @media print {
+          @page { size: ${sz.w}px ${sz.h}px; margin: 0; }
+          body { width: ${sz.w}px; }
+        }
+      </style>
+    </head>
+    <body>
+      ${printRef.current.innerHTML}
+    </body>
+    </html>
+  `);
+  win.document.close();
+
+  iframe.onload = () => {
+    win.focus();
+    win.print();
+    setTimeout(() => document.body.removeChild(iframe), 1000);
+  };
+}, [layout, sz, title]);
+
+  // const handlePrint = useCallback(() => {
+  //   if (!printRef.current) return;
+  //   const win = window.open("");
+  //   if (!win) return;
+
+  //   win.document.write(`
+  //     <!DOCTYPE html>
+  //     <html>
+  //     <head>
+  //       <title>${title || "My Book"}</title>
+  //       <style>
+  //         @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400&display=swap');
+  //         * { box-sizing: border-box; margin: 0; padding: 0; }
+  //         body { background: white; }
+  //         .print-page {
+  //           width: ${layout.w}px;
+  //           min-height: ${layout.h}px;
+  //           background: white;
+  //           page-break-after: always;
+  //           display: flex;
+  //           flex-direction: column;
+  //           overflow: hidden;
+  //           position: relative;
+  //         }
+  //         .print-page:last-child { page-break-after: avoid; }
+  //         .print-rhead {
+  //           display: flex; align-items: center; gap: 8px;
+  //           padding: 72px 58px 0 86px;
+  //         }
+  //         .print-rhead-label {
+  //           font-family: 'DM Sans', sans-serif; font-size: 7px; font-weight: 700;
+  //           letter-spacing: .22em; color: #aaa; text-transform: uppercase; white-space: nowrap;
+  //         }
+  //         .print-rhead-rule { flex: 1; height: .5px; background: #e4e4e4; }
+  //         .print-rhead-size { font-family: 'DM Mono', monospace; font-size: 7px; color: #ccc; }
+  //         .print-body {
+  //           flex: 1;
+  //           padding: 16px 58px 16px 86px;
+  //           font-size: ${layout.fontSize}px;
+  //           line-height: 1.8; color: #1c1c1c;
+  //           font-family: 'Lora', serif;
+  //           word-break: break-word; overflow-wrap: break-word; overflow: hidden;
+  //         }
+  //         .print-body p  { margin: 0 0 .7em; }
+  //         .print-body h1 { font-size: 2em; font-weight: bold; line-height: 1.2; margin: .2em 0 .35em; }
+  //         .print-body h2 { font-size: 1.5em; font-weight: bold; line-height: 1.25; margin: .25em 0 .3em; }
+  //         .print-body h3 { font-size: 1.17em; font-weight: bold; margin: .3em 0 .25em; }
+  //         .print-body strong, .print-body b { font-weight: bold; }
+  //         .print-body em, .print-body i { font-style: italic; }
+  //         .print-body ul { list-style: disc; padding-left: 1.5em; margin: .4em 0; }
+  //         .print-body ol { list-style: decimal; padding-left: 1.5em; margin: .4em 0; }
+  //         .print-body blockquote { border-left: 3px solid #c8973a; margin: .7em 0; padding: .5em 1em; background: #fdf9f2; font-style: italic; color: #555; }
+  //         .print-body table { border-collapse: collapse; width: 100%; margin: .6em 0; }
+  //         .print-body td, .print-body th { border: 1px solid #ddd; padding: 4px 8px; }
+  //         .print-body th { background: #f5f5f5; font-weight: 600; }
+  //         .print-body img { max-width: 100%; height: auto; display: block; margin: .4em auto; }
+  //         .print-folio {
+  //           display: flex; align-items: center; gap: 10px;
+  //           padding: 0 58px 96px 86px;
+  //         }
+  //         .print-folio-rule { flex: 1; height: .5px; background: #e4e4e4; }
+  //         .print-folio-num { font-family: 'DM Sans', sans-serif; font-size: 9px; color: #aaa; letter-spacing: .07em; }
+  //         .cover-page {
+  //           display: flex; flex-direction: column; align-items: center;
+  //           justify-content: center; gap: 24px;
+  //           padding: 72px 58px 96px 86px;
+  //           text-align: center;
+  //         }
+  //         .cover-page img { max-width: 60%; max-height: 400px; object-fit: contain; border-radius: 4px; }
+  //         .cover-page h1 { font-family: 'Lora', serif; font-size: ${Math.round(layout.fontSize * 2.2)}px; font-weight: 700; color: #1a2f4a; }
+  //         .cover-page h3 { font-family: 'DM Sans', sans-serif; font-size: ${Math.round(layout.fontSize * 1.1)}px; font-weight: 400; color: #666; }
+  //         @media print {
+  //           @page { size: ${sz.w}px ${sz.h}px; margin: 0; }
+  //           body { width: ${sz.w}px; }
+  //         }
+  //       </style>
+  //     </head>
+  //     <body>
+  //       ${printRef.current.innerHTML}
+  //     </body>
+  //     </html>
+  //   `);
+  //   win.document.close();
+  //   win.onload = () => {
+  //     win.focus();
+  //     win.print();
+  //   };
+  // }, [layout, sz, title]);
 
   let pageNum = 0;
 
@@ -416,6 +500,7 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
                     </div>
                   );
                 }
+
                 const pNum = pages.slice(0, idx).filter(p => p.type !== "cover").length + 1;
                 return (
                   <div
@@ -433,18 +518,38 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
                         position: "absolute", top: 0, left: 0,
                       }}
                     >
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: `${Math.round(layout.padTop * 0.4)}px ${layout.padX}px 8px` }}>
+                      {/* Running header */}
+                      <div style={{
+                        display: "flex", alignItems: "center", gap: 8,
+                        padding: "72px 58px 0 86px",
+                      }}>
                         <span style={{ fontFamily: "sans-serif", fontSize: 7, fontWeight: 700, letterSpacing: ".22em", color: "#aaa", textTransform: "uppercase", whiteSpace: "nowrap" }}>
                           {(title || "").toUpperCase()}
                         </span>
                         <span style={{ flex: 1, height: .5, background: "#e4e4e4" }} />
                         <span style={{ fontFamily: "monospace", fontSize: 7, color: "#ccc" }}>{PAGE_SIZES[sizeKey].label}</span>
                       </div>
+
+                      {/* Content body */}
                       <div
-                        style={{ flex: 1, padding: `0 ${layout.padX}px`, fontSize: layout.fontSize, lineHeight: 1.8, color: "#1c1c1c", overflow: "hidden", fontFamily: "Georgia, serif", wordBreak: "break-word" }}
+                        style={{
+                          flex: 1,
+                          padding: "16px 58px 16px 86px",
+                          fontSize: layout.fontSize,
+                          lineHeight: 1.8,
+                          color: "#1c1c1c",
+                          overflow: "hidden",
+                          fontFamily: "Georgia, serif",
+                          wordBreak: "break-word",
+                        }}
                         dangerouslySetInnerHTML={{ __html: pg.html }}
                       />
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: `8px ${layout.padX}px 16px` }}>
+
+                      {/* Folio */}
+                      <div style={{
+                        display: "flex", alignItems: "center", gap: 10,
+                        padding: "0 58px 96px 86px",
+                      }}>
                         <span style={{ flex: 1, height: .5, background: "#e4e4e4" }} />
                         <span style={{ fontFamily: "sans-serif", fontSize: 9, color: "#aaa", letterSpacing: ".07em" }}>{pNum}</span>
                       </div>
