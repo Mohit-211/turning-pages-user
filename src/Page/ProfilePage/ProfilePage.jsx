@@ -3,11 +3,17 @@ import {
   UpdateUserProfileApi,
   UserProfileApi,
 } from "../../api/users/users.api";
-import { GetAllPaymentsApi } from "../../api/operations/paymentApi";
+
+import {
+  GetAllPaymentsApi,
+  GetPaymentSpendingListApi,
+} from "../../api/operations/paymentApi";
+
 import "./ProfilePage.scss";
 
 const ProfilePage = () => {
   const [user, setUser] = useState(null);
+
   const [formData, setFormData] = useState({
     name: "",
     mobile: "",
@@ -15,8 +21,14 @@ const ProfilePage = () => {
   });
 
   const [payments, setPayments] = useState([]);
+  const [spendingList, setSpendingList] = useState([]);
+
+  const [activeTab, setActiveTab] = useState("payments");
+
   const [loading, setLoading] = useState(true);
   const [loadingPayments, setLoadingPayments] = useState(true);
+  const [loadingSpending, setLoadingSpending] = useState(true);
+
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -29,6 +41,7 @@ const ProfilePage = () => {
       const data = res?.data?.data;
 
       setUser(data);
+
       setFormData({
         name: data?.user_profile?.name || "",
         mobile: data?.user_profile?.mobile || "",
@@ -56,9 +69,25 @@ const ProfilePage = () => {
     }
   };
 
+  /* =====================
+     LOAD SPENDING
+  ====================== */
+  const loadSpendingList = async () => {
+    try {
+      setLoadingSpending(true);
+      const res = await GetPaymentSpendingListApi();
+      setSpendingList(res?.data?.data || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingSpending(false);
+    }
+  };
+
   useEffect(() => {
     loadProfile();
     loadPayments();
+    loadSpendingList();
   }, []);
 
   /* =====================
@@ -66,6 +95,7 @@ const ProfilePage = () => {
   ====================== */
   const validateForm = () => {
     const e = {};
+
     if (!formData.name.trim()) e.name = "Name is required";
 
     if (!formData.mobile.trim()) {
@@ -83,15 +113,27 @@ const ProfilePage = () => {
   ====================== */
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    if (errors[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!validateForm()) return;
 
     setSaving(true);
+
     try {
       await UpdateUserProfileApi(formData);
       loadProfile();
@@ -102,144 +144,172 @@ const ProfilePage = () => {
     }
   };
 
-
-if (loading) {
-    return (
-      <div className="profile-page loading">
-        <div className="skeleton-header" />
-        <div className="skeleton-form">
-          <div className="skeleton-line long" />
-          <div className="skeleton-line" />
-          <div className="skeleton-line" />
-          <div className="skeleton-line medium" />
-        </div>
-      </div>
-    );
+  if (loading) {
+    return <div className="profile-page">Loading...</div>;
   }
+
   return (
     <div className="profile-page">
-      {/* ===== HEADER ===== */}
+
+      {/* HEADER */}
       <div className="profile-header">
         <div className="profile-info">
-          <div className="avatar-section">
-            <div className="avatar-placeholder">
-              {user?.user_profile?.name?.[0]?.toUpperCase() || "?"}
-            </div>
-            <button className="edit-avatar">✎</button>
+          <div className="avatar-placeholder">
+            {user?.user_profile?.name?.[0]?.toUpperCase() || "?"}
           </div>
 
-          <div className="user-details">
-            <h2 className="username">{user?.user_profile?.name}</h2>
-            <p className="email-display">{user?.email}</p>
+          <div>
+            <h2>{user?.user_profile?.name}</h2>
+            <p>{user?.email}</p>
           </div>
         </div>
 
-        <button className="save-btn" onClick={handleSubmit} disabled={saving}>
+        <button onClick={handleSubmit} disabled={saving}  className="save-btn">
           {saving ? "Saving..." : "Save Changes"}
         </button>
       </div>
 
-      {/* ===== FORM ===== */}
+      {/* FORM */}
       <div className="form-section">
         <h3>Personal Details</h3>
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-grid">
-            <div className="form-field">
-              <label>Full Name</label>
-              <input
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-              />
-              {errors.name && (
-                <span className="error-text">{errors.name}</span>
-              )}
-            </div>
-
-            <div className="form-field">
-              <label>Mobile</label>
-              <input
-                name="mobile"
-                value={formData.mobile}
-                onChange={handleChange}
-              />
-              {errors.mobile && (
-                <span className="error-text">{errors.mobile}</span>
-              )}
-            </div>
-
-            <div className="form-field">
-              <label>Email</label>
-              <input value={formData.email} disabled />
-            </div>
+        <div className="form-grid">
+          <div className="form-field">
+            <label>Name</label>
+            <input
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+            />
+            {errors.name && <span>{errors.name}</span>}
           </div>
-        </form>
+
+          <div className="form-field">
+            <label>Mobile</label>
+            <input
+              name="mobile"
+              value={formData.mobile}
+              onChange={handleChange}
+            />
+            {errors.mobile && <span>{errors.mobile}</span>}
+          </div>
+
+          <div className="form-field">
+            <label>Email</label>
+            <input value={formData.email} disabled />
+          </div>
+        </div>
       </div>
 
-      {/* ===== PAYMENT HISTORY TABLE ===== */}
-    
-<div className="payment-section">
-  <h3>Payment History</h3>
+      {/* TABS */}
+      <div className="profile-tabs">
+        <button
+          className={activeTab === "payments" ? "active" : ""}
+          onClick={() => setActiveTab("payments")}
+        >
+          Payment History
+        </button>
 
-  {loadingPayments ? (
-    <p className="no-payments">Loading payment history...</p>
-  ) : payments.length === 0 ? (
-    <p className="no-payments">No payment records found</p>
-  ) : (
-    <div className="payment-table-wrapper">
+        <button
+          className={activeTab === "spending" ? "active" : ""}
+          onClick={() => setActiveTab("spending")}
+        >
+          Spending History
+        </button>
+      </div>
+
+      {/* TAB CONTENT */}
+
+      {activeTab === "payments" && (
+        <div className="payment-section">
+
+          {loadingPayments ? (
+            <p>Loading payment history...</p>
+          ) : payments.length === 0 ? (
+            <p>No payment records found</p>
+          ) : (
+            <table className="payment-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Payment Type</th>
+                  <th>Mode</th>
+                  <th>Credits</th>
+                  <th>Amount</th>
+                  <th>Transaction ID</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {[...payments].reverse().map((p) => (
+                  <tr key={p.id}>
+                    <td>
+                      {new Date(p.created_at).toLocaleDateString()}
+                    </td>
+
+                    <td>{p.payment_type}</td>
+                    <td>{p.payment_mode}</td>
+                    <td>{p.credit}</td>
+
+                    <td>
+                      {p.currency} {p.amount}
+                    </td>
+
+                    <td>{p.transaction_id}</td>
+
+                    <td>{p.payment_status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      )}
+
+    {activeTab === "spending" && (
+  <div className="payment-section">
+    {loadingSpending ? (
+      <p>Loading spending history...</p>
+    ) : spendingList.length === 0 ? (
+      <p>No spending records found</p>
+    ) : (
       <table className="payment-table">
         <thead>
           <tr>
             <th>Date</th>
-            <th>Payment Type</th>
-            <th>Mode</th>
-            {/* <th>Gateway</th> */}
-            <th>Credits</th>
-            <th>Amount</th>
-            <th>Transaction ID</th>
-            <th>Status</th>
+            <th>Event</th>
+            <th>Description</th>
+            <th>Credit Spent</th>
+            <th>Remaining Credit</th>
           </tr>
         </thead>
 
         <tbody>
-          {payments?.reverse().map((p) => (
-            <tr key={p.id}>
+          {[...spendingList].reverse().map((s) => (
+            <tr key={s.id}>
               <td>
-                {new Date(p.created_at).toLocaleDateString()}
+                {new Date(s.created_at).toLocaleDateString()}
               </td>
 
-              <td>{p.payment_type}</td>
-              <td className="capitalize">{p.payment_mode}</td>
-              {/* <td className="capitalize">{p.payment_gateway}</td> */}
-
-              <td>{p.credit}</td>
-
-              <td className="amount">
-                {p.currency} {p.amount}
+              <td className="capitalize">
+                {s.event_name?.replaceAll("_", " ")}
               </td>
-
-              <td className="mono">{p.transaction_id}</td>
 
               <td>
-                <span
-                  className={`status-pill ${
-                    p.payment_status === "success"
-                      ? "completed"
-                      : "pending"
-                  }`}
-                >
-                  {p.payment_status}
-                </span>
+                {s.description ? s.description : "-"}
               </td>
+
+              <td>{s.credit_spent}</td>
+
+              <td>{s.remaining_credit}</td>
             </tr>
           ))}
         </tbody>
       </table>
-    </div>
-  )}
-</div>
-
+    )}
+  </div>
+)}
     </div>
   );
 };

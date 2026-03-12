@@ -7,3 +7,6 @@ export const stripePaymentApi = (payload) =>
 // Get All Payments
 export const GetAllPaymentsApi = () =>
   client.get(PAYMENT_ENDPOINTS.GET_ALL);
+
+export const GetPaymentSpendingListApi = () =>
+  client.get(PAYMENT_ENDPOINTS.SPENDING_LISt);
