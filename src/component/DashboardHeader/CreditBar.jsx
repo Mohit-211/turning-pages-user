@@ -78,7 +78,7 @@ const CreditBar = ({ maxCredits = 100 }) => {
           Total Amount: <span>${amount}</span>
         </div>
 
-        <StripePayment
+        {/* <StripePayment
           amount={amount}
           credits={creditInput}
           onPaymentSuccess={() => {
@@ -87,7 +87,18 @@ const CreditBar = ({ maxCredits = 100 }) => {
             fetchUserProfile(); // 🔄 refresh credits after payment
           }}
           onCloseModal={() => setOpen(false)}
-        />
+        /> */}
+        <StripePayment
+  amount={amount}
+  credit={creditInput}
+  payment_for="buy_credit"
+  onPaymentSuccess={() => {
+    setOpen(false);
+    setCreditInput(10);
+    fetchUserProfile();
+  }}
+  onCloseModal={() => setOpen(false)}
+/>
       </Modal>
     </>
   );

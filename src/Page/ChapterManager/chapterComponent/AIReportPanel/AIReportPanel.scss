@@ -7,7 +7,71 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+.plagiarism-input {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 10px;
 
+  h3 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 6px;
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 120px;
+    resize: vertical;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+    outline: none;
+    transition: border 0.2s ease;
+
+    &:focus {
+      border-color: #2563eb;
+    }
+  }
+
+  .input-actions {
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .use-editor-btn {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #e2e8f0;
+    }
+  }
+
+  .run-btn {
+    background: #174f78;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    align-self: flex-start;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #0f3c5a;
+    }
+  }
+}
   /* ─────────────────────────────
      Tabs
   ───────────────────────────── */

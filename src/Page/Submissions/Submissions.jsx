@@ -1,33 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { RefreshCw, Eye, Upload, XCircle, CheckCircle } from "lucide-react";
+import { Modal } from "antd";
 import "./Submissions.scss";
 import {
   GetBookSubmittionHistoryApi,
   GetBooksBySubmittion,
 } from "../../api/operations/book.api";
-
+import StripePayment from "../../component/StripePayment/StripePayment";
 export default function Submissions() {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(false);
-
-  // 🔹 Normalize backend status
+  const [paymentOpen, setPaymentOpen] = useState(false);
+  const [selectedBookId, setSelectedBookId] = useState(null);
+  const [eventName, setEventName] = useState("");
+  /* ================= STATUS NORMALIZE ================= */
   const normalizeStatus = (status) => {
     if (!status) return "Waiting for Admin's approval";
-
     const s = status.toLowerCase();
-
     if (["pending", "waiting", "inditing"].includes(s)) {
       return "Waiting for Admin's approval";
     }
-
     if (s === "approved") return "Approved";
     if (s === "rejected") return "Rejected";
-
     return "Waiting for Admin's approval";
   };
-
-  // 🔹 Load submissions
+  /* ================= LOAD SUBMISSIONS ================= */
   const loadSubmissions = async () => {
     setLoading(true);
     try {
@@ -41,25 +39,43 @@ export default function Submissions() {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     loadSubmissions();
   }, []);
-
-  // 🔹 Handle all button actions
+  /* ================= PAYMENT FLOW ================= */
+  const handleSubmitForEditing = (bookId, event_name) => {
+    setSelectedBookId(bookId);
+    setEventName(event_name);
+    setPaymentOpen(true);
+  };
+  const submitAfterPayment = async () => {
+    try {
+      await GetBooksBySubmittion({
+        book_id: selectedBookId,
+        event_name: eventName,
+      });
+      alert("Re-submit successful");
+      loadSubmissions();
+    } catch (error) {
+      console.error("Action failed", error);
+      alert("Action failed");
+    }
+  };
+  /* ================= NORMAL ACTION ================= */
   const handleAction = async (bookId, event_name) => {
-    console.log(event_name,"event_name")
+    if (event_name === "re-submit") {
+      handleSubmitForEditing(bookId, event_name);
+      return;
+    }
     if (event_name === "withdraw") {
       const ok = window.confirm("Withdraw this submission?");
       if (!ok) return;
     }
-
     try {
       await GetBooksBySubmittion({
         book_id: bookId,
         event_name,
       });
-
       alert(`"${event_name}" action successful`);
       loadSubmissions();
     } catch (error) {
@@ -67,10 +83,9 @@ export default function Submissions() {
       alert("Action failed");
     }
   };
-
   return (
     <div className="submissions-page">
-      {/* Header */}
+      {/* HEADER */}
       <header className="page-header">
         <h1>Submissions</h1>
         <button
@@ -81,8 +96,7 @@ export default function Submissions() {
           <RefreshCw size={18} />
         </button>
       </header>
-
-      {/* Loading */}
+      {/* LOADING */}
       {loading ? (
         <div className="skeleton-grid">
           {[...Array(4)].map((_, i) => (
@@ -90,7 +104,7 @@ export default function Submissions() {
           ))}
         </div>
       ) : submissions.length === 0 ? (
-        /* Empty */
+        /* EMPTY */
         <div className="empty-state">
           <p>No submissions yet</p>
           <Link to="/dashboard/books" className="start-btn">
@@ -98,19 +112,17 @@ export default function Submissions() {
           </Link>
         </div>
       ) : (
-        /* Grid */
+        /* GRID */
         <div className="submissions-grid">
           {submissions.map((item) => {
             const status = normalizeStatus(item.status);
-
             return (
               <div key={item.id} className="submission-card">
-                {/* Header */}
+                {/* HEADER */}
                 <div className="card-header">
                   <h3 className="book-title">
                     {item?.submission_book?.title || "—"}
                   </h3>
-
                   <span
                     className={`status-badge ${status
                       .replace(/\s/g, "")
@@ -119,8 +131,7 @@ export default function Submissions() {
                     {status}
                   </span>
                 </div>
-
-                {/* Body */}
+                {/* BODY */}
                 <div className="card-body">
                   <div className="meta-row">
                     <span className="label">Last Submission:</span>
@@ -129,15 +140,13 @@ export default function Submissions() {
                     </span>
                   </div>
                 </div>
-
-                {/* Actions */}
+                {/* ACTIONS */}
                 <div className="card-actions">
                   {status === "Waiting for Admin's approval" && (
                     <div className="status-message">
                       Waiting for Admin's approval
                     </div>
                   )}
-
                   {status === "Rejected" && (
                     <button
                       className="action-btn resubmit-btn"
@@ -146,7 +155,6 @@ export default function Submissions() {
                       <Upload size={16} /> Resubmit
                     </button>
                   )}
-
                   {status === "Approved" && (
                     <>
                       <button
@@ -155,21 +163,18 @@ export default function Submissions() {
                       >
                         <Eye size={16} /> View
                       </button>
-
                       <button
                         className="action-btn withdraw-btn"
                         onClick={() => handleAction(item.id, "withdraw")}
                       >
                         <XCircle size={16} /> Withdraw
                       </button>
-
                       <button
                         className="action-btn resubmit-btn"
                         onClick={() => handleAction(item.id, "re-submit")}
                       >
                         <Upload size={16} /> Resubmit
                       </button>
-
                       <button
                         className="action-btn approve-btn"
                         onClick={() => handleAction(item.id, "completed")}
@@ -184,6 +189,25 @@ export default function Submissions() {
           })}
         </div>
       )}
+      {/* STRIPE PAYMENT MODAL */}
+      <Modal
+        open={paymentOpen}
+        footer={null}
+        destroyOnClose
+        onCancel={() => setPaymentOpen(false)}
+        title="Complete Payment"
+      >
+        <StripePayment
+          amount={40}
+          payment_for="book_submission"
+          book_submission_id={selectedBookId}
+          onPaymentSuccess={() => {
+            setPaymentOpen(false);
+            submitAfterPayment();
+          }}
+          onCloseModal={() => setPaymentOpen(false)}
+        />
+      </Modal>
     </div>
   );
 }

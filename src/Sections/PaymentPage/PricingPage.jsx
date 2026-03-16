@@ -23,8 +23,6 @@ const PricingCards = ({ onPaymentDone }) => {
     console.log("Payment Success:", paymentIntent);
     console.log("Credits Purchased:", selectedPlan?.credits);
 
-    // 🔹 Call backend to add credits if needed
-
     setOpen(false);
     setSelectedPlan(null);
 
@@ -38,13 +36,30 @@ const PricingCards = ({ onPaymentDone }) => {
       <section id="pricing">
         <div className="pricing-wrapper">
           {plans.map((plan) => (
-            <Card key={plan.title} className={`pricing-card ${plan.highlight ? "active" : ""}`}>
+            <Card
+              key={plan.title}
+              className={`pricing-card ${plan.highlight ? "active" : ""}`}
+            >
               {plan.tag && <Tag color="gold">{plan.tag}</Tag>}
               <h2 className="plan-title">{plan.title}</h2>
-              <div className="price-section"><span className="price">{plan.price}</span></div>
-              <div className="credit-box"><ThunderboltOutlined /><span>{plan.credits} Credits</span></div>
+
+              <div className="price-section">
+                <span className="price">{plan.price}</span>
+              </div>
+
+              <div className="credit-box">
+                <ThunderboltOutlined />
+                <span>{plan.credits} Credits</span>
+              </div>
+
               <p className="credit-note">{plan.note}</p>
-              <Button type={plan.highlight ? "primary" : "default"} block size="large" onClick={() => handleBuy(plan)}>
+
+              <Button
+                type={plan.highlight ? "primary" : "default"}
+                block
+                size="large"
+                onClick={() => handleBuy(plan)}
+              >
                 Buy Credits
               </Button>
             </Card>
@@ -56,7 +71,8 @@ const PricingCards = ({ onPaymentDone }) => {
         {selectedPlan && (
           <StripePayment
             amount={selectedPlan.amount}
-            credits={selectedPlan.credits}
+            credit={selectedPlan.credits}
+            payment_for="buy_credit"
             onPaymentSuccess={handleSuccess}
             onCloseModal={() => setOpen(false)}
           />

@@ -594,7 +594,7 @@ export default function BookHeader({
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, [showSizePick]);
-
+console.log(bookIdDetails,"bookIdDetailsbookIdDetailsbookIdDetails")
   const isSubmitted = bookIdDetails?.book_submissions?.length > 0;
   const sz = PAGE_SIZES[sizeKey];
 
