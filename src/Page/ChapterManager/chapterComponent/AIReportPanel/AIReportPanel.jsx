@@ -16,7 +16,8 @@ export default function AIReportPanel({
   onRunTool,
   editorContent,
 }) {
-  const [inputText, setInputText] = useState("");
+const [inputText, setInputText] = useState("");
+const [hasRunPlagiarism, setHasRunPlagiarism] = useState(false);
 
   useEffect(() => {
     if (activeTab === "plagiarism") {
@@ -26,112 +27,127 @@ export default function AIReportPanel({
 
   /* ================= PLAGIARISM ================= */
 
-  const renderPlagiarism = () => {
-    const p = data?.plagiarism;
+ const renderPlagiarism = () => {
+  const p = data?.plagiarism;
 
-    // 🔥 If no report yet → show input UI
-    if (!p) {
-      return (
-        <div className="plagiarism-input">
-          <h4>Plagiarism Check</h4>
-
-          <button
-            className="use-editor-btn"
-            onClick={() => setInputText(editorContent || "")}
-          >
-            Use Full Chapter Content
-          </button>
-
-          <textarea
-            placeholder="Or paste selected text..."
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-          />
-
-          <button
-            className="run-btn"
-            onClick={() => {
-              if (!inputText.trim()) {
-                message.warning("Enter text first");
-                return;
-              }
-              onRunTool("plagiarism", inputText);
-            }}
-          >
-            Run Check
-          </button>
-        </div>
-      );
-    }
-
-    // 🔥 Show report
+  // 🔹 First time message
+  if (!p && !hasRunPlagiarism) {
     return (
-      <>
-        <div className="score-card">
-          <h1>{p.plagiarismScore ?? 0}%</h1>
-          <p>Similarity Score</p>
-          <span
-            className={`badge ${
-              p.status === "HIGH_RISK"
-                ? "danger"
-                : p.status === "MEDIUM_RISK"
-                ? "warning"
-                : "success"
-            }`}
-          >
-            {p.status?.replace("_", " ") || "UNKNOWN"}
-          </span>
-        </div>
+     <div className="empty-state">
+  <p>
+    No plagiarism report yet.  
+    Click <strong>Plagiarism Check</strong> above to run the analysis.
+  </p>
+</div>
+    );
+  }
 
-        <div className="stats-grid">
-          <Stat label="Total Words" value={p.stats?.totalWords} />
-          <Stat label="Plagiarized" value={p.stats?.plagiarizedWords} />
-          <Stat label="Identical" value={p.stats?.identicalWords} />
-          <Stat label="Similar" value={p.stats?.similarWords} />
-          <Stat label="Sources" value={p.stats?.sourcesMatched} />
-        </div>
+  // 🔹 Input UI
+  if (!p) {
+    return (
+      <div className="plagiarism-input">
+        <h4>Plagiarism Check</h4>
 
-        <div className="source-list">
-          <h4>Detected Sources</h4>
+        <button
+          className="use-editor-btn"
+          onClick={() => setInputText(editorContent || "")}
+        >
+          Use Full Chapter Content
+        </button>
 
-          {p?.others?.sources?.map((src, index) => (
-            <div key={index} className="source-item">
-              <div className="source-header">
-                <span>{src.score}% Match</span>
-                <span className="risk">
-                  {src.score > 80
-                    ? "High Risk"
-                    : src.score > 50
-                    ? "Medium Risk"
-                    : "Low Risk"}
-                </span>
-              </div>
+        <textarea
+          placeholder="Or paste selected text..."
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+        />
 
-              <div className="source-meta">
-                <strong>{src.title || "Untitled"}</strong>
-                <p>{src.source}</p>
-                {src.url && (
-                  <a
-                    href={src.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    View Source
-                  </a>
-                )}
-              </div>
+        <button
+          className="run-btn"
+          onClick={() => {
+            if (!inputText.trim()) {
+              message.warning("Enter text first");
+              return;
+            }
 
-              {src.plagiarismFound?.length > 0 && (
-                <div className="matched-text">
-                  {src.plagiarismFound[0].sequence}
-                </div>
+            setHasRunPlagiarism(true);
+            onRunTool("plagiarism", inputText);
+          }}
+        >
+          Run Check
+        </button>
+      </div>
+    );
+  }
+
+  // 🔹 Show report
+  return (
+    <>
+      <div className="score-card">
+        <h1>{p.plagiarismScore ?? 0}%</h1>
+        <p>Similarity Score</p>
+        <span
+          className={`badge ${
+            p.status === "HIGH_RISK"
+              ? "danger"
+              : p.status === "MEDIUM_RISK"
+              ? "warning"
+              : "success"
+          }`}
+        >
+          {p.status?.replace("_", " ") || "UNKNOWN"}
+        </span>
+      </div>
+
+      <div className="stats-grid">
+        <Stat label="Total Words" value={p.stats?.totalWords} />
+        <Stat label="Plagiarized" value={p.stats?.plagiarizedWords} />
+        <Stat label="Identical" value={p.stats?.identicalWords} />
+        <Stat label="Similar" value={p.stats?.similarWords} />
+        <Stat label="Sources" value={p.stats?.sourcesMatched} />
+      </div>
+
+      <div className="source-list">
+        <h4>Detected Sources</h4>
+
+        {p?.others?.sources?.map((src, index) => (
+          <div key={index} className="source-item">
+            <div className="source-header">
+              <span>{src.score}% Match</span>
+              <span className="risk">
+                {src.score > 80
+                  ? "High Risk"
+                  : src.score > 50
+                  ? "Medium Risk"
+                  : "Low Risk"}
+              </span>
+            </div>
+
+            <div className="source-meta">
+              <strong>{src.title || "Untitled"}</strong>
+              <p>{src.source}</p>
+
+              {src.url && (
+                <a
+                  href={src.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View Source
+                </a>
               )}
             </div>
-          ))}
-        </div>
-      </>
-    );
-  };
+
+            {src.plagiarismFound?.length > 0 && (
+              <div className="matched-text">
+                {src.plagiarismFound[0].sequence}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </>
+  );
+};
 
   /* ================= CONSISTENCY ================= */
 

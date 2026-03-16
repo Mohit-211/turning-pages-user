@@ -7,12 +7,11 @@ import ChapterList from "./chapterComponent/ChapterList";
 import AddChapterModal from "./chapterComponent/AddChapterModal";
 import UploadChapterModal from "./chapterComponent/UploadChapterModal";
 import BookHeader from "../Book/BookHeader/BookHeader";
-import TurnPreview from "./chapterComponent/PaginatedPreview";
 import AIReportPanel from "./chapterComponent/AIReportPanel/AIReportPanel";
 import PlagiarismModal from "./chapterComponent/PlagiarismModal/PlagiarismModal";
 import FactCheckModal from "./chapterComponent/FactCheckModal/FactCheckModal";
 
-import { GetBookByIdApi } from "../../api/operations/book.api";
+import { GetBookByIdApi, GetBooksBySubmittion } from "../../api/operations/book.api";
 import {
   CreateChapterApi,
   DeleteChapterApi,
@@ -23,13 +22,19 @@ import {
   UpdateChapterApi,
 } from "../../api/operations/chapter.api";
 
-import { message } from "antd";
+import { message, Modal } from "antd";
 import Toolbar from "./chapterComponent/toolbar";
 import ChapterEditor from "./chapterComponent/chapterEditor";
 import PdfViewer from "./PdfViewer/PdfViewer";
+import StripePayment from "../../component/StripePayment/StripePayment";
 
 export default function ChapterManager() {
+
   const { bookId } = useParams();
+
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [paymentOpen, setPaymentOpen] = useState(false);
+  const [eventName, setEventName] = useState("");
 
   const [bookDetails, setBookDetails] = useState({});
   const [chapters, setChapters] = useState([]);
@@ -38,8 +43,7 @@ export default function ChapterManager() {
   const [viewMode, setViewMode] = useState("edit");
 
   const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
-
+  const [saving, setSaving] = useState(false);
 
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
@@ -76,6 +80,7 @@ export default function ChapterManager() {
       if (data?.book_chapters?.length > 0) {
         setSelectedId(data.book_chapters[0].id);
       }
+
     } catch (err) {
       message.error("Failed to load book");
     } finally {
@@ -89,18 +94,56 @@ export default function ChapterManager() {
     setEditorContent(chapter?.content || "");
   }, [selectedId, chapters]);
 
-  // 🔥 MAIN AI TOOL HANDLER
+  /* ================= SUBMIT BOOK ================= */
+
+  const handleSubmitForEditing = async (event_name) => {
+    setEventName(event_name);
+    setPaymentOpen(true);
+  };
+
+  const submitBookAfterPayment = async () => {
+    try {
+
+      setSubmitLoading(true);
+
+      await GetBooksBySubmittion({
+        book_id: bookId,
+        event_name: eventName,
+      });
+
+      message.success("Book submitted successfully");
+
+      fetchBookAndChapters();
+
+    } catch (error) {
+
+      message.error(
+        error?.response?.data?.message || "Failed to submit book"
+      );
+
+    } finally {
+
+      setSubmitLoading(false);
+
+    }
+  };
+
+  /* ================= AI TOOLS ================= */
+
   const handleRunAITool = async (tool) => {
+
     if (!selectedId) {
       message.warning("Select a chapter first");
       return;
     }
 
     try {
+
       let response;
       let resultData = null;
 
       switch (tool) {
+
         case "plagiarism":
           setPlagiarismModalOpen(true);
           return;
@@ -125,6 +168,7 @@ export default function ChapterManager() {
 
         default:
           return;
+
       }
 
       resultData = response?.data?.data || null;
@@ -136,23 +180,28 @@ export default function ChapterManager() {
           [tool]: resultData,
         },
       }));
+
     } catch (err) {
+
       message.error("AI Tool failed");
+
     } finally {
+
       setAiLoading(false);
+
     }
   };
 
-  // 🔥 PLAGIARISM HANDLER
   const handlePlagiarismCheck = async (text) => {
+
     setPlagiarismModalOpen(false);
     setIsAIPanelOpen(true);
     setAiActiveTab("plagiarism");
     setAiLoading(true);
 
     try {
+
       const response = await PlagiarismCheck(text);
-      console.log(response,"response")
       const resultData = response?.data?.data || null;
 
       setAiResults((prev) => ({
@@ -162,21 +211,27 @@ export default function ChapterManager() {
           plagiarism: resultData,
         },
       }));
+
     } catch (err) {
+
       message.error("Plagiarism check failed");
+
     } finally {
+
       setAiLoading(false);
+
     }
   };
 
-  // 🔥 FACT CHECK HANDLER
   const handleFactCheck = async (text) => {
+
     setFactModalOpen(false);
     setIsAIPanelOpen(true);
     setAiActiveTab("fact");
     setAiLoading(true);
 
     try {
+
       const response = await FactChecking(text);
       const resultData = response?.data?.data || null;
 
@@ -187,56 +242,78 @@ export default function ChapterManager() {
           fact: resultData,
         },
       }));
+
     } catch (err) {
+
       message.error("Fact check failed");
+
     } finally {
+
       setAiLoading(false);
+
     }
   };
 
   const currentAIData = aiResults[selectedId] || {};
+
+  /* ================= SAVE CHAPTER ================= */
+
   const handleSaveChapter = async () => {
-    if (!selectedId) return alert("No chapter selected");
+
+    if (!selectedId) return;
+
     setSaving(true);
+
     try {
+
       const chapter = chapters.find((c) => c.id === selectedId);
+
       await UpdateChapterApi({
         title: chapter?.title,
         book_id: bookId,
         chapter_id: selectedId,
         content: editorContent,
       });
-      alert("Chapter saved successfully");
+
+      message.success("Chapter saved successfully");
       fetchBookAndChapters();
+
     } catch (err) {
-      alert("Failed to save chapter");
+
+      message.error("Failed to save chapter");
+
     } finally {
+
       setSaving(false);
+
     }
   };
- const handleCreateChapter = async (payload) => {
-  try {
-    const res = await CreateChapterApi(payload);
 
-    const backendMessage =
-      res?.data?.message || "Chapter created successfully";
+  const handleCreateChapter = async (payload) => {
 
-    message.success(backendMessage);   // ✅ show backend message
+    try {
 
-    setAddModalVisible(false);
+      const res = await CreateChapterApi(payload);
 
-    await fetchBookAndChapters();      // ✅ auto refresh list
+      message.success(res?.data?.message || "Chapter created successfully");
 
-  } catch (error) {
-    message.error(
-      error?.response?.data?.message || "Failed to create chapter"
-    );
-  }
-};
-console.log(chapters,"chapters")
+      setAddModalVisible(false);
+      fetchBookAndChapters();
+
+    } catch (error) {
+
+      message.error(
+        error?.response?.data?.message || "Failed to create chapter"
+      );
+
+    }
+  };
+
   return (
     <div className="chapter-manager">
+
       <aside className="chapter-sider">
+
         <div className="sider-header">
           <Link to="/dashboard" className="back-btn">
             <ArrowLeft size={18} /> Dashboard
@@ -254,13 +331,17 @@ console.log(chapters,"chapters")
             onDelete={DeleteChapterApi}
           />
         )}
+
       </aside>
 
       <main className="chapter-content-area">
+
         <BookHeader
           bookIdDetails={bookDetails}
           title={bookDetails?.title || "Untitled Book"}
           bookId={bookId}
+          onSubmit={handleSubmitForEditing}
+          loading={submitLoading}
         />
 
         <Toolbar
@@ -277,6 +358,7 @@ console.log(chapters,"chapters")
         />
 
         <div className="content-layout">
+
           <div className="editor-container">
             {viewMode === "edit" ? (
               <ChapterEditor
@@ -298,15 +380,17 @@ console.log(chapters,"chapters")
               />
             </div>
           )}
+
         </div>
+
       </main>
 
       <AddChapterModal
-  visible={addModalVisible}
-  onCancel={() => setAddModalVisible(false)}
-  onCreate={handleCreateChapter}
-  bookId={bookId}   
-/>
+        visible={addModalVisible}
+        onCancel={() => setAddModalVisible(false)}
+        onCreate={handleCreateChapter}
+        bookId={bookId}
+      />
 
       <UploadChapterModal
         visible={uploadModalVisible}
@@ -327,6 +411,28 @@ console.log(chapters,"chapters")
         chapterText={editorContent}
         onCheckFact={handleFactCheck}
       />
+
+      {/* STRIPE PAYMENT MODAL */}
+
+      <Modal
+        open={paymentOpen}
+        footer={null}
+        destroyOnClose
+        onCancel={() => setPaymentOpen(false)}
+        title="Complete Payment"
+      >
+        <StripePayment
+          amount={40}
+          payment_for="book_submission"
+          book_submission_id={bookId}
+          onPaymentSuccess={() => {
+            setPaymentOpen(false);
+            submitBookAfterPayment();
+          }}
+          onCloseModal={() => setPaymentOpen(false)}
+        />
+      </Modal>
+
     </div>
   );
 }
