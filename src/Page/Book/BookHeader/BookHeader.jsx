@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import { Send, Image as ImageIcon, Download, X, ChevronDown } from "lucide-react";
 import "./BookHeader.scss";
+import { toast } from "react-toastify";
 
 // ─── All supported page sizes (at 96 dpi) ─────────────────────────────────────
 const PAGE_SIZES = {
@@ -216,17 +217,17 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
     return () => clearTimeout(id);
   }, [sizeKey]);
 
-const handlePrint = useCallback(() => {
-  if (!printRef.current) return;
+  const handlePrint = useCallback(() => {
+    if (!printRef.current) return;
 
-  const iframe = document.createElement("iframe");
-  iframe.style.cssText = "position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:0;";
-  document.body.appendChild(iframe);
+    const iframe = document.createElement("iframe");
+    iframe.style.cssText = "position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:0;";
+    document.body.appendChild(iframe);
 
-  const win = iframe.contentWindow;
-  if (!win) return;
+    const win = iframe.contentWindow;
+    if (!win) return;
 
-  win.document.write(`
+    win.document.write(`
     <!DOCTYPE html>
     <html>
     <head>
@@ -303,14 +304,14 @@ const handlePrint = useCallback(() => {
     </body>
     </html>
   `);
-  win.document.close();
+    win.document.close();
 
-  iframe.onload = () => {
-    win.focus();
-    win.print();
-    setTimeout(() => document.body.removeChild(iframe), 1000);
-  };
-}, [layout, sz, title]);
+    iframe.onload = () => {
+      win.focus();
+      win.print();
+      setTimeout(() => document.body.removeChild(iframe), 1000);
+    };
+  }, [layout, sz, title]);
 
   // const handlePrint = useCallback(() => {
   //   if (!printRef.current) return;
@@ -594,7 +595,7 @@ export default function BookHeader({
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, [showSizePick]);
-console.log(bookIdDetails,"bookIdDetailsbookIdDetailsbookIdDetails")
+  console.log(bookIdDetails, "bookIdDetailsbookIdDetailsbookIdDetails")
   const isSubmitted = bookIdDetails?.book_submissions?.length > 0;
   const sz = PAGE_SIZES[sizeKey];
 
@@ -613,14 +614,20 @@ console.log(bookIdDetails,"bookIdDetailsbookIdDetailsbookIdDetails")
           </button>
 
           <button
-            className="action-btn submit-editing"
-            onClick={() => onSubmit?.("submit")}
-            disabled={loading || isSubmitted}
-          >
-            <Send size={16} />
-            {loading ? "Submitting..." : "Submit for Editing"}
-          </button>
+  className="action-btn submit-editing"
+  onClick={() => {
+    if (isSubmitted) {
+      toast.info("You already submitted this book. Waiting for admin approval.");
+      return;
+    }
 
+    onSubmit?.("submit");
+  }}
+  disabled={loading}
+>
+  <Send size={16} />
+  {loading ? "Submitting..." : "Submit for Editing"}
+</button>
           {/* ── Download PDF with size selector ── */}
           <div className="bh-pdf-group" ref={sizeRef}>
             <button

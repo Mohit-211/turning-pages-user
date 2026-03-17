@@ -39,7 +39,6 @@ const DashboardHeader = ({
 
   const handleLogout = async () => {
     try {
-      // await logoutApi();
       localStorage.removeItem("book_publish_token");
       navigate("/login");
     } catch (err) {

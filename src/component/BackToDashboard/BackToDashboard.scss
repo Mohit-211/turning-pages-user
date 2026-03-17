@@ -1,9 +1,8 @@
-// components/BackToDashboard.scss
 .back-to-dashboard {
   display: inline-flex;
   align-items: center;
   cursor: pointer;
-  color: #6b7280; // subtle gray
+  color: #6b7280; 
   font-size: 14px;
   transition: color 0.2s ease, transform 0.2s ease;
 margin: 10px 0px;
@@ -18,7 +17,7 @@ margin: 10px 0px;
   }
 
   &:hover {
-    color: #111827; // darker gray on hover
+    color: #111827; 
 
     .back-icon {
       transform: translateX(-2px);

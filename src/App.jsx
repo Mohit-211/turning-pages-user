@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 /* Pages */
 import Main from "./Page/Main";
 import Dashboard from "./Page/Dashboard/Dashboard";
@@ -10,7 +11,6 @@ import ProfilePage from "./Page/ProfilePage/ProfilePage";
 import AddChapterPage from "./Page/AddChapterPage/AddChapterPage";
 import ChapterManager from "./Page/ChapterManager/ChapterManager";
 import Submissions from "./Page/Submissions/Submissions";
-import Bhavya from "./Page/bhavya";
 
 /* Layouts */
 import AuthLayout from "./Page/Auth/AuthLayout";
@@ -171,12 +171,17 @@ function App() {
         {/* -------------------- MISC -------------------- */}
         <Route path="/create-book" element={<CreateBook />} />
         <Route path="/payment" element={<PricingCards />} />
-        <Route path="/demo" element={<Bhavya />} />
-        {/* <Route path="/feed-page" element={<FeedPage/>} /> */}
         <Route path="/sample-feed" element={<SampleFeedPage />} />
 
-
       </Routes>
+      <ToastContainer
+             position="top-right"
+             autoClose={3000}
+             newestOnTop
+             closeOnClick
+             pauseOnHover
+             theme="colored"
+           />
     </BrowserRouter>
   );
 }

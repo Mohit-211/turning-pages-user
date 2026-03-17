@@ -4,13 +4,11 @@ import { Modal, InputNumber, Button, Spin } from "antd";
 import StripePayment from "../StripePayment/StripePayment";
 import "./CreditBar.scss";
 import { UserProfileApi } from "../../api/users/users.api";
-
 const CreditBar = ({ maxCredits = 100 }) => {
   const [open, setOpen] = useState(false);
   const [creditInput, setCreditInput] = useState(10);
   const [credits, setCredits] = useState(0);
   const [loading, setLoading] = useState(false);
-
   /* ================= FETCH PROFILE ================= */
   const fetchUserProfile = async () => {
     try {
@@ -24,14 +22,11 @@ const CreditBar = ({ maxCredits = 100 }) => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchUserProfile();
   }, []);
-
   const creditPercent = Math.min((credits / maxCredits) * 100, 100);
   const amount = creditInput;
-
   return (
     <>
       <div className="credit-bar">
@@ -41,20 +36,17 @@ const CreditBar = ({ maxCredits = 100 }) => {
             {loading ? <Spin size="small" /> : `${credits} / ${maxCredits}`}
           </span>
         </div>
-
         <div className="progress-track">
           <div
             className="progress-fill"
             style={{ width: `${creditPercent}%` }}
           />
         </div>
-
         <button className="more-credits-btn" onClick={() => setOpen(true)}>
           <Plus size={14} />
           More Credits
         </button>
       </div>
-
       {/* 💳 Buy Credits Modal */}
       <Modal
         open={open}
@@ -73,21 +65,10 @@ const CreditBar = ({ maxCredits = 100 }) => {
             style={{ width: "100%", marginTop: 8 }}
           />
         </div>
-
         <div style={{ marginBottom: 20, fontWeight: 600 }}>
           Total Amount: <span>${amount}</span>
         </div>
-
-        {/* <StripePayment
-          amount={amount}
-          credits={creditInput}
-          onPaymentSuccess={() => {
-            setOpen(false);
-            setCreditInput(10);
-            fetchUserProfile(); // 🔄 refresh credits after payment
-          }}
-          onCloseModal={() => setOpen(false)}
-        /> */}
+        
         <StripePayment
   amount={amount}
   credit={creditInput}
@@ -103,5 +84,4 @@ const CreditBar = ({ maxCredits = 100 }) => {
     </>
   );
 };
-
 export default CreditBar;
