@@ -15,7 +15,6 @@ const menuItems = [
 const DashboardSidebar = () => {
   const location = useLocation();
   const currentPath = location.pathname;
-  // Load collapsed state from localStorage (default: false)
   const [collapsed, setCollapsed] = useState(() => {
     const stored = localStorage.getItem("sidebarCollapsed");
     return stored === "true";

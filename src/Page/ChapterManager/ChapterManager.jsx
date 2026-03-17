@@ -32,6 +32,7 @@ export default function ChapterManager() {
 
   const { bookId } = useParams();
 
+  const [booksubmiition, setBookSubmitton] = useState();
   const [submitLoading, setSubmitLoading] = useState(false);
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [eventName, setEventName] = useState("");
@@ -81,7 +82,7 @@ export default function ChapterManager() {
         setSelectedId(data.book_chapters[0].id);
       }
 
-    } catch (err) {
+    } catch {
       message.error("Failed to load book");
     } finally {
       setLoading(false);
@@ -94,32 +95,48 @@ export default function ChapterManager() {
     setEditorContent(chapter?.content || "");
   }, [selectedId, chapters]);
 
+  /* ================= CREATE SUBMISSION (Reusable) ================= */
+
+  const createBookSubmission = async (event_name) => {
+    try {
+
+      const res = await GetBooksBySubmittion({
+        book_id: bookId,
+        event_name: event_name,
+      });
+
+      const submissionId = res?.data?.data?.id;
+
+      if (!submissionId) {
+        message.error("Submission failed");
+        return null;
+      }
+
+      return submissionId;
+
+    } catch (error) {
+
+
+      return null;
+    }
+  };
+
   /* ================= SUBMIT BOOK ================= */
 
   const handleSubmitForEditing = async (event_name) => {
-    setEventName(event_name);
-    setPaymentOpen(true);
-  };
 
-  const submitBookAfterPayment = async () => {
     try {
 
       setSubmitLoading(true);
 
-      await GetBooksBySubmittion({
-        book_id: bookId,
-        event_name: eventName,
-      });
+      const submissionId = await createBookSubmission(event_name);
 
-      message.success("Book submitted successfully");
+      if (!submissionId) return;
 
-      fetchBookAndChapters();
+      setBookSubmitton(submissionId);
+      setEventName(event_name);
 
-    } catch (error) {
-
-      message.error(
-        error?.response?.data?.message || "Failed to submit book"
-      );
+      setPaymentOpen(true);
 
     } finally {
 
@@ -127,6 +144,25 @@ export default function ChapterManager() {
 
     }
   };
+
+  // const submitBookAfterPayment = async () => {
+
+  //   try {
+
+  //     setSubmitLoading(true);
+
+  //     await createBookSubmission(eventName);
+
+  //     message.success("Book submitted successfully");
+
+  //     fetchBookAndChapters();
+
+  //   } finally {
+
+  //     setSubmitLoading(false);
+
+  //   }
+  // };
 
   /* ================= AI TOOLS ================= */
 
@@ -140,7 +176,6 @@ export default function ChapterManager() {
     try {
 
       let response;
-      let resultData = null;
 
       switch (tool) {
 
@@ -171,7 +206,7 @@ export default function ChapterManager() {
 
       }
 
-      resultData = response?.data?.data || null;
+      const resultData = response?.data?.data || null;
 
       setAiResults((prev) => ({
         ...prev,
@@ -181,7 +216,7 @@ export default function ChapterManager() {
         },
       }));
 
-    } catch (err) {
+    } catch {
 
       message.error("AI Tool failed");
 
@@ -212,7 +247,7 @@ export default function ChapterManager() {
         },
       }));
 
-    } catch (err) {
+    } catch {
 
       message.error("Plagiarism check failed");
 
@@ -243,7 +278,7 @@ export default function ChapterManager() {
         },
       }));
 
-    } catch (err) {
+    } catch {
 
       message.error("Fact check failed");
 
@@ -278,7 +313,7 @@ export default function ChapterManager() {
       message.success("Chapter saved successfully");
       fetchBookAndChapters();
 
-    } catch (err) {
+    } catch {
 
       message.error("Failed to save chapter");
 
@@ -412,8 +447,6 @@ export default function ChapterManager() {
         onCheckFact={handleFactCheck}
       />
 
-      {/* STRIPE PAYMENT MODAL */}
-
       <Modal
         open={paymentOpen}
         footer={null}
@@ -424,10 +457,10 @@ export default function ChapterManager() {
         <StripePayment
           amount={40}
           payment_for="book_submission"
-          book_submission_id={bookId}
+          book_submission_id={booksubmiition}
           onPaymentSuccess={() => {
             setPaymentOpen(false);
-            submitBookAfterPayment();
+            // submitBookAfterPayment();
           }}
           onCloseModal={() => setPaymentOpen(false)}
         />

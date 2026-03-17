@@ -11,11 +11,7 @@ export const AUTH_ENDPOINTS = {
 export const USER_ENDPOINTS = {
   PROFILE: "user/profile",
 };
-// export const POST_ENDPOINTS = {
-//   GET_ALL: "/posts",
-//   CREATE: "/posts",
-//   DELETE: (id) => `/posts/${id}`,
-// };
+
 export const Genre_ENDPOINTS = {
   GET_ALL: "genres",
 };
@@ -45,10 +41,6 @@ export const Chapter_ENDPOINTS = {
 };
 
 
-// export const Payment_ENDPOINTS = {
-//   STRIPE: "payments/intent/generate",
-// };
-
 export const PAYMENT_ENDPOINTS = {
   STRIPE: "payments/intent/generate",
   GET_ALL: "payments/all",
@@ -58,7 +50,6 @@ export const SUPPORT_ENDPOINTS = {
   CREATE_TICKET: "support",
   GET_ALL_TICKETS: "support",
   GET_TICKET_BY_ID: (id) => `support/${id}`,
-  // ADD_MESSAGE: "support/tickets/message/add",
 };
 export const FEED_ENDPOINTS = {
   CREATE: "feeds",

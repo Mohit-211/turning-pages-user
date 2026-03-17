@@ -18,6 +18,7 @@ const CreateBook = () => {
   const [formData, setFormData] = useState({
     title: "",
     genre_id: "",
+ 
     description: "",
   });
 
@@ -54,7 +55,7 @@ const CreateBook = () => {
   };
 
   const handlePrevious = () => setStep(1);
-
+console.log(formData,"formData")
   const handleCreate = async () => {
     setLoadingCreate(true);
     try {
@@ -141,18 +142,27 @@ const CreateBook = () => {
                   <div className="form-field">
                     <label>Genre *</label>
                     <select
-                      name="genre_id"
-                      value={formData.genre_id}
-                      onChange={handleInputChange}
-                      className={errors.genre_id ? "input-error" : ""}
-                    >
-                      <option value="">Select genre</option>
-                      {genres.map((g) => (
-                        <option key={g.id} value={g.id}>
-                          {g.title}
-                        </option>
-                      ))}
-                    </select>
+  value={formData.genre_id}
+  onChange={(e) => {
+    const selected = genres.find(
+      (g) => g.id === Number(e.target.value)
+    );
+
+    setFormData({
+      ...formData,
+      genre_id: selected.id,
+      genre_title: selected.title
+    });
+  }}
+>
+  <option value="">Select Genre</option>
+
+  {genres.map((g) => (
+    <option key={g.id} value={g.id}>
+      {g.title}
+    </option>
+  ))}
+</select>
                     {errors.genre_id && (
                       <span className="error">{errors.genre_id}</span>
                     )}
