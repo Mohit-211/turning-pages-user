@@ -41,6 +41,7 @@ $mg-outside: 0.6in;
   display: flex;
   align-items: center;
   gap: 0.8rem;
+  width: 20%;
 
   .book-icon {
     font-size: 1.6rem;
@@ -619,6 +620,7 @@ $mg-outside: 0.6in;
     text-transform: uppercase;
     white-space: nowrap;
   }
+  
 
   .print-rhead-rule { flex: 1; height: .5px; background: #e4e4e4; }
 

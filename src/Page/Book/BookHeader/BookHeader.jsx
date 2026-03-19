@@ -1,8 +1,8 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
-import { Send, Image as ImageIcon, Download, X, ChevronDown } from "lucide-react";
+import { Send, Image as ImageIcon, Download, X, ChevronDown, MessageCircle } from "lucide-react";
 import "./BookHeader.scss";
 import { toast } from "react-toastify";
-
+import { useNavigate } from "react-router-dom";
 // ─── All supported page sizes (at 96 dpi) ─────────────────────────────────────
 const PAGE_SIZES = {
   A3: { label: "A3", w: 1123, h: 1587, desc: "297 × 420 mm" },
@@ -16,7 +16,6 @@ const PAGE_SIZES = {
   POCKET: { label: "Pocket Book", w: 432, h: 648, desc: "4.5 × 6.75 in" },
   SQUARE: { label: "Square", w: 756, h: 756, desc: "7.87 × 7.87 in" },
 };
-
 function getLayout(sizeKey) {
   const s = PAGE_SIZES[sizeKey];
   return {
@@ -26,7 +25,6 @@ function getLayout(sizeKey) {
     fontSize: Math.max(10, Math.round(s.w * 0.017)),
   };
 }
-
 function measureHeight(html, width, fontSize) {
   const probe = document.createElement("div");
   probe.style.cssText = `
@@ -42,7 +40,6 @@ function measureHeight(html, width, fontSize) {
   document.body.removeChild(probe);
   return h;
 }
-
 function splitLargeElement(outerHTML, tag, attrs, layout) {
   const tmp = document.createElement("div");
   tmp.innerHTML = outerHTML;
@@ -65,12 +62,10 @@ function splitLargeElement(outerHTML, tag, attrs, layout) {
   }
   return chunks;
 }
-
 function paginateHTML(rawHTML, layout) {
   const container = document.createElement("div");
   container.innerHTML = rawHTML;
   let children = Array.from(container.children);
-
   if (children.length <= 1) {
     const src = children.length === 1 ? children[0] : container;
     const tag = (src.tagName || "div").toLowerCase();
@@ -87,11 +82,9 @@ function paginateHTML(rawHTML, layout) {
       }
     }
   }
-
   const pages = [];
   let page = [];
   let pageH = 0;
-
   children.forEach(el => {
     const elHTML = el.outerHTML;
     const tag = el.tagName.toLowerCase();
@@ -111,11 +104,9 @@ function paginateHTML(rawHTML, layout) {
     page.push(elHTML);
     pageH += h;
   });
-
   if (page.length) pages.push(page.join(""));
   return pages.length ? pages : [rawHTML];
 }
-
 function hasValidContent(html) {
   if (!html) return false;
   const text = html
@@ -126,12 +117,10 @@ function hasValidContent(html) {
     .toLowerCase();
   return !!text && !text.includes("coming soon");
 }
-
 // ─── Size Selector Dropdown ───────────────────────────────────────────────────
 function SizeDropdown({ current, onSelect, onClose }) {
   const standard = ["A3", "A4", "A5", "LETTER", "LEGAL", "B5", "HALFLETTER"];
   const books = ["TRADE", "POCKET", "SQUARE"];
-
   return (
     <div className="bh-size-dropdown" onClick={e => e.stopPropagation()}>
       <div className="bh-size-dropdown__head">
@@ -157,7 +146,6 @@ function SizeDropdown({ current, onSelect, onClose }) {
     </div>
   );
 }
-
 function SizeCard({ sizeKey, active, onSelect }) {
   const s = PAGE_SIZES[sizeKey];
   const ratio = s.h / s.w;
@@ -176,28 +164,22 @@ function SizeCard({ sizeKey, active, onSelect }) {
     </button>
   );
 }
-
 // ─── Print Modal — renders paginated pages then triggers print ────────────────
 function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
   const printRef = useRef(null);
   const [pages, setPages] = useState([]);
   const [status, setStatus] = useState("building");
-
   const layout = getLayout(sizeKey);
   const sz = PAGE_SIZES[sizeKey];
-
   const coverUrl = bookIdDetails?.cover_img_name
     ? `${import.meta.env.VITE_BOOK_IMAGE_URL}${bookIdDetails.cover_img_name}`
     : "";
-
   useEffect(() => {
     setStatus("building");
     const id = setTimeout(() => {
       try {
         const allPages = [];
-
         allPages.push({ type: "cover" });
-
         const chapters = (bookIdDetails?.book_chapters || []).filter(ch => hasValidContent(ch.content));
         chapters.forEach((chapter, chIdx) => {
           const titleHTML = `<h2>Chapter ${chIdx + 1}${chapter.title ? ` – ${chapter.title}` : ""}</h2>${chapter.content || ""}`;
@@ -206,7 +188,6 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
             allPages.push({ type: "chapter", chapterIndex: chIdx, pageIndex: pIdx, html, chapter });
           });
         });
-
         setPages(allPages);
         setStatus("ready");
       } catch (err) {
@@ -216,17 +197,13 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
     }, 150);
     return () => clearTimeout(id);
   }, [sizeKey]);
-
   const handlePrint = useCallback(() => {
     if (!printRef.current) return;
-
     const iframe = document.createElement("iframe");
     iframe.style.cssText = "position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:0;";
     document.body.appendChild(iframe);
-
     const win = iframe.contentWindow;
     if (!win) return;
-
     win.document.write(`
     <!DOCTYPE html>
     <html>
@@ -305,19 +282,16 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
     </html>
   `);
     win.document.close();
-
     iframe.onload = () => {
       win.focus();
       win.print();
       setTimeout(() => document.body.removeChild(iframe), 1000);
     };
   }, [layout, sz, title]);
-
   // const handlePrint = useCallback(() => {
   //   if (!printRef.current) return;
   //   const win = window.open("");
   //   if (!win) return;
-
   //   win.document.write(`
   //     <!DOCTYPE html>
   //     <html>
@@ -401,9 +375,7 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
   //     win.print();
   //   };
   // }, [layout, sz, title]);
-
   let pageNum = 0;
-
   return (
     <div className="bh-print-overlay" onClick={onClose}>
       <div className="bh-print-modal" onClick={e => e.stopPropagation()}>
@@ -424,7 +396,6 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
             <button className="bh-print-modal__close" onClick={onClose}><X size={14} /></button>
           </div>
         </div>
-
         {/* Status */}
         {status === "building" && (
           <div className="bh-print-modal__loading">
@@ -432,7 +403,6 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
             <p>Laying out {PAGE_SIZES[sizeKey].label} pages…</p>
           </div>
         )}
-
         {/* Page Preview */}
         {status === "ready" && (
           <div className="bh-print-modal__canvas">
@@ -465,7 +435,6 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
                 );
               })}
             </div>
-
             {/* Visual preview stack */}
             <div className="bh-print-modal__stack">
               {pages.map((pg, idx) => {
@@ -473,7 +442,6 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
                 const scale = Math.min(PREVIEW_W / layout.w, 1);
                 const scaledW = Math.round(layout.w * scale);
                 const scaledH = Math.round(layout.h * scale);
-
                 if (pg.type === "cover") {
                   return (
                     <div
@@ -501,7 +469,6 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
                     </div>
                   );
                 }
-
                 const pNum = pages.slice(0, idx).filter(p => p.type !== "cover").length + 1;
                 return (
                   <div
@@ -530,7 +497,6 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
                         <span style={{ flex: 1, height: .5, background: "#e4e4e4" }} />
                         <span style={{ fontFamily: "monospace", fontSize: 7, color: "#ccc" }}>{PAGE_SIZES[sizeKey].label}</span>
                       </div>
-
                       {/* Content body */}
                       <div
                         style={{
@@ -545,7 +511,6 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
                         }}
                         dangerouslySetInnerHTML={{ __html: pg.html }}
                       />
-
                       {/* Folio */}
                       <div style={{
                         display: "flex", alignItems: "center", gap: 10,
@@ -560,7 +525,6 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
                 );
               })}
             </div>
-
             <div className="bh-print-modal__total">
               {pages.filter(p => p.type !== "cover").length} content pages + cover
             </div>
@@ -570,7 +534,6 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
     </div>
   );
 }
-
 // ─── Main BookHeader ──────────────────────────────────────────────────────────
 export default function BookHeader({
   bookId,
@@ -584,7 +547,7 @@ export default function BookHeader({
   const [showSizePick, setShowSizePick] = useState(false);
   const [showPrintModal, setShowPrintModal] = useState(false);
   const sizeRef = useRef(null);
-
+  const navigate = useNavigate();
   useEffect(() => {
     if (!showSizePick) return;
     const handler = (e) => {
@@ -598,7 +561,6 @@ export default function BookHeader({
   console.log(bookIdDetails, "bookIdDetailsbookIdDetailsbookIdDetails")
   const isSubmitted = bookIdDetails?.book_submissions?.length > 0;
   const sz = PAGE_SIZES[sizeKey];
-
   return (
     <>
       <header className="book-header">
@@ -606,28 +568,40 @@ export default function BookHeader({
           <span className="book-icon">📘</span>
           <h3>{title || "Untitled Book"}</h3>
         </div>
-
         <div className="actions">
           <button className="action-btn edit-cover" onClick={onEditCover}>
             <ImageIcon size={16} />
             Edit Cover
           </button>
-
           <button
-  className="action-btn submit-editing"
-  onClick={() => {
-    if (isSubmitted) {
-      toast.info("You already submitted this book. Waiting for admin approval.");
-      return;
-    }
-
-    onSubmit?.("submit");
-  }}
-  disabled={loading}
->
-  <Send size={16} />
-  {loading ? "Submitting..." : "Submit for Editing"}
-</button>
+            className="action-btn submit-editing"
+            onClick={() => {
+              if (isSubmitted) {
+                toast.info("You already submitted this book. Waiting for admin approval.");
+                return;
+              }
+              onSubmit?.("submit");
+            }}
+            disabled={loading}
+          >
+            <Send size={16} />
+            {loading ? "Submitting..." : "Submit for Editing"}
+          </button>
+          {/* {bookIdDetails?.book_editors?.length} */}
+          {!bookIdDetails?.book_editors?.length <= 0
+            &&
+            <button
+              className="action-btn submit-editing"
+              onClick={() =>
+                navigate(`/dashboard/chat/${bookIdDetails?.book_chat_room?.id}`, {
+                  state: { book: bookIdDetails },
+                })
+              }
+            >
+              <MessageCircle size={16} />
+              Chat
+            </button>
+          }
           {/* ── Download PDF with size selector ── */}
           <div className="bh-pdf-group" ref={sizeRef}>
             <button
@@ -638,7 +612,6 @@ export default function BookHeader({
               <Download size={16} />
               Download PDF
             </button>
-
             <button
               className="action-btn bh-pdf-size-toggle"
               onClick={() => setShowSizePick(v => !v)}
@@ -648,7 +621,6 @@ export default function BookHeader({
               <span className="bh-pdf-size-label">{sz.label}</span>
               <ChevronDown size={11} style={{ opacity: .7 }} />
             </button>
-
             {showSizePick && (
               <SizeDropdown
                 current={sizeKey}
@@ -659,7 +631,6 @@ export default function BookHeader({
           </div>
         </div>
       </header>
-
       {showPrintModal && (
         <PrintModal
           bookIdDetails={bookIdDetails}

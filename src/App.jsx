@@ -31,6 +31,7 @@ import SupportDashboard from "./Page/Support/Support";
 import FeedPage from "./component/FeedPage/FeedPage";
 import SampleFeedPage from "./component/FeedPage/SampleFeedPage";
 import QuotesPage from "./component/Quotesmodule/QuotesPage";
+import Chat from "./Page/Chat/Chat";
 
 function App() {
   return (
@@ -163,6 +164,16 @@ function App() {
             <ProtectedRoute>
               <DashboardLayout>
                   <QuotesPage />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+         path="/dashboard/chat/:book_room_id?"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                  <Chat />
               </DashboardLayout>
             </ProtectedRoute>
           }
