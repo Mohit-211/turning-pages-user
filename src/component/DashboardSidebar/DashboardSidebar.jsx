@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Home, BookOpen, Send, Settings, User, Menu, Rss, LayoutList, Headset, Quote } from "lucide-react";
+import { Home, BookOpen, Send, Settings, User, Menu, Rss, LayoutList, Headset, Quote, MessageSquare } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import "./DashboardSidebar.scss";
 const menuItems = [
@@ -11,6 +11,7 @@ const menuItems = [
   { title: "My Feed", url: "/dashboard/feed-page", icon: LayoutList },
   { title: "Quotes", url: "/dashboard/quotes", icon: Quote},
   { title: "Support", url: "/dashboard/support", icon: Headset },
+  { title: "Chat", url: "/dashboard/chat", icon: MessageSquare },
 ];
 const DashboardSidebar = () => {
   const location = useLocation();

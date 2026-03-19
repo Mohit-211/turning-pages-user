@@ -11,7 +11,6 @@ export const AUTH_ENDPOINTS = {
 export const USER_ENDPOINTS = {
   PROFILE: "user/profile",
 };
-
 export const Genre_ENDPOINTS = {
   GET_ALL: "genres",
 };
@@ -27,7 +26,6 @@ export const Book_ENDPOINTS = {
   SUBMITTION: "books/submission/update",
   GET_SUBMITTION_HISTORY: "books/all/book/submission/history",
 };
-
 export const Chapter_ENDPOINTS = {
   CREATE: "chapters",
   GET_ALL: (id) => `chapters/${id}`,
@@ -39,8 +37,6 @@ export const Chapter_ENDPOINTS = {
   GENERATE_SUMMARY: "books/chapter/summerize",
   FACT_CHECK: "books/fact/check",
 };
-
-
 export const PAYMENT_ENDPOINTS = {
   STRIPE: "payments/intent/generate",
   GET_ALL: "payments/all",
@@ -59,15 +55,15 @@ export const FEED_ENDPOINTS = {
   LIKE: (feedId) => `feeds/${feedId}/like`,
   ALL_Comment:(feedId)=>`feeds/${feedId}/comments`
 };
-
-
 export const Quote_ENDPOINTS = {
   GET_TAGS: (page = 1, limit = 20) =>
     `/quotes/tags/list?page=${page}&limit=${limit}`,
-
   GET_ALL_QUOTES: (page = 1, limit = 10) =>
     `/quotes?page=${page}&limit=${limit}`,
-
   GET_QUOTES_BY_TAG: (slug, page = 1, limit = 10) =>
     `/quotes?tag=${slug}&page=${page}&limit=${limit}`,
+};
+export const Chat_ENDPOINTS = {
+  GET_ALL: "chats/my",
+  CREATE:"chats/message/send"
 };
