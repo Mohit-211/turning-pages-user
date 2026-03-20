@@ -14,12 +14,14 @@ const LoginForm = () => {
 
     try {
       const response = await loginApi({ email, password });
+      console.log(response,"response")
       const token = response?.data?.data?.tokens?.access?.token;
 
       localStorage.setItem("book_publish_token", token);
       message.success("Login successful! Welcome back.");
       navigate("/dashboard");
     } catch (error) {
+      console.log(error,"error")
       const errorMessage = error?.response?.data?.message || "Login failed";
 
       if (

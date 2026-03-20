@@ -32,6 +32,7 @@ import FeedPage from "./component/FeedPage/FeedPage";
 import SampleFeedPage from "./component/FeedPage/SampleFeedPage";
 import QuotesPage from "./component/Quotesmodule/QuotesPage";
 import Chat from "./Page/Chat/Chat";
+import DirectoryPage from "./component/FeedPage/DirectoryPage";
 
 function App() {
   return (
@@ -147,33 +148,43 @@ function App() {
           }
         />
 
-       
+
         <Route
-         path="/dashboard/feed-page"
+          path="/dashboard/feed-page"
           element={
             <ProtectedRoute>
               <DashboardLayout>
-                  <FeedPage />
+                <FeedPage />
               </DashboardLayout>
             </ProtectedRoute>
           }
         />
         <Route
-         path="/dashboard/quotes"
+          path="/dashboard/directory-page"
           element={
             <ProtectedRoute>
               <DashboardLayout>
-                  <QuotesPage />
+                <DirectoryPage />
               </DashboardLayout>
             </ProtectedRoute>
           }
         />
         <Route
-         path="/dashboard/chat/:book_room_id?"
+          path="/dashboard/quotes"
           element={
             <ProtectedRoute>
               <DashboardLayout>
-                  <Chat />
+                <QuotesPage />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/chat/:book_room_id?"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <Chat />
               </DashboardLayout>
             </ProtectedRoute>
           }
@@ -186,13 +197,13 @@ function App() {
 
       </Routes>
       <ToastContainer
-             position="top-right"
-             autoClose={3000}
-             newestOnTop
-             closeOnClick
-             pauseOnHover
-             theme="colored"
-           />
+        position="top-right"
+        autoClose={3000}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        theme="colored"
+      />
     </BrowserRouter>
   );
 }

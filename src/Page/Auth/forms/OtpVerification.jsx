@@ -64,9 +64,11 @@ const OtpVerification = () => {
           id="otp"
           type="text"
           inputMode="numeric"
-          placeholder="6-digit OTP"
+          placeholder="4-digit OTP"
           value={otp}
           onChange={(e) => setOtp(e.target.value)}
+                   maxLength={4}
+
         />
       </div>
 
