@@ -19,13 +19,15 @@ const Chat = () => {
 
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+  console.log(selectedUser,"selectedUser")
   const [messagesByRoom, setMessagesByRoom] = useState({});
+  console.log(messagesByRoom,"messagesByRoom")
   const [text, setText] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
   const messagesEndRef = useRef(null);
 
-  const senderId = localStorage.getItem("userId") || "1";
+  const senderId = localStorage.getItem("userId");
 
   // 👉 check if direct chat mode
   const isDirectChat = !!book_room_id;

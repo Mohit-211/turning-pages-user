@@ -1,5 +1,5 @@
 import client from "../client";
-import { FEED_ENDPOINTS } from "../endpoints";
+import { FEED_ENDPOINTS, Genre_ENDPOINTS } from "../endpoints";
 // Create Chapter
 export const CreateFeedApi = (payload) =>
   client.post(FEED_ENDPOINTS.CREATE, payload, {
@@ -17,3 +17,4 @@ export const ReplayCommentOnFeedApi = (payload) =>
   client.post(FEED_ENDPOINTS.REPLAY_COMMENT, payload);
 export const GetAllFeedCommentApi = (feedId) =>
   client.get(FEED_ENDPOINTS.ALL_Comment(feedId));
+export const GetAllFeedByGenreId= (GENER_ID) => client.get(FEED_ENDPOINTS.GET_ALL_FEED_BY_GENER_ID(GENER_ID));

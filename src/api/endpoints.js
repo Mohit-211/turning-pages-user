@@ -40,7 +40,7 @@ export const Chapter_ENDPOINTS = {
 export const PAYMENT_ENDPOINTS = {
   STRIPE: "payments/intent/generate",
   GET_ALL: "payments/all",
-  SPENDING_LISt:"payments/credit/list"
+  SPENDING_LISt: "payments/credit/list"
 };
 export const SUPPORT_ENDPOINTS = {
   CREATE_TICKET: "support",
@@ -51,9 +51,13 @@ export const FEED_ENDPOINTS = {
   CREATE: "feeds",
   CREATE_COMMENT: "feeds/comment",
   GET_ALL: "feeds",
-  REPLAY_COMMENT:"feeds/comment",
+  GET_ALL_FEED_BY_GENER_ID:(GENER_ID) =>`feeds?page=1&limit=10&genre_id=${GENER_ID}`,
+  REPLAY_COMMENT: "feeds/comment",
   LIKE: (feedId) => `feeds/${feedId}/like`,
-  ALL_Comment:(feedId)=>`feeds/${feedId}/comments`
+  ALL_Comment: (feedId) => `feeds/${feedId}/comments`
+};
+export const DIRECTORY_ENDPOINTS = {
+  GET_ALL: "feeds/directories/all",
 };
 export const Quote_ENDPOINTS = {
   GET_TAGS: (page = 1, limit = 20) =>
@@ -65,5 +69,5 @@ export const Quote_ENDPOINTS = {
 };
 export const Chat_ENDPOINTS = {
   GET_ALL: "chats/my",
-  CREATE:"chats/message/send"
+  CREATE: "chats/message/send"
 };

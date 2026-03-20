@@ -6,9 +6,11 @@ const menuItems = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
   { title: "My Books", url: "/dashboard/books", icon: BookOpen },
   { title: "Submissions", url: "/dashboard/submissions", icon: Send },
-  { title: "Settings", url: "/dashboard/settings", icon: Settings },
+  // { title: "Settings", url: "/dashboard/settings", icon: Settings },
   { title: "Profile", url: "/dashboard/profile", icon: User },
   { title: "My Feed", url: "/dashboard/feed-page", icon: LayoutList },
+  { title: "My Directory", url: "/dashboard/directory-page", icon: LayoutList },
+
   { title: "Quotes", url: "/dashboard/quotes", icon: Quote},
   { title: "Support", url: "/dashboard/support", icon: Headset },
   { title: "Chat", url: "/dashboard/chat", icon: MessageSquare },
