@@ -31,10 +31,10 @@ const CreditBar = ({ maxCredits = 100 }) => {
     <>
       <div className="credit-bar">
         <div className="credit-info">
-          <span className="label">Credits</span>
-          <span className="count">
-            {loading ? <Spin size="small" /> : `${credits} / ${maxCredits}`}
-          </span>
+          <span className="count">Credits {credits}</span>
+          {/* <span className="count">
+            {loading ? <Spin size="small" /> : `${credits}`}
+          </span> */}
         </div>
         <div className="progress-track">
           <div

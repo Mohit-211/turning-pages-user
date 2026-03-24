@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -39,8 +39,17 @@ function App() {
     <BrowserRouter>
       <Routes>
         {/* Public Landing */}
-        <Route path="/" element={<Main />} />
-
+        {/* <Route path="/" element={<Main />} /> */}
+<Route
+  path="/"
+  element={
+    localStorage.getItem("book_publish_token") ? (
+      <Navigate to="/dashboard" replace />
+    ) : (
+      <Navigate to="/login" replace />
+    )
+  }
+/>
         {/* -------------------- AUTH -------------------- */}
         <Route
           path="/login"
