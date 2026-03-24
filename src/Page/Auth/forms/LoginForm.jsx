@@ -74,7 +74,7 @@ const LoginForm = () => {
         </Form.Item>
 
         <div className="form-meta">
-          <Link to="/auth/forgot-password" className="forgot-link">
+          <Link to="/auth/forgot-password-sendotp" className="forgot-link">
             Forgot password?
           </Link>
         </div>
