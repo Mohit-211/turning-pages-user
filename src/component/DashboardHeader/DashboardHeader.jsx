@@ -66,7 +66,7 @@ const DashboardHeader = ({
 
       <div className="right-section">
         {/* Notifications */}
-        <div className="dropdown-wrapper" ref={notifRef}>
+        {/* <div className="dropdown-wrapper" ref={notifRef}>
           <button
             className="icon-btn"
             onClick={() => {
@@ -96,7 +96,7 @@ const DashboardHeader = ({
               )}
             </div>
           )}
-        </div>
+        </div> */}
 
         {/* Profile */}
         <div className="dropdown-wrapper" ref={profileRef}>
