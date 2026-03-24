@@ -42,7 +42,16 @@ const OtpVerification = () => {
 
       if (response?.data?.success) {
         message.success(response?.data?.message || "OTP verified successfully");
-        navigate("/login");
+        console.log(response, "response")
+        const token = response?.data?.data?.token
+        // ✅ CONDITIONAL REDIRECT
+        if (type === "forgot_password") {
+          navigate("/auth/forgot-password", {
+            state: { email, token } // optional but recommended
+          });
+        } else {
+          navigate("/login");
+        }
       }
     } catch (error) {
       message.error(
@@ -52,7 +61,6 @@ const OtpVerification = () => {
       setLoading(false);
     }
   };
-
   return (
     <form onSubmit={handleVerifyOtp} className="auth-form otp-form">
       <div className="field">
@@ -67,7 +75,7 @@ const OtpVerification = () => {
           placeholder="4-digit OTP"
           value={otp}
           onChange={(e) => setOtp(e.target.value)}
-                   maxLength={4}
+          maxLength={4}
 
         />
       </div>

@@ -33,6 +33,8 @@ import SampleFeedPage from "./component/FeedPage/SampleFeedPage";
 import QuotesPage from "./component/Quotesmodule/QuotesPage";
 import Chat from "./Page/Chat/Chat";
 import DirectoryPage from "./component/FeedPage/DirectoryPage";
+import ForgotPassword from "./Page/Auth/forms/ForgotPassword";
+import SendOtp from "./Page/Auth/forms/SendOtp";
 
 function App() {
   return (
@@ -61,13 +63,32 @@ function App() {
             </PublicRoute>
           }
         />
-
-        <Route
-          path="/signup"
+<Route
+          path="/login"
           element={
             <PublicRoute>
               <AuthLayout>
-                <SignUpForm />
+                <LoginForm />
+              </AuthLayout>
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/auth/forgot-password-sendotp"
+          element={
+            <PublicRoute>
+              <AuthLayout>
+                <SendOtp />
+              </AuthLayout>
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/auth/forgot-password"
+          element={
+            <PublicRoute>
+              <AuthLayout>
+                <ForgotPassword />
               </AuthLayout>
             </PublicRoute>
           }
