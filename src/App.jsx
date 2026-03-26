@@ -35,6 +35,7 @@ import Chat from "./Page/Chat/Chat";
 import DirectoryPage from "./component/FeedPage/DirectoryPage";
 import ForgotPassword from "./Page/Auth/forms/ForgotPassword";
 import SendOtp from "./Page/Auth/forms/SendOtp";
+import ChangePassword from "./Page/Auth/forms/ChangePassword";
 
 function App() {
   return (
@@ -42,16 +43,16 @@ function App() {
       <Routes>
         {/* Public Landing */}
         {/* <Route path="/" element={<Main />} /> */}
-<Route
-  path="/"
-  element={
-    localStorage.getItem("book_publish_token") ? (
-      <Navigate to="/dashboard" replace />
-    ) : (
-      <Navigate to="/login" replace />
-    )
-  }
-/>
+        <Route
+          path="/"
+          element={
+            localStorage.getItem("book_publish_token") ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
         {/* -------------------- AUTH -------------------- */}
         <Route
           path="/login"
@@ -63,7 +64,7 @@ function App() {
             </PublicRoute>
           }
         />
-<Route
+        <Route
           path="/login"
           element={
             <PublicRoute>
@@ -102,6 +103,17 @@ function App() {
                 <OtpVerification />
               </AuthLayout>
             </PublicRoute>
+          }
+        />
+
+         <Route
+          path="/dashboard/change-password"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <ChangePassword />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
 
