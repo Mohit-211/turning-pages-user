@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Form, Input, Button, message } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import { forgotPasswordApi } from "../../../api/auth/auth.api";
-
+import "./ForgotPassword.scss"
 const ForgotPassword = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -47,7 +47,7 @@ console.log(location,"======")
   };
 
   return (
-    <div className="auth-form">
+    <div className="ForgotPassword">
       <Form layout="vertical" onFinish={onFinish}>
         
         <Form.Item

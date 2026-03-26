@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Bell, User, Settings, LogOut, ChevronDown } from "lucide-react";
+import { Bell, User, Settings, LogOut, ChevronDown, Key } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "./DashboardHeader.scss";
 import ProfileIcon from "../../assets/profileicon.jpg";
@@ -136,7 +136,13 @@ const DashboardHeader = ({
                 <Settings size={16} />
                 Settings
               </div>
-
+ <div
+                className="dropdown-item"
+                onClick={() => navigate("/dashboard/change-password")}
+              >
+                <Key size={16} />
+                Change Password
+              </div>
               <div className="divider" />
 
               <div className="dropdown-item danger" onClick={handleLogout}>
