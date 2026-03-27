@@ -9,10 +9,15 @@ const AuthLayout = ({ children }) => {
   return (
     <div className="auth-page">
       <div className="auth-header">
-        <Link to="/" className="back-link">
-          <ArrowLeft className="icon" />
-          Back to Home
-        </Link>
+       <a
+  href="https://turningpages.io/"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="back-link"
+>
+  <ArrowLeft className="icon" />
+  Back to Home
+</a>
       </div>
 
       <div className="auth-main">
