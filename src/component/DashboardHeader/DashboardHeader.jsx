@@ -5,7 +5,7 @@ import "./DashboardHeader.scss";
 import ProfileIcon from "../../assets/profileicon.jpg";
 import { logoutApi } from "../../api/auth/auth.api";
 import CreditBar from "./CreditBar";
-
+import logo from "../../../public/logo.jpg"
 const DashboardHeader = ({
   user,
   notifications = [],
@@ -51,7 +51,9 @@ const DashboardHeader = ({
     <header className="dashboard-header">
       <div className="left-section">
         <div className="logo">
-          <span className="emoji">📖</span>
+          <span className="emoji">
+            <img src={logo} width={50} height={50}/>
+          </span>
           <span className="title">Turning Pages</span>
         </div>
       </div>
