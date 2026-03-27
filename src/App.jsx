@@ -65,11 +65,11 @@ function App() {
           }
         />
         <Route
-          path="/login"
+          path="/signup"
           element={
             <PublicRoute>
               <AuthLayout>
-                <LoginForm />
+                <SignUpForm />
               </AuthLayout>
             </PublicRoute>
           }
