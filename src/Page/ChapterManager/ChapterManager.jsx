@@ -27,9 +27,10 @@ import Toolbar from "./chapterComponent/toolbar";
 import ChapterEditor from "./chapterComponent/chapterEditor";
 import PdfViewer from "./PdfViewer/PdfViewer";
 import StripePayment from "../../component/StripePayment/StripePayment";
+import AIToolsGuide from "./chapterComponent/AIToolsGuide";
 
 export default function ChapterManager() {
-
+const [showAIGuide, setShowAIGuide] = useState(false);
   const { bookId } = useParams();
 
   const [booksubmiition, setBookSubmitton] = useState();
@@ -379,19 +380,25 @@ export default function ChapterManager() {
           loading={submitLoading}
         />
 
-        <Toolbar
-          chapterTitle={chapters.find((c) => c.id === selectedId)}
-          saving={saving}
-          onSave={handleSaveChapter}
-          viewMode={viewMode}
-          setViewMode={setViewMode}
-          onToggleAIPanel={() => setIsAIPanelOpen(!isAIPanelOpen)}
-          isAIPanelOpen={isAIPanelOpen}
-          onRunAITool={handleRunAITool}
-          activeTool={aiActiveTab}
-          onOpenUploadModal={() => setUploadModalVisible(true)}
-        />
-
+       <Toolbar
+  chapterTitle={chapters.find((c) => c.id === selectedId)}
+  saving={saving}
+  onSave={handleSaveChapter}
+  viewMode={viewMode}
+  setViewMode={setViewMode}
+  onToggleAIPanel={() => {
+    setIsAIPanelOpen(!isAIPanelOpen);
+    setShowAIGuide(false); // 👈 reset guide if AI panel toggled
+  }}
+  isAIPanelOpen={isAIPanelOpen}
+  onRunAITool={handleRunAITool}
+  activeTool={aiActiveTab}
+  onOpenUploadModal={() => setUploadModalVisible(true)}
+  onOpenAIGuide={() => {
+    setIsAIPanelOpen(true);
+    setShowAIGuide(true); // 👈 show guide
+  }}
+/>
         <div className="content-layout">
 
           <div className="editor-container">
@@ -405,16 +412,20 @@ export default function ChapterManager() {
             )}
           </div>
 
-          {isAIPanelOpen && (
-            <div className="report-section">
-              <AIReportPanel
-                activeTab={aiActiveTab}
-                setActiveTab={setAiActiveTab}
-                data={currentAIData}
-                loading={aiLoading}
-              />
-            </div>
-          )}
+        {isAIPanelOpen && (
+  <div className="report-section">
+    {showAIGuide ? (
+      <AIToolsGuide/>
+    ) : (
+      <AIReportPanel
+        activeTab={aiActiveTab}
+        setActiveTab={setAiActiveTab}
+        data={currentAIData}
+        loading={aiLoading}
+      />
+    )}
+  </div>
+)}
 
         </div>
 

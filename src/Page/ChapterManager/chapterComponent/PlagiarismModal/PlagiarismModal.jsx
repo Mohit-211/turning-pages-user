@@ -87,7 +87,7 @@ export default function PlagiarismModal({
           </div>
 
           <div style={{ marginTop: "8px", fontSize: "12px", color: "#666" }}>
-            Alphabet Characters Count:{" "}
+            Characters Count:{" "}
             {countAlphabetCharacters(selectedText)}
           </div>
         </div>

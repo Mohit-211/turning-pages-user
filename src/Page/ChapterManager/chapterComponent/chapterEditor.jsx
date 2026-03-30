@@ -23,10 +23,12 @@ export default function ChapterEditor({
       <Editor
         apiKey="l8z8itk8wu9fzhh5rycablwg5569p08i4rnr84vdohk2wh3m"
         value={content || chapter?.content || ""}
+        
         init={{
           height: 580,
-          menubar: true,
+          menubar: false,
           branding: false,
+            statusbar: false,
           plugins:
             "advlist autolink lists link image charmap preview anchor table",
           toolbar:

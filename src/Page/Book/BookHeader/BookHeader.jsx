@@ -4,17 +4,77 @@ import "./BookHeader.scss";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 // ─── All supported page sizes (at 96 dpi) ─────────────────────────────────────
-const PAGE_SIZES = {
-  A3: { label: "A3", w: 1123, h: 1587, desc: "297 × 420 mm" },
-  A4: { label: "A4", w: 794, h: 1123, desc: "210 × 297 mm" },
-  A5: { label: "A5", w: 559, h: 794, desc: "148 × 210 mm" },
-  LETTER: { label: "Letter", w: 816, h: 1056, desc: "8.5 × 11 in" },
-  LEGAL: { label: "Legal", w: 816, h: 1344, desc: "8.5 × 14 in" },
-  B5: { label: "B5", w: 665, h: 945, desc: "176 × 250 mm" },
-  HALFLETTER: { label: "Half Letter", w: 528, h: 816, desc: "5.5 × 8.5 in" },
-  TRADE: { label: "Trade Book", w: 576, h: 864, desc: "6 × 9 in" },
-  POCKET: { label: "Pocket Book", w: 432, h: 648, desc: "4.5 × 6.75 in" },
-  SQUARE: { label: "Square", w: 756, h: 756, desc: "7.87 × 7.87 in" },
+export const PAGE_SIZES = {
+  A3: {
+    label: "A3",
+    w: 1123,
+    h: 1587,
+    desc: "11.7 × 16.5 in",
+    icon: "tall"
+  },
+  A4: {
+    label: "A4",
+    w: 794,
+    h: 1123,
+    desc: "8.27 × 11.7 in",
+    icon: "tall"
+  },
+  A5: {
+    label: "A5",
+    w: 559,
+    h: 794,
+    desc: "5.83 × 8.27 in",
+    icon: "tall"
+  },
+  LETTER: {
+    label: "Letter / Journal",
+    w: 816,
+    h: 1056,
+    desc: "8.5 × 11 in",
+    icon: "tall"
+  },
+  LEGAL: {
+    label: "Legal",
+    w: 816,
+    h: 1344,
+    desc: "8.5 × 14 in",
+    icon: "tall"
+  },
+  B5: {
+    label: "B5",
+    w: 665,
+    h: 945,
+    desc: "6.93 × 9.84 in",
+    icon: "tall"
+  },
+  HALFLETTER: {
+    label: "Half Letter",
+    w: 528,
+    h: 816,
+    desc: "5.5 × 8.5 in",
+    icon: "tall"
+  },
+  TRADE: {
+    label: "Traditional",
+    w: 576,
+    h: 864,
+    desc: "6 × 9 in",
+    icon: "tall"
+  },
+  POCKET: {
+    label: "Pocket Book",
+    w: 432,
+    h: 648,
+    desc: "4.25 × 6.5 in",
+    icon: "tall"
+  },
+  SQUARE: {
+    label: "Square",
+    w: 756,
+    h: 756,
+    desc: "7.87 × 7.87 in",
+    icon: "square"
+  }
 };
 function getLayout(sizeKey) {
   const s = PAGE_SIZES[sizeKey];
@@ -543,7 +603,7 @@ export default function BookHeader({
   onSubmit,
   loading,
 }) {
-  const [sizeKey, setSizeKey] = useState("A4");
+  const [sizeKey, setSizeKey] = useState("TRADE");
   const [showSizePick, setShowSizePick] = useState(false);
   const [showPrintModal, setShowPrintModal] = useState(false);
   const sizeRef = useRef(null);

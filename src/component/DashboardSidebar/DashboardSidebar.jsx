@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
-import { Home, BookOpen, Send, Settings, User, Menu, Rss, LayoutList, Headset, Quote, MessageSquare } from "lucide-react";
+import { Home, BookOpen, Send, Settings, User, Menu, Rss, LayoutList, Headset, Quote, MessageSquare, CreditCard } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import "./DashboardSidebar.scss";
 const menuItems = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
   { title: "My Books", url: "/dashboard/books", icon: BookOpen },
   { title: "Submissions", url: "/dashboard/submissions", icon: Send },
-  // { title: "Settings", url: "/dashboard/settings", icon: Settings },
   { title: "Profile", url: "/dashboard/profile", icon: User },
   // { title: "My Feed", url: "/dashboard/feed-page", icon: LayoutList },
-  { title: "My Directory", url: "/dashboard/directory-page", icon: LayoutList },
+  { title: "Social Feed", url: "/dashboard/social-feed", icon: LayoutList },
+  { title: "Credits", url: "/dashboard/credits", icon: CreditCard },
 
-  { title: "Quotes", url: "/dashboard/quotes", icon: Quote},
+  { title: "Quotes", url: "/dashboard/quotes", icon: Quote },
   { title: "Support", url: "/dashboard/support", icon: Headset },
   { title: "Chat", url: "/dashboard/chat", icon: MessageSquare },
 ];
@@ -45,9 +45,8 @@ const DashboardSidebar = () => {
               <li key={item.title} className="sidebar-menu-item">
                 <Link
                   to={item.url}
-                  className={`sidebar-menu-button ${
-                    isActive(item.url) ? "active" : ""
-                  }`}
+                  className={`sidebar-menu-button ${isActive(item.url) ? "active" : ""
+                    }`}
                   data-tooltip={item.title}
                 >
                   <Icon className="icon" />

@@ -1,15 +1,18 @@
 import { useState, useRef, useEffect } from "react";
 import "./ComposeBox.scss";
+
 import { GetAllGenreApi } from "../../api/operations/genre.api";
 import { CreateFeedApi } from "../../api/operations/feed.api";
+import { UserProfileApi } from "../../api/users/users.api";
 
-export default function ComposeBox({ onPostCreated,reloadFeeds }) {
+export default function ComposeBox({ onPostCreated, reloadFeeds }) {
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const [genreId, setGenreId] = useState("");
   const [genres, setGenres] = useState([]);
 
- 
+  const [user, setUser] = useState(null);
+
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
 
@@ -21,11 +24,10 @@ export default function ComposeBox({ onPostCreated,reloadFeeds }) {
   const fileRef = useRef(null);
 
   const isReady = title.trim() && text.trim() && genreId && !loading;
-
+console.log(user,"user")
   // ─────────────────────────────────
-  // Load Genres API
+  // LOAD GENRES
   // ─────────────────────────────────
-
   useEffect(() => {
     const loadGenres = async () => {
       try {
@@ -40,14 +42,42 @@ export default function ComposeBox({ onPostCreated,reloadFeeds }) {
   }, []);
 
   // ─────────────────────────────────
-  // TAGS
+  // LOAD USER PROFILE
   // ─────────────────────────────────
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const res = await UserProfileApi();
+        setUser(res.data?.data || res.data);
+      } catch (err) {
+        console.error("User fetch error", err);
+      }
+    };
 
+    loadUser();
+  }, []);
 
   // ─────────────────────────────────
-  // IMAGE
+  // GET INITIALS
   // ─────────────────────────────────
+  const getInitials = (name) => {
+  
 
+    const parts = name.trim().split(" ");
+
+    if (parts.length === 1) {
+      return parts[0][0].toUpperCase();
+    }
+
+    return (
+      parts[0][0].toUpperCase() +
+      parts[parts.length - 1][0].toUpperCase()
+    );
+  };
+
+  // ─────────────────────────────────
+  // IMAGE HANDLING
+  // ─────────────────────────────────
   const handleImageChange = (e) => {
     const file = e.target.files?.[0] ?? null;
 
@@ -68,9 +98,8 @@ export default function ComposeBox({ onPostCreated,reloadFeeds }) {
   };
 
   // ─────────────────────────────────
-  // RESET
+  // RESET FORM
   // ─────────────────────────────────
-
   const resetForm = () => {
     setTitle("");
     setText("");
@@ -84,45 +113,52 @@ export default function ComposeBox({ onPostCreated,reloadFeeds }) {
   // ─────────────────────────────────
   // SUBMIT
   // ─────────────────────────────────
-
   const handleSubmit = async () => {
-  if (!isReady) return;
+    if (!isReady) return;
 
-  setLoading(true);
-  setError("");
-  setSuccess(false);
+    setLoading(true);
+    setError("");
+    setSuccess(false);
 
-  try {
-    const formData = new FormData();
+    try {
+      const formData = new FormData();
 
-    formData.append("title", title.trim());
-    formData.append("content", text.trim());
-    formData.append("genre_id", genreId);
+      formData.append("title", title.trim());
+      formData.append("content", text.trim());
+      formData.append("genre_id", genreId);
 
-    if (image) {
-      formData.append("images", image); // binary file
+      if (image) {
+        formData.append("images", image);
+      }
+
+      const data = await CreateFeedApi(formData);
+
+      setSuccess(true);
+      resetForm();
+      await reloadFeeds();
+
+      onPostCreated?.(data);
+
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (err) {
+      setError(err.message ?? "Something went wrong.");
+    } finally {
+      setLoading(false);
     }
-
-    const data = await CreateFeedApi(formData);
-
-    setSuccess(true);
-    resetForm();
-    await reloadFeeds();
-
-    onPostCreated?.(data);
-
-    setTimeout(() => setSuccess(false), 3000);
-  } catch (err) {
-    setError(err.message ?? "Something went wrong.");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <div className={`compose-box${expanded ? " compose-box--expanded" : ""}`}>
       <div className="compose-box__inner">
-        <div className="compose-box__avatar">EV</div>
+        
+        {/* ✅ AVATAR */}
+        <div className="compose-box__avatar">
+  {user ? (
+    user?.user_profile?.name?.[0]?.toUpperCase() || "U"
+  ) : (
+    <span className="avatar-loader" />
+  )}
+</div>
 
         <div className="compose-box__body">
           {expanded && (
@@ -146,7 +182,8 @@ export default function ComposeBox({ onPostCreated,reloadFeeds }) {
 
           {expanded && (
             <div className="compose-box__meta">
-              {/* GENRE DROPDOWN */}
+              
+              {/* GENRE */}
               <div className="compose-box__field">
                 <label className="compose-box__label">
                   Genre <span className="compose-box__required">*</span>

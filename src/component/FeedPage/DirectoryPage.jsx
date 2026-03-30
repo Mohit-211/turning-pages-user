@@ -89,7 +89,7 @@ export default function DirectoryPage() {
     activeGroup === null
       ? "All Feeds"
       : joinedGroups.find((g) => g.genre_id === activeGroup)?.book_genre
-          ?.title ?? "Feeds";
+        ?.title ?? "Feeds";
 
   const isLoading = loading || feedsLoading;
 
@@ -124,6 +124,11 @@ export default function DirectoryPage() {
 
       {/* MAIN CONTENT */}
       <div className="feed-page__body">
+        <ComposeBox onfeedCreated={handleFeedCreated}
+          reloadFeeds={loadFeeds}
+
+        />
+
         <main className="feed-page__main">
           {/* Section title */}
           <div className="feed-page__section-title">
