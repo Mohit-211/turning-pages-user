@@ -36,6 +36,8 @@ import DirectoryPage from "./component/FeedPage/DirectoryPage";
 import ForgotPassword from "./Page/Auth/forms/ForgotPassword";
 import SendOtp from "./Page/Auth/forms/SendOtp";
 import ChangePassword from "./Page/Auth/forms/ChangePassword";
+import CreditSystem from "./Page/CreditPage/CreditPage";
+import AIToolsGuide from "./Page/ChapterManager/chapterComponent/AIToolsGuide";
 
 function App() {
   return (
@@ -181,6 +183,7 @@ function App() {
           }
         />
 
+
         <Route
           path="/dashboard/chaptermanager/:bookId"
           element={
@@ -202,11 +205,21 @@ function App() {
           }
         />
         <Route
-          path="/dashboard/directory-page"
+          path="/dashboard/social-feed"
           element={
             <ProtectedRoute>
               <DashboardLayout>
                 <DirectoryPage />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="/dashboard/ai-tools-guide"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <AIToolsGuide />
               </DashboardLayout>
             </ProtectedRoute>
           }
@@ -221,6 +234,17 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/dashboard/credits"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <CreditSystem />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/dashboard/chat/:book_room_id?"
           element={

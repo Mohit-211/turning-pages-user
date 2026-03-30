@@ -81,13 +81,17 @@ $accents: (
   }
 }
 
+@keyframes skeleton-shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
 // ============================================================
 // Page Wrapper
 // ============================================================
 
 .quotes-page {
   min-height: 100vh;
-  // background: $bg-base;
   font-family: $font-display;
 }
 
@@ -98,7 +102,6 @@ $accents: (
 .quotes-header {
   text-align: center;
   padding: 64px 40px 48px;
-  // background: $bg-base;
   border-bottom: 1px solid $border;
   margin-bottom: 48px;
 
@@ -127,8 +130,76 @@ $accents: (
     width: 60px;
     height: 3px;
     background: var(--accent, #c8a96e);
-    margin: 12px auto 0;
+    margin: 12px auto 24px; // extra bottom margin before search
     @include smooth(background, 0.4s);
+  }
+}
+
+// ============================================================
+// Search
+// ============================================================
+
+.quotes-search-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.quotes-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 560px;
+  border: 1.5px solid $border;
+  border-radius: 3px;
+  padding: 0 14px;
+  background: $bg-card;
+  @include smooth(border-color box-shadow, 0.25s);
+
+  &:focus-within,
+  &--active {
+    border-color: var(--accent, #c8a96e);
+    box-shadow: 0 0 0 3px rgba(200, 169, 110, 0.12);
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    color: $ink-muted;
+    flex-shrink: 0;
+  }
+
+  &__input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: $font-ui;
+    font-size: 14px;
+    color: $ink;
+    padding: 12px 0;
+
+    &::placeholder {
+      color: $ink-muted;
+    }
+  }
+
+  &__clear {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: $ink-muted;
+    padding: 4px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    @include smooth();
+
+    &:hover {
+      color: $ink;
+    }
   }
 }
 
@@ -137,9 +208,53 @@ $accents: (
 // ============================================================
 
 .quotes-main {
-  max-width: 1200px;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 0 32px 80px;
+}
+
+// ============================================================
+// Tags Row (All Categories btn + scrollable tags)
+// ============================================================
+
+.quotes-tags-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 40px;
+  overflow: hidden; // clip so inner scroll doesn't bleed
+  @include smooth(opacity, 0.25s);
+
+  // While search is active, dim the tag row to signal it's not filtering
+  &--search-active {
+    opacity: 0.45;
+    // pointer-events still on — clicking a tag clears search and navigates
+  }
+}
+
+.all-cats-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 1.5px solid $ink;
+  background: transparent;
+  color: $ink;
+  @include font-label(11px, 0.1em);
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 2px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  @include smooth();
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    background: $ink;
+    color: $bg-base;
+  }
 }
 
 // ============================================================
@@ -147,7 +262,7 @@ $accents: (
 // ============================================================
 
 .quotes-tags {
-  margin-bottom: 40px;
+  flex: 1;
   overflow-x: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -159,11 +274,8 @@ $accents: (
   &__inner {
     display: flex;
     gap: 10px;
-    // width: max-content;
-    width: 145dvh;
+    width: max-content; // FIX: was wrongly set to 145dvh
     padding: 4px 0;
-    overflow: scroll;
-        scrollbar-width: none;
   }
 }
 
@@ -286,6 +398,32 @@ $accents: (
     padding: 40px 28px;
   }
 
+  // Skeleton variant — override ::before decorative mark
+  &--skeleton {
+    background: darken($bg-card, 4%);
+    border-color: $border-card;
+    min-height: 160px;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      display: none; // hide quote-mark on skeleton
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.6),
+        transparent
+      );
+      animation: skeleton-shimmer 1.2s infinite;
+    }
+  }
+
   // Staggered animation delays
   @for $i from 1 through 6 {
     &:nth-child(#{$i}) {
@@ -357,13 +495,204 @@ $accents: (
   }
 
   &--copied {
-    background: map-get($accents, 'wisdom'); // sage green for "done"
+    background: map-get($accents, 'wisdom');
     border-color: map-get($accents, 'wisdom');
     color: $bg-card;
   }
 
   svg {
     flex-shrink: 0;
+  }
+}
+
+// ============================================================
+// Empty State
+// ============================================================
+
+.quotes-empty {
+  padding: 60px 20px;
+  text-align: center;
+  grid-column: 1 / -1;
+
+  &__title {
+    font-family: $font-display;
+    font-size: 22px;
+    font-weight: 700;
+    color: $ink;
+    margin-bottom: 8px;
+  }
+
+  &__sub {
+    @include font-label(12px, 0.08em);
+    color: $ink-muted;
+  }
+}
+
+// ============================================================
+// All Categories Modal
+// ============================================================
+
+.cat-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba($ink, 0.45);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  backdrop-filter: blur(3px);
+  animation: fadeUp 0.2s ease both;
+}
+
+.cat-modal {
+  background: $bg-card;
+  border: 1px solid $border-card;
+  border-radius: 4px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba($ink, 0.18);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid $border;
+    flex-shrink: 0;
+  }
+
+  &__title {
+    font-family: $font-display;
+    font-size: 20px;
+    font-weight: 700;
+    color: $ink;
+  }
+
+  &__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: $ink-muted;
+    padding: 4px;
+    border-radius: 2px;
+    @include smooth();
+
+    &:hover {
+      color: $ink;
+    }
+  }
+
+  &__search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 16px;
+    border-bottom: 1px solid $border;
+    flex-shrink: 0;
+
+    &-icon {
+      display: flex;
+      align-items: center;
+      color: $ink-muted;
+      flex-shrink: 0;
+    }
+
+    &-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-family: $font-ui;
+      font-size: 13px;
+      color: $ink;
+      padding: 12px 0;
+
+      &::placeholder {
+        color: $ink-muted;
+      }
+    }
+
+    &-clear {
+      display: flex;
+      align-items: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: $ink-muted;
+      padding: 4px;
+      border-radius: 2px;
+      @include smooth();
+
+      &:hover { color: $ink; }
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 8px;
+    padding: 16px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: $border transparent;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1.5px solid $border;
+    background: transparent;
+    color: $ink;
+    @include font-label(11px, 0.08em);
+    padding: 10px 14px;
+    cursor: pointer;
+    border-radius: 3px;
+    @include smooth();
+    text-align: left;
+
+    &:hover {
+      background: $bg-footer;
+      border-color: darken($border, 8%);
+    }
+
+    &--active {
+      background: $ink;
+      color: $bg-base;
+      border-color: $ink;
+    }
+  }
+
+  &__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  &__active-badge {
+    margin-left: auto;
+    @include font-label(9px, 0.06em);
+    background: var(--accent, #c8a96e);
+    color: $bg-card;
+    padding: 2px 6px;
+    border-radius: 2px;
+  }
+
+  &__empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 32px 16px;
+    @include font-label(12px, 0.08em);
+    color: $ink-muted;
   }
 }
 
@@ -381,27 +710,4 @@ $accents: (
     @include font-label(12px, 0.1em);
     color: $ink-muted;
   }
-  .quote-card--skeleton {
-  background: #f3f3f3;
-  position: relative;
-  overflow: hidden;
-}
-
-.quote-card--skeleton::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255,255,255,0.6),
-    transparent
-  );
-  animation: skeleton 1.2s infinite;
-}
-
-@keyframes skeleton {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
 }

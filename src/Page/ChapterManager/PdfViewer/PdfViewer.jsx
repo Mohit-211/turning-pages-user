@@ -3,16 +3,76 @@ import "./PdfViewer.scss";
 
 // ─── All supported page sizes (at 96 dpi) ────────────────────────────────────
 export const PAGE_SIZES = {
-  A3:          { label: "A3",           w: 1123, h: 1587, desc: "297 × 420 mm",   icon: "tall" },
-  A4:          { label: "A4",           w: 794,  h: 1123, desc: "210 × 297 mm",   icon: "tall" },
-  A5:          { label: "A5",           w: 559,  h: 794,  desc: "148 × 210 mm",   icon: "tall" },
-  LETTER:      { label: "Letter",       w: 816,  h: 1056, desc: "8.5 × 11 in",    icon: "tall" },
-  LEGAL:       { label: "Legal",        w: 816,  h: 1344, desc: "8.5 × 14 in",    icon: "tall" },
-  B5:          { label: "B5",           w: 665,  h: 945,  desc: "176 × 250 mm",   icon: "tall" },
-  HALFLETTER:  { label: "Half Letter",  w: 528,  h: 816,  desc: "5.5 × 8.5 in",   icon: "tall" },
-  TRADE:       { label: "Trade Book",   w: 576,  h: 864,  desc: "6 × 9 in",       icon: "tall" },
-  POCKET:      { label: "Pocket Book",  w: 432,  h: 648,  desc: "4.5 × 6.75 in",  icon: "tall" },
-  SQUARE:      { label: "Square",       w: 756,  h: 756,  desc: "7.87 × 7.87 in", icon: "square" },
+  A3: {
+    label: "A3",
+    w: 1123,
+    h: 1587,
+    desc: "11.7 × 16.5 in",
+    icon: "tall"
+  },
+  A4: {
+    label: "A4",
+    w: 794,
+    h: 1123,
+    desc: "8.27 × 11.7 in",
+    icon: "tall"
+  },
+  A5: {
+    label: "A5",
+    w: 559,
+    h: 794,
+    desc: "5.83 × 8.27 in",
+    icon: "tall"
+  },
+  LETTER: {
+    label: "Letter / Journal",
+    w: 816,
+    h: 1056,
+    desc: "8.5 × 11 in",
+    icon: "tall"
+  },
+  LEGAL: {
+    label: "Legal",
+    w: 816,
+    h: 1344,
+    desc: "8.5 × 14 in",
+    icon: "tall"
+  },
+  B5: {
+    label: "B5",
+    w: 665,
+    h: 945,
+    desc: "6.93 × 9.84 in",
+    icon: "tall"
+  },
+  HALFLETTER: {
+    label: "Half Letter",
+    w: 528,
+    h: 816,
+    desc: "5.5 × 8.5 in",
+    icon: "tall"
+  },
+  TRADE: {
+    label: "Traditional",
+    w: 576,
+    h: 864,
+    desc: "6 × 9 in",
+    icon: "tall"
+  },
+  POCKET: {
+    label: "Pocket Book",
+    w: 432,
+    h: 648,
+    desc: "4.25 × 6.5 in",
+    icon: "tall"
+  },
+  SQUARE: {
+    label: "Square",
+    w: 756,
+    h: 756,
+    desc: "7.87 × 7.87 in",
+    icon: "square"
+  }
 };
 
 const PAD_RATIO_X   = 0.091;  // ~72px on A4
@@ -135,8 +195,9 @@ function paginateHTML(rawHTML, layout) {
 function SizeSelector({ current, onSelect, onClose }) {
   const sizes = Object.entries(PAGE_SIZES);
   // Group: Standard / Book
+  
   const standard = ["A3","A4","A5","LETTER","LEGAL"];
-  const books    = ["B5","HALFLETTER","TRADE","POCKET","SQUARE"];
+const books = ["TRADE","B5","HALFLETTER","POCKET","SQUARE"];
 
   const Card = ({ sizeKey }) => {
     const s       = PAGE_SIZES[sizeKey];
@@ -191,7 +252,8 @@ function SizeSelector({ current, onSelect, onClose }) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function PdfViewer({ htmlContent = "", title = "Document", onClose }) {
-  const [sizeKey,  setSizeKey]  = useState("A4");
+  
+const [sizeKey, setSizeKey] = useState("TRADE");
   const [pages,    setPages]    = useState([]);
   const [zoom,     setZoom]     = useState(1.0);
   const [status,   setStatus]   = useState("idle");

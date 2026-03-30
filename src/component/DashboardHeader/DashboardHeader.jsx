@@ -17,10 +17,8 @@ const DashboardHeader = ({
   console.log(user,"user")
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
-
   const notifRef = useRef(null);
   const profileRef = useRef(null);
-
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -36,7 +34,6 @@ const DashboardHeader = ({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
   const handleLogout = async () => {
     try {
       localStorage.removeItem("book_publish_token");
@@ -46,7 +43,6 @@ const DashboardHeader = ({
       alert("Logout failed. Please try again.");
     }
   };
-
   return (
     <header className="dashboard-header">
       <div className="left-section">
@@ -57,7 +53,6 @@ const DashboardHeader = ({
           <span className="title">Turning Pages</span>
         </div>
       </div>
-
       <div className="center-section">
         <CreditBar
           credits={user?.total_credit}
@@ -65,7 +60,6 @@ const DashboardHeader = ({
           onMoreCredits={() => navigate("/dashboard/billing")}
         />
       </div>
-
       <div className="right-section">
         {/* Notifications */}
         {/* <div className="dropdown-wrapper" ref={notifRef}>
@@ -79,7 +73,6 @@ const DashboardHeader = ({
             <Bell size={20} />
             {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
           </button>
-
           {showNotifications && (
             <div className="dropdown notification-dropdown">
               <div className="dropdown-header">Notifications</div>
@@ -99,7 +92,6 @@ const DashboardHeader = ({
             </div>
           )}
         </div> */}
-
         {/* Profile */}
         <div className="dropdown-wrapper" ref={profileRef}>
           <div
@@ -115,14 +107,12 @@ const DashboardHeader = ({
             </span>
             <ChevronDown size={16} />
           </div>
-
           {showProfile && (
             <div className="dropdown profile-dropdown">
               {/* <div className="profile-header">
                 <p className="name">{user?.user_profile?.name || "User"}</p>
                 <p className="email">{user?.email || "—"}</p>
               </div> */}
-
               <div
                 className="dropdown-item"
                 onClick={() => navigate("/dashboard/profile")}
@@ -130,14 +120,7 @@ const DashboardHeader = ({
                 <User size={16} />
                 Profile
               </div>
-
-              <div
-                className="dropdown-item"
-                onClick={() => navigate("/dashboard/settings")}
-              >
-                <Settings size={16} />
-                Settings
-              </div>
+        
  <div
                 className="dropdown-item"
                 onClick={() => navigate("/dashboard/change-password")}
@@ -146,7 +129,6 @@ const DashboardHeader = ({
                 Change Password
               </div>
               <div className="divider" />
-
               <div className="dropdown-item danger" onClick={handleLogout}>
                 <LogOut size={16} />
                 Sign Out
@@ -158,5 +140,4 @@ const DashboardHeader = ({
     </header>
   );
 };
-
 export default DashboardHeader;

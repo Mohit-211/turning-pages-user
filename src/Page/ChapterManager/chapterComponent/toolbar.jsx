@@ -7,6 +7,7 @@ import {
   PanelRight,
   X,
   PlayCircle,
+  BookOpen,
 } from "lucide-react";
 import "./Toolbar.scss";
 
@@ -21,6 +22,8 @@ export default function Toolbar({
   activeTool,
   onSave,
   onOpenUploadModal,
+  content = "", // 👈 pass editor content here (optional)
+  onOpenAIGuide
 }) {
   const isEditMode = viewMode === "edit";
   const [selectedTool, setSelectedTool] = useState(activeTool || "");
@@ -30,11 +33,19 @@ export default function Toolbar({
   }, [activeTool]);
 
   const handleRunTool = () => {
-    console.log(selectedTool,"selectedTool")
     if (!selectedTool) {
-      alert("Please select an AI Tool");
+      alert("Please select a TAV Tool before running analysis.");
       return;
     }
+
+    // ✅ OPTIONAL: 200 character validation
+    if (content && content.length < 200) {
+      alert(
+        "Content should be at least 200 characters to run TAV Analysis."
+      );
+      return;
+    }
+
     onRunAITool(selectedTool);
   };
 
@@ -45,12 +56,17 @@ export default function Toolbar({
       </div>
 
       <div className="action-buttons">
+        {/* ✅ UPDATED LABEL */}
+<button className="toolbar-btn ai-guide-btn"   onClick={onOpenAIGuide}>
+  <BookOpen size={18} />
+  <span>AI Guide</span>
+</button>
         <div className="ai-tool-select">
           <select
             value={selectedTool}
             onChange={(e) => setSelectedTool(e.target.value)}
           >
-            <option value="">Select AI Tool</option>
+            <option value="">Select TAV Tool</option>
             <option value="plagiarism">Plagiarism Check</option>
             <option value="consistency">Consistency Check</option>
             <option value="summary">Generate Summary</option>
@@ -87,7 +103,11 @@ export default function Toolbar({
           </button>
         )}
 
-        <button className="toolbar-btn save-btn" disabled={saving}   onClick={onSave}>
+        <button
+          className="toolbar-btn save-btn"
+          disabled={saving}
+          onClick={onSave}
+        >
           <Save size={18} />
           <span>{saving ? "Saving..." : "Save"}</span>
         </button>
