@@ -76,8 +76,8 @@ const filterQuotes = (source, query, availableTags) => {
 };
 
 export default function QuotesPage() {
-  const [allQuotes, setAllQuotes] = useState([]);   // paginated quotes for current tag
-  const [quotes, setQuotes] = useState([]);   // what's displayed
+  const [allQuotes, setAllQuotes] = useState([]);
+  const [quotes, setQuotes] = useState([]);
   const [tags, setTags] = useState(["All"]);
   const [activeTag, setActiveTag] = useState("All");
   const [allQoutesLength, setAllQoutesLength] = useState(0);
@@ -91,17 +91,14 @@ export default function QuotesPage() {
   const [limit, setLimit] = useState(10);
   const [hasMore, setHasMore] = useState(true);
 
-  // Refs — avoid stale closures everywhere
   const searchRef = useRef(null);
   const debounceRef = useRef(null);
   const loaderRef = useRef(null);
-  // Single source of truth for the full dataset (fetched once globally for search)
-  const fullQuotesRef = useRef([]);   // raw array, never stale
+  const fullQuotesRef = useRef([]);
   const fullFetchedRef = useRef(false);
   const tagsRef = useRef(["All"]);
-  const allQuotesRef = useRef([]);   // mirror of allQuotes state
+  const allQuotesRef = useRef([]);
 
-  // Keep refs in sync with state
   useEffect(() => { tagsRef.current = tags; }, [tags]);
   useEffect(() => { allQuotesRef.current = allQuotes; }, [allQuotes]);
 
@@ -142,23 +139,21 @@ export default function QuotesPage() {
 
   /* ─── Fetch ALL quotes globally (once per session) for search ─── */
   const fetchAllForSearch = async () => {
-    if (fullFetchedRef.current) return fullQuotesRef.current; // already have it
+    if (fullFetchedRef.current) return fullQuotesRef.current;
     setSearchLoading(true);
     try {
       const res = await GetAllQuotesApi(1, 9999);
       const quoteList = res?.data?.data?.data || [];
-      fullQuotesRef.current = quoteList;   // store directly in ref — no re-render
+      fullQuotesRef.current = quoteList;
       fullFetchedRef.current = true;
     } catch (err) {
       console.log(err);
-      // fallback: use whatever is loaded
       fullQuotesRef.current = allQuotesRef.current;
       fullFetchedRef.current = true;
     }
     setSearchLoading(false);
     return fullQuotesRef.current;
   };
-
 
   /* ─── Debounced search ─── */
   useEffect(() => {
@@ -173,12 +168,12 @@ export default function QuotesPage() {
         return;
       }
 
-      // If query exactly matches a tag → switch active tag (uses proper API)
+      // If query exactly matches a tag → switch active tag but KEEP search input value
       const matchedTag = tagsRef.current.find(
         t => t.toLowerCase() === q.toLowerCase()
       );
       if (matchedTag) {
-        setSearchQuery("");
+        // ✅ Removed setSearchQuery("") — input stays as user typed
         setActiveTag(matchedTag);
         return;
       }
@@ -190,10 +185,11 @@ export default function QuotesPage() {
 
       const results = filterQuotes(source, q, tagsRef.current);
       setQuotes(results);
-    }, 1000);
+    }, 6000);
 
     return () => clearTimeout(debounceRef.current);
   }, [searchQuery]); // eslint-disable-line
+
   /* ─── Keep displayed quotes in sync when allQuotes loads (non-search) ─── */
   useEffect(() => {
     if (!searchQuery.trim()) {
@@ -220,7 +216,6 @@ export default function QuotesPage() {
     setHasMore(true);
     setSearchQuery("");
     setShowSkeleton(true);
-    // Do NOT reset fullQuotesRef/fullFetchedRef — search dataset is global
 
     const timer = setTimeout(() => {
       setShowSkeleton(false);
@@ -264,7 +259,6 @@ export default function QuotesPage() {
 
   /* ─── Derived display values ─── */
   const isSearchActive = searchQuery.trim().length > 0;
-  console.log(isSearchActive, "isSearchActive")
   const accent = tagAccents[activeTag] || "#c8a96e";
   const searchMatchedTag = isSearchActive
     ? tags.find(t => t.toLowerCase() === searchQuery.trim().toLowerCase()) ?? null
@@ -311,8 +305,7 @@ export default function QuotesPage() {
       <main className="quotes-main">
 
         {/* ── Tags Row ── */}
-        <div className={`quotes-tags-row ${isSearchActive && !searchMatchedTag ? "quotes-tags-row--search-active" : ""
-          }`}>
+        <div className={`quotes-tags-row ${isSearchActive && !searchMatchedTag ? "quotes-tags-row--search-active" : ""}`}>
           <button className="all-cats-btn" onClick={() => setShowCatModal(true)}>
             <IconGrid /> All Categories
           </button>
@@ -329,7 +322,11 @@ export default function QuotesPage() {
                     style={{ "--accent": tagAccents[tag] || "#c8a96e" }}
                     onClick={() => {
                       setActiveTag(tag);
-                      if (isSearchActive) { setSearchQuery(""); setQuotes([]); }
+                      // ✅ Only clears search when user explicitly clicks a tag
+                      if (isSearchActive) {
+                        setSearchQuery("");
+                        setQuotes([]);
+                      }
                     }}
                   >
                     {tag}
