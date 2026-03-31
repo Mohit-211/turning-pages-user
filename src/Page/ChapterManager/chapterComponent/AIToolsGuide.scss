@@ -1,33 +1,335 @@
-.ai-guide {
-  max-width: 800px;
-  margin: auto;
-  padding: 24px;
-  font-family: "DM Sans", sans-serif;
+.guide {
+  font-family: inherit;
+  max-width: 680px;
+  padding: 1.5rem 0;
 
-  h1 {
-    font-size: 28px;
-    margin-bottom: 20px;
+  &__eyebrow {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 6px;
   }
 
-  section {
-    margin-bottom: 24px;
+  &__title {
+    font-size: 26px;
+    font-weight: 600;
+    margin: 0 0 6px;
+    color: #111;
 
-    h2 {
-      font-size: 20px;
-      margin-bottom: 10px;
+    em {
+      font-style: italic;
+      font-weight: 400;
     }
+  }
 
-    p {
-      margin-bottom: 8px;
-      color: #444;
-    }
+  &__subtitle {
+    font-size: 14px;
+    color: #666;
+    margin: 0 0 2rem;
+  }
 
-    ul {
-      padding-left: 18px;
+  &__steps {
+    display: flex;
+    flex-direction: column;
+  }
 
-      li {
-        margin-bottom: 6px;
+  &__divider {
+    height: 1px;
+    background: #ebebeb;
+    margin: 1rem 0 1.5rem;
+  }
+
+  &__section {
+    margin-bottom: 1.5rem;
+  }
+
+  &__section-label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #999;
+    margin-bottom: 10px;
+  }
+}
+
+// ─── STEPS ───────────────────────────────────────────
+.step {
+  display: flex;
+  gap: 16px;
+
+  &--last {
+    .step__aside {
+      .step__line {
+        display: none;
       }
     }
+  }
+
+  &__aside {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #f4f4f4;
+    border: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+    flex-shrink: 0;
+  }
+
+  &__line {
+    width: 1px;
+    flex: 1;
+    min-height: 24px;
+    background: #e5e5e5;
+    margin: 4px 0;
+  }
+
+  &__body {
+    padding-bottom: 1.5rem;
+    flex: 1;
+  }
+
+  &__title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #111;
+    margin: 4px 0 6px;
+  }
+
+  &__desc {
+    font-size: 14px;
+    color: #555;
+    margin: 0 0 10px;
+    line-height: 1.6;
+
+    mark {
+      background: #e8f0fe;
+      color: #1a56db;
+      border-radius: 3px;
+      padding: 0 4px;
+      font-weight: 500;
+    }
+  }
+}
+
+// ─── TOOL GRID ────────────────────────────────────────
+.tool-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.tool-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #ebebeb;
+  background: #fff;
+
+  &__symbol {
+    font-size: 16px;
+    font-weight: 600;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__name {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0 0 2px;
+    color: #111;
+  }
+
+  &__desc {
+    font-size: 12px;
+    color: #777;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  &--red .tool-card__symbol   { background: #fef2f2; color: #b91c1c; }
+  &--blue .tool-card__symbol  { background: #eff6ff; color: #1d4ed8; }
+  &--green .tool-card__symbol { background: #f0fdf4; color: #15803d; }
+  &--violet .tool-card__symbol { background: #f5f3ff; color: #6d28d9; }
+}
+
+// ─── FLOW ROW ─────────────────────────────────────────
+.flow-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.flow-box {
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.flow-arrow {
+  font-size: 12px;
+  color: #aaa;
+}
+
+// ─── VALIDATION CARDS ─────────────────────────────────
+.val-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.val-card {
+  border-radius: 8px;
+  border: 1px solid #ebebeb;
+  overflow: hidden;
+  background: #fff;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+  }
+
+  &__icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  &__title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #111;
+    flex: 1;
+  }
+
+  &__badge {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+
+  &__body {
+    padding: 0 14px 12px 50px;
+  }
+
+  &__msg {
+    font-size: 13px;
+    color: #555;
+    margin: 0 0 6px;
+    line-height: 1.5;
+
+    mark {
+      background: #e8f0fe;
+      color: #1a56db;
+      border-radius: 3px;
+      padding: 0 4px;
+      font-weight: 500;
+    }
+  }
+
+  &__alert {
+    font-size: 12px;
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  // Variants
+  &--error {
+    .val-card__icon  { background: #fef2f2; color: #b91c1c; }
+    .val-card__badge { background: #fef2f2; color: #b91c1c; }
+    .val-card__alert { background: #fef2f2; color: #b91c1c; }
+  }
+
+  &--warning {
+    .val-card__icon  { background: #fffbeb; color: #92400e; }
+    .val-card__badge { background: #fffbeb; color: #92400e; }
+    .val-card__alert { background: #fffbeb; color: #92400e; }
+  }
+
+  &--info {
+    .val-card__icon  { background: #eff6ff; color: #1d4ed8; }
+    .val-card__badge { background: #eff6ff; color: #1d4ed8; }
+    .val-card__alert { background: #eff6ff; color: #1d4ed8; }
+  }
+}
+
+// ─── TIPS ─────────────────────────────────────────────
+.tips {
+  padding: 14px 16px;
+  background: #fafafa;
+  border-radius: 10px;
+  border: 1px solid #ebebeb;
+
+  &__label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #999;
+    margin-bottom: 10px;
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13px;
+    color: #555;
+    line-height: 1.5;
+  }
+
+  &__dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #bbb;
+    margin-top: 6px;
+    flex-shrink: 0;
   }
 }
