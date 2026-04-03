@@ -1,10 +1,12 @@
 import React from "react";
 import "./WelcomeSection.scss";
+import PaymentSection from "./PaymentSection";
 
 const WelcomeSection = ({ user, onNewBook }) => {
   const displayName = user?.user_profile?.name?.split(" ")[0] || "Creator";
 
   return (
+    <>
     <section className="welcome-section">
       <div className="greeting">
         <h2>Welcome back, {displayName}</h2>
@@ -16,6 +18,8 @@ const WelcomeSection = ({ user, onNewBook }) => {
         Start a New Book
       </button>
     </section>
+    <PaymentSection/>
+    </>
   );
 };
 

@@ -40,7 +40,11 @@ export const Chapter_ENDPOINTS = {
 export const PAYMENT_ENDPOINTS = {
   STRIPE: "payments/intent/generate",
   GET_ALL: "payments/all",
-  SPENDING_LISt: "payments/credit/list"
+  SPENDING_LISt: "payments/credit/list",
+  SUBSCRIPTION: "payments/subscription/create",
+  GET_ALL_PAYMENTS: "payments/all",
+  GET_USER_SUBSCRIPTIONS: "payments/getUserSubscriptions"
+
 };
 export const SUPPORT_ENDPOINTS = {
   CREATE_TICKET: "support",

@@ -54,11 +54,11 @@ const DashboardHeader = ({
         </div>
       </div>
       <div className="center-section">
-        <CreditBar
+        {/* <CreditBar
           credits={user?.total_credit}
           maxCredits={maxCredits}
           onMoreCredits={() => navigate("/dashboard/billing")}
-        />
+        /> */}
       </div>
       <div className="right-section">
         {/* Notifications */}

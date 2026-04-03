@@ -1,0 +1,213 @@
+// ─── Variables (mirrors PricingPage.scss) ─────────────────────────────────────
+
+$color-primary:       #D85A30;
+$color-primary-dark:  #993C1D;
+$color-primary-light: #FAECE7;
+
+$color-text-base:     #2C2C2A;
+$color-text-muted:    #5F5E5A;
+$color-text-faint:    #888780;
+
+$color-bg-card:       #ffffff;
+$color-bg-subtle:     #F1EFE8;
+
+$color-border:        #E5E4DC;
+$color-border-mid:    #B4B2A9;
+
+$radius-sm:   8px;
+$radius-md:   10px;
+$radius-lg:   14px;
+
+$transition-fast: 0.15s ease;
+
+// ─── Overlay ──────────────────────────────────────────────────────────────────
+
+.cm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+  animation: cm-fade-in 0.15s ease;
+}
+
+@keyframes cm-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+// ─── Modal box ────────────────────────────────────────────────────────────────
+
+.cm {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  border: 1px solid $color-border;
+  width: 100%;
+  max-width: 420px;
+  overflow: hidden;
+  animation: cm-slide-up 0.2s ease;
+}
+
+@keyframes cm-slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ─── Header ───────────────────────────────────────────────────────────────────
+
+.cm__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid $color-border;
+}
+
+.cm__title {
+  font-size: 15px;
+  font-weight: 500;
+  color: $color-text-base;
+}
+
+.cm__close {
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: $color-text-faint;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: $radius-sm;
+  line-height: 1;
+  transition: background $transition-fast, color $transition-fast;
+
+  &:hover:not(:disabled) {
+    background: $color-bg-subtle;
+    color: $color-text-base;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+// ─── Body ─────────────────────────────────────────────────────────────────────
+
+.cm__body {
+  padding: 1.25rem;
+}
+
+.cm__plan-name {
+  font-size: 20px;
+  font-weight: 500;
+  color: $color-primary;
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+.cm__rows {
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  overflow: hidden;
+}
+
+.cm__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 14px;
+  font-size: 13px;
+  border-bottom: 1px solid $color-border;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &--total {
+    background: $color-bg-subtle;
+  }
+}
+
+.cm__row-label {
+  color: $color-text-muted;
+}
+
+.cm__row-value {
+  color: $color-text-base;
+  font-weight: 500;
+}
+
+.cm__row-price {
+  font-size: 17px;
+  font-weight: 500;
+  color: $color-primary;
+}
+
+// ─── Footer ───────────────────────────────────────────────────────────────────
+
+.cm__footer {
+  display: flex;
+  gap: 10px;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid $color-border;
+}
+
+.cm__btn {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: $radius-sm;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background $transition-fast, opacity $transition-fast;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &--cancel {
+    background: transparent;
+    border: 1px solid $color-border-mid;
+    color: $color-text-base;
+
+    &:hover:not(:disabled) {
+      background: $color-bg-subtle;
+    }
+  }
+
+  &--confirm {
+    background: $color-primary;
+    border: 1px solid $color-primary;
+    color: white;
+    min-height: 38px;
+
+    &:hover:not(:disabled) {
+      background: $color-primary-dark;
+      border-color: $color-primary-dark;
+    }
+  }
+}
+
+// ─── Spinner ──────────────────────────────────────────────────────────────────
+
+.cm__spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: cm-spin 0.7s linear infinite;
+}
+
+@keyframes cm-spin {
+  to { transform: rotate(360deg); }
+}
