@@ -26,7 +26,6 @@ import PublicRoute from "./Page/AuthRoutes/PublicRoute";
 import ProtectedRoute from "./Page/AuthRoutes/ProtectedRoute";
 
 /* Payments */
-import PricingCards from "./Sections/PaymentPage/PricingPage";
 import SupportDashboard from "./Page/Support/Support";
 import FeedPage from "./component/FeedPage/FeedPage";
 import SampleFeedPage from "./component/FeedPage/SampleFeedPage";
@@ -38,6 +37,7 @@ import SendOtp from "./Page/Auth/forms/SendOtp";
 import ChangePassword from "./Page/Auth/forms/ChangePassword";
 import CreditSystem from "./Page/CreditPage/CreditPage";
 import AIToolsGuide from "./Page/ChapterManager/chapterComponent/AIToolsGuide";
+import PricingPage from "./Sections/PaymentPage/PricingPage";
 
 function App() {
   return (
@@ -255,10 +255,19 @@ function App() {
             </ProtectedRoute>
           }
         />
+          <Route
+          path="/dashboard/payment"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <PricingPage />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
 
         {/* -------------------- MISC -------------------- */}
         <Route path="/create-book" element={<CreateBook />} />
-        <Route path="/payment" element={<PricingCards />} />
         <Route path="/sample-feed" element={<SampleFeedPage />} />
 
       </Routes>

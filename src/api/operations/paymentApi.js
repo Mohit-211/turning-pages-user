@@ -10,3 +10,12 @@ export const GetAllPaymentsApi = () =>
 
 export const GetPaymentSpendingListApi = () =>
   client.get(PAYMENT_ENDPOINTS.SPENDING_LISt);
+
+export const CreateSubscriptionApi = (payload) =>
+  client.post(PAYMENT_ENDPOINTS.SUBSCRIPTION, payload);
+
+export const GetUserSubscriptionsApi = () =>
+  client.get(PAYMENT_ENDPOINTS.GET_USER_SUBSCRIPTIONS);
+
+export const GetAllPaymentListApi = () =>
+  client.get(PAYMENT_ENDPOINTS.GET_ALL_PAYMENTS);

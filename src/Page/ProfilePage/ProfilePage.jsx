@@ -6,6 +6,8 @@ import {
 import {
   GetAllPaymentsApi,
   GetPaymentSpendingListApi,
+  GetAllPaymentListApi,
+  GetUserSubscriptionsApi,
 } from "../../api/operations/paymentApi";
 import "./ProfilePage.scss";
 
@@ -34,7 +36,14 @@ const SearchIcon = () => (
     strokeWidth="1.5"
     width="13"
     height="13"
-    style={{ position: "absolute", left: 9, top: "50%", transform: "translateY(-50%)", opacity: 0.4, pointerEvents: "none" }}
+    style={{
+      position: "absolute",
+      left: 9,
+      top: "50%",
+      transform: "translateY(-50%)",
+      opacity: 0.4,
+      pointerEvents: "none",
+    }}
   >
     <circle cx="6.5" cy="6.5" r="4.5" />
     <path d="M10.5 10.5L14 14" strokeLinecap="round" />
@@ -50,15 +59,15 @@ const PaymentTable = ({ payments, loading }) => {
     const q = search.toLowerCase();
     return [...payments].reverse().filter((p) => {
       const matchQ = !q || JSON.stringify(p).toLowerCase().includes(q);
-      const matchS = !statusFilter || p.payment_status?.toLowerCase() === statusFilter;
+      const matchS =
+        !statusFilter || p.payment_status?.toLowerCase() === statusFilter;
       return matchQ && matchS;
     });
   }, [payments, search, statusFilter]);
 
   if (loading) return <p>Loading payment history…</p>;
   if (!payments.length) return <p>No payment records found.</p>;
-console.log(filtered,"filtered")
-// console.log(payment_status,"payment_status")
+
   return (
     <>
       <div className="filter-bar">
@@ -91,7 +100,7 @@ console.log(filtered,"filtered")
               <th>Date</th>
               <th>Type</th>
               <th>Mode</th>
-              <th>Credits</th>
+              {/* <th>Credits</th> */}
               <th>Amount</th>
               <th>Transaction ID</th>
               <th>Status</th>
@@ -103,7 +112,7 @@ console.log(filtered,"filtered")
                 <td>{fmtDate(p.created_at)}</td>
                 <td className="capitalize">{p.payment_type}</td>
                 <td className="capitalize">{p.payment_mode}</td>
-                <td>{p.credit?.toLocaleString()}</td>
+                {/* <td>{p.credit?.toLocaleString()}</td> */}
                 <td className="amount">{fmtCurrency(p.currency, p.amount)}</td>
                 <td>
                   <span className="mono">{p.transaction_id || "—"}</span>
@@ -167,7 +176,9 @@ const SpendingTable = ({ spendingList, loading }) => {
                 <td className="capitalize">
                   {s.event_name?.replaceAll("_", " ") || "—"}
                 </td>
-                <td style={{ color: "var(--text-2)" }}>{s.description || "—"}</td>
+                <td style={{ color: "var(--text-2)" }}>
+                  {s.description || "—"}
+                </td>
                 <td className="amount">{s.credit_spent}</td>
                 <td>{s.remaining_credit?.toLocaleString()}</td>
               </tr>
@@ -179,19 +190,218 @@ const SpendingTable = ({ spendingList, loading }) => {
   );
 };
 
+/* ── SubscriptionTable ───────────────────────────── */
+const SubscriptionTable = ({ subscriptions, loading }) => {
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase();
+    return [...subscriptions].reverse().filter((s) => {
+      const matchQ = !q || JSON.stringify(s).toLowerCase().includes(q);
+      const matchS =
+        !statusFilter || s.payment_status?.toLowerCase() === statusFilter;
+      return matchQ && matchS;
+    });
+  }, [subscriptions, search, statusFilter]);
+
+  if (loading) return <p>Loading subscription details…</p>;
+  if (!subscriptions.length) return <p>No subscription records found.</p>;
+
+  return (
+    <>
+      <div className="filter-bar">
+        <div className="search-wrap">
+          <SearchIcon />
+          <input
+            placeholder="Search subscriptions…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        <select
+          className="filter-select"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          <option value="">All statuses</option>
+          <option value="success">Completed</option>
+          <option value="pending">Pending</option>
+          <option value="failed">Failed</option>
+        </select>
+      </div>
+
+      {filtered.length === 0 ? (
+        <p>No matching records.</p>
+      ) : (
+        <table className="payment-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Plan</th>
+              <th>Amount</th>
+              {/* <th>Credits</th> */}
+              {/* <th>Valid until</th> */}
+              <th>Transaction ID</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map((s) => (
+              <tr key={s.id}>
+                <td>{fmtDate(s.created_at)}</td>
+                <td className="capitalize">
+                  {s.plan_name || s.payment_type || "—"}
+                </td>
+                <td className="amount">{fmtCurrency(s.currency, s.amount)}</td>
+                {/* <td>{s.credit?.toLocaleString() || "—"}</td> */}
+                {/* <td>{s.valid_until ? fmtDate(s.valid_until) : "—"}</td> */}
+                <td>
+                  <span className="mono">{s.transaction_id || "—"}</span>
+                </td>
+                <td>
+                  <StatusPill value={s.payment_status} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </>
+  );
+};
+
+/* ── MySubscriptionsTab ──────────────────────────── */
+const PLAN_PALETTE = {
+  starter:    { bg: "#e8f1fb", color: "#1a5fa8" },
+  author:     { bg: "#e6f7f2", color: "#0d9973" },
+  pro_author: { bg: "#fef3c7", color: "#b45309" },
+  studio:     { bg: "#fdecea", color: "#c0392b" },
+};
+
+const getPalette = (sub) => {
+  const key = (sub.package_name || sub.plan_name || "")
+    .toLowerCase()
+    .replace(/\s+/g, "_");
+  return PLAN_PALETTE[key] || PLAN_PALETTE.starter;
+};
+
+const MySubscriptionsTab = ({ userSubscriptions, loading }) => {
+  if (loading)
+    return <p style={{ padding: "24px 20px" }}>Loading your subscriptions…</p>;
+
+  if (!userSubscriptions.length)
+    return (
+      <p
+        style={{
+          padding: "48px 24px",
+          textAlign: "center",
+          color: "var(--text-3)",
+        }}
+      >
+        No active subscriptions found.
+      </p>
+    );
+
+  return (
+    <div className="my-subscriptions">
+      {userSubscriptions.map((sub) => {
+        const palette  = getPalette(sub);
+        const isActive =
+          sub.is_active === true ||
+          sub.status?.toLowerCase() === "active";
+
+        return (
+          <div key={sub.id} className="sub-card">
+            {/* coloured left accent bar */}
+            <div
+              className="sub-card__accent"
+              style={{ background: palette.color }}
+            />
+
+            <div className="sub-card__body">
+              {/* top row: name + status pill */}
+              <div className="sub-card__top">
+                <div>
+                  <div className="sub-card__plan-name">
+                    {sub.package_name || sub.plan_name || "—"}
+                  </div>
+                  <div className="sub-card__meta">
+                    Subscribed on{" "}
+                    {sub.created_at ? fmtDate(sub.created_at) : "—"}
+                  </div>
+                </div>
+                <span
+                  className={`status-pill ${isActive ? "active" : "inactive"}`}
+                >
+                  {isActive ? "Active" : "Inactive"}
+                </span>
+              </div>
+
+              {/* stats grid */}
+              <div className="sub-card__stats">
+                <div className="sub-card__stat">
+                  <span className="sub-card__stat-label">Credits</span>
+                  <span className="sub-card__stat-value">
+                    {(sub.total_credit ?? sub.credit)?.toLocaleString() ?? "—"}
+                  </span>
+                </div>
+                <div className="sub-card__stat">
+                  <span className="sub-card__stat-label">Amount paid</span>
+                  <span className="sub-card__stat-value">
+                    {sub.amount != null
+                      ? fmtCurrency(sub.currency || "₹", sub.amount)
+                      : "—"}
+                  </span>
+                </div>
+                <div className="sub-card__stat">
+                  <span className="sub-card__stat-label">Valid until</span>
+                  <span className="sub-card__stat-value">
+                    {sub.valid_until || sub.expires_at
+                      ? fmtDate(sub.valid_until || sub.expires_at)
+                      : "—"}
+                  </span>
+                </div>
+                <div className="sub-card__stat">
+                  <span className="sub-card__stat-label">Billing</span>
+                  <span className="sub-card__stat-value capitalize">
+                    {sub.billing_cycle || sub.payment_mode || "—"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* plan badge (top-right) */}
+            <div
+              className="sub-card__badge"
+              style={{ background: palette.bg, color: palette.color }}
+            >
+              {sub.package_name || sub.plan_name || "Plan"}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 /* ── ProfilePage ─────────────────────────────────── */
 const ProfilePage = () => {
   const [user, setUser]         = useState(null);
   const [formData, setFormData] = useState({ name: "", mobile: "", email: "" });
   const [payments, setPayments] = useState([]);
-  const [spendingList, setSpendingList] = useState([]);
-  const [activeTab, setActiveTab]       = useState("payments");
-  const [loading, setLoading]           = useState(true);
-  const [loadingPayments, setLoadingPayments] = useState(true);
-  const [loadingSpending, setLoadingSpending] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [savedState, setSavedState] = useState("idle"); // idle | saving | saved
-  const [errors, setErrors] = useState({});
+  const [spendingList, setSpendingList]             = useState([]);
+  const [subscriptions, setSubscriptions]           = useState([]);
+  const [userSubscriptions, setUserSubscriptions]   = useState([]);
+  const [activeTab, setActiveTab]                   = useState("payments");
+  const [loading, setLoading]                       = useState(true);
+  const [loadingPayments, setLoadingPayments]       = useState(true);
+  const [loadingSpending, setLoadingSpending]       = useState(true);
+  const [loadingSubscriptions, setLoadingSubscriptions]         = useState(true);
+  const [loadingUserSubscriptions, setLoadingUserSubscriptions] = useState(true);
+  const [saving, setSaving]         = useState(false);
+  const [savedState, setSavedState] = useState("idle");
+  const [errors, setErrors]         = useState({});
 
   /* ── loaders ─────────────────────────────────── */
   const loadProfile = async () => {
@@ -235,10 +445,37 @@ const ProfilePage = () => {
     }
   };
 
+  const loadSubscriptionList = async () => {
+    try {
+      setLoadingSubscriptions(true);
+      const res = await GetAllPaymentListApi();
+      setSubscriptions(res?.data?.data || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingSubscriptions(false);
+    }
+  };
+
+  const loadUserSubscriptions = async () => {
+    try {
+      setLoadingUserSubscriptions(true);
+      const res = await GetUserSubscriptionsApi();
+      console.log(res,"res")
+      setUserSubscriptions(res?.data?.data || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingUserSubscriptions(false);
+    }
+  };
+
   useEffect(() => {
     loadProfile();
     loadPayments();
     loadSpendingList();
+    loadSubscriptionList();
+    loadUserSubscriptions();
   }, []);
 
   /* ── validation ───────────────────────────────── */
@@ -279,18 +516,18 @@ const ProfilePage = () => {
     }
   };
 
-  /* ── derived stats ────────────────────────────── */
-  const totalPaid = payments
-    .filter((p) => p.payment_status === "completed")
-    .reduce((sum, p) => sum + Number(p.amount), 0);
+  /* ── panel meta ───────────────────────────────── */
+  const panelTitle =
+    activeTab === "payments"          ? "Transactions"           :
+    activeTab === "spending"          ? "Credit usage"           :
+    activeTab === "subscriptions"     ? "Subscription history"   :
+    "My subscriptions";
 
-  const creditsSpent = spendingList
-    .slice(-30)
-    .reduce((sum, s) => sum + (s.credit_spent || 0), 0);
-
-  const memberSince = user?.created_at
-    ? new Date(user.created_at).toLocaleDateString("en-GB", { month: "short", year: "numeric" })
-    : "—";
+  const recordCount =
+    activeTab === "payments"          ? payments.length          :
+    activeTab === "spending"          ? spendingList.length       :
+    activeTab === "subscriptions"     ? subscriptions.length      :
+    userSubscriptions.length;
 
   const saveLabel =
     savedState === "saving" ? "Saving…" :
@@ -326,25 +563,17 @@ const ProfilePage = () => {
         <div className="profile-header-right">
           <div className="credit-badge">
             <span className="credit-badge__label">Credits</span>
-                        {user?.total_credit?.toLocaleString() || "—"}
-
+            {user?.total_credit?.toLocaleString() || "—"}
           </div>
-          <button
-            className={saveCls}
-            onClick={handleSubmit}
-            disabled={saving}
-          >
+          <button className={saveCls} onClick={handleSubmit} disabled={saving}>
             {saveLabel}
           </button>
         </div>
       </div>
 
- 
-
       {/* FORM */}
       <div className="form-section">
         <p className="section-title">Personal details</p>
-
         <div className="form-grid">
           <div className="form-field">
             <label htmlFor="name">Full name</label>
@@ -379,35 +608,53 @@ const ProfilePage = () => {
 
       {/* TABS */}
       <div className="profile-tabs">
-        <button
+        {/* <button
           className={activeTab === "payments" ? "active" : ""}
           onClick={() => setActiveTab("payments")}
         >
           Payment history
-        </button>
+        </button> */}
         <button
           className={activeTab === "spending" ? "active" : ""}
           onClick={() => setActiveTab("spending")}
         >
           Spending history
         </button>
+        <button
+          className={activeTab === "subscriptions" ? "active" : ""}
+          onClick={() => setActiveTab("subscriptions")}
+        >
+         Plans Purchase
+        </button>
+        <button
+          className={activeTab === "my-subscriptions" ? "active" : ""}
+          onClick={() => setActiveTab("my-subscriptions")}
+        >
+          My subscriptions
+        </button>
       </div>
 
       {/* PANEL */}
       <div className="payment-section">
         <div className="panel-header">
-          <span className="panel-title">
-            {activeTab === "payments" ? "Transactions" : "Credit usage"}
-          </span>
-          <span className="record-count">
-            {activeTab === "payments" ? payments.length : spendingList.length} records
-          </span>
+          <span className="panel-title">{panelTitle}</span>
+          <span className="record-count">{recordCount} records</span>
         </div>
 
         {activeTab === "payments" ? (
           <PaymentTable payments={payments} loading={loadingPayments} />
-        ) : (
+        ) : activeTab === "spending" ? (
           <SpendingTable spendingList={spendingList} loading={loadingSpending} />
+        ) : activeTab === "subscriptions" ? (
+          <SubscriptionTable
+            subscriptions={subscriptions}
+            loading={loadingSubscriptions}
+          />
+        ) : (
+          <MySubscriptionsTab
+            userSubscriptions={userSubscriptions}
+            loading={loadingUserSubscriptions}
+          />
         )}
       </div>
 

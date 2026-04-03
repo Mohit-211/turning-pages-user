@@ -4,6 +4,7 @@ import { Modal, InputNumber, Button, Spin } from "antd";
 import StripePayment from "../StripePayment/StripePayment";
 import "./CreditBar.scss";
 import { UserProfileApi } from "../../api/users/users.api";
+import { useNavigate } from "react-router-dom";
 const CreditBar = ({ maxCredits = 100 }) => {
   const [open, setOpen] = useState(false);
   const [creditInput, setCreditInput] = useState(10);
@@ -27,21 +28,17 @@ const CreditBar = ({ maxCredits = 100 }) => {
   }, []);
   const creditPercent = Math.min((credits / maxCredits) * 100, 100);
   const amount = creditInput;
+  const navigate = useNavigate();
   return (
     <>
       <div className="credit-bar">
-        <div className="credit-info">
-          <span className="count">Credits {credits}</span>
-          {/* <span className="count">
-            {loading ? <Spin size="small" /> : `${credits}`}
-          </span> */}
-        </div>
-        <div className="progress-track">
+       
+        {/* <div className="progress-track">
           <div
             className="progress-fill"
             style={{ width: `${creditPercent}%` }}
           />
-        </div>
+        </div> */}
         <button className="more-credits-btn" onClick={() => setOpen(true)}>
           <Plus size={14} />
           More Credits

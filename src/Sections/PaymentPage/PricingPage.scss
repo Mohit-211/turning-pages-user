@@ -1,58 +1,260 @@
-.pricing-wrapper {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 24px;
-    padding: 40px;
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500&display=swap');
+
+// ── Variables ──────────────────────────────────────────────
+$green-light:   #E1F5EE;
+$green-mid:     #1D9E75;
+$green-dark:    #0F6E56;
+$green-border:  #5DCAA5;
+
+$text-primary:   #1a1a1a;
+$text-secondary: #6b6b6b;
+$text-tertiary:  #9e9e9e;
+
+$border-light:   rgba(0, 0, 0, 0.08);
+$border-mid:     rgba(0, 0, 0, 0.14);
+
+$radius-md: 8px;
+$radius-lg: 12px;
+
+$font-display: 'DM Serif Display', Georgia, serif;
+$font-body:    'DM Sans', system-ui, sans-serif;
+
+// ── Page ──────────────────────────────────────────────────
+.pricing-page {
+  font-family: $font-body;
+  color: $text-primary;
+  padding: 2rem 1.5rem 4rem;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
-.pricing-card {
-    text-align: center;
-    border-radius: 16px;
-    transition: all 0.3s ease;
+// ── Section header ────────────────────────────────────────
+.pricing-page__section-header {
+  margin-bottom: 1.75rem;
+}
+
+.pricing-page__eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $text-tertiary;
+  margin-bottom: 0.4rem;
+}
+
+.pricing-page__title {
+  font-family: $font-display;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.2;
+  margin-bottom: 0.4rem;
+  color: $text-primary;
+}
+
+.pricing-page__subtitle {
+  font-size: 14px;
+  color: $text-secondary;
+  line-height: 1.6;
+}
+
+.pricing-page__divider {
+  border: none;
+  border-top: 0.5px solid $border-light;
+  margin: 2.5rem 0;
+}
+
+// ── Plans grid ────────────────────────────────────────────
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+// ── Plan card ─────────────────────────────────────────────
+.plan-card {
+  background: #ffffff;
+  border: 0.5px solid $border-light;
+  border-radius: $radius-lg;
+  padding: 1.25rem 1rem;
+  transition: border-color 0.15s ease;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    border-color: $border-mid;
+  }
+
+  &--popular {
+    border: 2px solid $green-mid;
+  }
+
+  &__badge {
+    display: inline-block;
+    background: $green-light;
+    color: $green-dark;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin-bottom: 0.75rem;
+    align-self: flex-start;
+  }
+
+  &__name {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 0.35rem;
+    color: $text-primary;
+  }
+
+  &__price {
+    font-family: $font-display;
+    font-size: 28px;
+    font-weight: 400;
+    margin-bottom: 0.2rem;
+    color: $text-primary;
+
+    span {
+      font-family: $font-body;
+      font-size: 13px;
+      font-weight: 400;
+      color: $text-secondary;
+    }
+  }
+
+  &__credits {
+    font-size: 12px;
+    color: $text-secondary;
+    margin-bottom: auto;
+    padding-bottom: 1.25rem;
+  }
+
+  &__cta {
+    width: 100%;
+    padding: 8px 12px;
+    font-family: $font-body;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: $radius-md;
+    cursor: pointer;
+    border: 0.5px solid $border-mid;
+    background: transparent;
+    color: $text-primary;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 
     &:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+      background: #f5f5f5;
     }
 
-    .plan-title {
-        font-size: 22px;
-        font-weight: 600;
-        margin-top: 16px;
+    .plan-card--popular & {
+      background: $green-mid;
+      color: #ffffff;
+      border-color: $green-mid;
+
+      &:hover {
+        background: $green-dark;
+        border-color: $green-dark;
+      }
     }
-
-    .price-section {
-        margin: 20px 0;
-
-        .price {
-            font-size: 36px;
-            font-weight: 700;
-        }
-
-        .duration {
-            color: #888;
-            margin-left: 4px;
-        }
-    }
-
-    .feature-list {
-        list-style: none;
-        padding: 0;
-        margin: 24px 0;
-
-        li {
-            margin-bottom: 10px;
-            color: #555;
-
-            svg {
-                color: #52c41a;
-                margin-right: 6px;
-            }
-        }
-    }
+  }
 }
 
-.pricing-card.active {
-    border: 2px solid #1677ff;
-    transform: scale(1.03);
+// ── Publish grid ──────────────────────────────────────────
+.publish-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+// ── Publish card ──────────────────────────────────────────
+.publish-card {
+  background: #ffffff;
+  border: 0.5px solid $border-light;
+  border-radius: $radius-lg;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.15s ease;
+
+  &:hover {
+    border-color: $border-mid;
+  }
+
+  &__name {
+    font-size: 14px;
+    font-weight: 500;
+    color: $text-primary;
+    margin-bottom: 0.35rem;
+  }
+
+  &__price {
+    font-family: $font-display;
+    font-size: 30px;
+    font-weight: 400;
+    color: $text-primary;
+    margin-bottom: 1rem;
+  }
+
+  &__features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.25rem;
+    flex: 1;
+
+    li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 13px;
+      color: $text-secondary;
+      padding: 6px 0;
+      border-bottom: 0.5px solid $border-light;
+      line-height: 1.5;
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+
+  &__cta {
+    width: 100%;
+    padding: 9px 12px;
+    font-family: $font-body;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: $radius-md;
+    cursor: pointer;
+    border: 0.5px solid $border-mid;
+    background: transparent;
+    color: $text-primary;
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: #f5f5f5;
+    }
+  }
+}
+
+// ── Check icon ────────────────────────────────────────────
+.check-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  width: 14px;
+  height: 14px;
+}
+
+// ── Responsive ────────────────────────────────────────────
+@media (max-width: 600px) {
+  .pricing-page {
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .plans-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .publish-grid {
+    grid-template-columns: 1fr;
+  }
 }
