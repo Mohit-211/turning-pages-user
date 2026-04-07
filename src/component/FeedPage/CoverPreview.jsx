@@ -11,7 +11,7 @@ export default function CoverPreview({ colorClass, title }) {
         <p className="cover-preview__title">{title}</p>
       </div>
 
-      <div className="cover-preview__ai-badge">AI Generated ✦</div>
+      <div className="cover-preview__ai-badge">TAV Generated ✦</div>
     </div>
   );
 }

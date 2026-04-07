@@ -13,18 +13,18 @@ const tips = [
   "Ensure your content is at least 200 characters for analysis to proceed.",
   "Use clear and meaningful content for best results.",
   "Longer content generally provides richer analysis.",
-  "Always review AI output before applying any changes.",
+  "Always review TAV output before applying any changes.",
   "Save your work before switching between Edit and Preview modes.",
 ];
 
 const steps = [
   {
     id: "01",
-    title: "Select AI Tools",
+    title: "Select TAV Tools",
     desc: (
       <>
         Open the toolbar and click on the dropdown labeled{" "}
-        <mark>Select AI Tool</mark>. Choose the required <mark>TAV Tool</mark>.
+        <mark>Select TAV Tool</mark>. Choose the required <mark>TAV Tool</mark>.
       </>
     ),
   },
@@ -110,10 +110,10 @@ const quickRef = [
   },
   {
     icon: "AI",
-    title: "Open AI / Close AI",
+    title: "Open TAV / Close TAV",
     desc: (
       <>
-        Toggles the AI side panel. When open, the button shows an{" "}
+        Toggles the TAV side panel. When open, the button shows an{" "}
         <mark>X</mark> icon. Click again to close.
       </>
     ),
@@ -125,7 +125,7 @@ const quickRef = [
   },
   {
     icon: "?",
-    title: "AI Guide",
+    title: "TAV Guide",
     desc: "Opens this guide. Use it anytime you need a refresher on how to use TAV tools.",
   },
 ];
@@ -139,7 +139,7 @@ export default function AIToolsGuide() {
       {/* HEADER
       <header className="guide__header">
         <span className="guide__eyebrow">TAV Platform · Documentation</span>
-        <h1 className="guide__title">AI Tools <em>Guide</em></h1>
+        <h1 className="guide__title">TAV Tools <em>Guide</em></h1>
         <p className="guide__subtitle">
           How to run TAV analysis — including all validations and error states.
         </p>

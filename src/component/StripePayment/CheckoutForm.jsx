@@ -38,107 +38,206 @@ const CheckoutForm = ({
     setCardError(event.error ? event.error.message : "");
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!stripe || !elements || loading) return;
-    setLoading(true);
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     if (!stripe || !elements || loading) return;
+//     setLoading(true);
 
-    try {
-      // Step 1 — validate card client-side
-      const { error: pmError } = await stripe.createPaymentMethod({
-        type: "card",
-        card: elements.getElement(CardElement),
+//     try {
+//       // Step 1 — validate card client-side
+//       const { error: pmError } = await stripe.createPaymentMethod({
+//         type: "card",
+//         card: elements.getElement(CardElement),
+//       });
+
+//       if (pmError) {
+//         setCardError(pmError.message);
+//         setLoading(false);
+//         return;
+//       }
+
+//       // ✅ Step 2 — call the correct API based on modalType
+//       if (modalType === "plan") {
+//         // ── PLAN: CreateSubscriptionApi({ package_name }) ──
+//         const res = await CreateSubscriptionApi({
+//           package_name: packageName,
+//         });
+
+//         if (res?.data?.success) {
+//           message.success("Subscription activated 🎉");
+//           onPaymentSuccess?.(res.data);
+//           onCloseModal?.();
+//         } else {
+//           message.error(res?.data?.message || "Subscription failed.");
+//         }
+
+//       }
+//       else if (modalType === "publish") {
+//         // ── PUBLISH: stripePaymentApi({ amount, package_name }) → confirmCardPayment ──
+//         const response = await stripePaymentApi({
+//           amount,
+//           package_name: packageName,
+//         });
+//         console.log(response,"response")
+//         const clientSecret = response?.data?.data?.client_secret;
+// console.log(clientSecret,"clientSecret")
+//         if (!clientSecret) {
+//           message.error("Payment initialization failed.");
+//           setLoading(false);
+//           return;
+//         }
+
+//         const result = await stripe.confirmCardPayment(clientSecret, {
+//           payment_method: {
+//             card: elements.getElement(CardElement),
+//           },
+//         });
+// console.log(result,"result")
+//         if (result.error) {
+//           setCardError(result.error.message);
+//         } else if (result.paymentIntent?.status === "succeeded") {
+//           message.success("Payment successful 🎉");
+//           onPaymentSuccess?.(result.paymentIntent);
+//           onCloseModal?.();
+//         }
+
+//       } else if (payment_for === "book_submission") {
+//         // ── BOOK SUBMISSION ──
+//         const response = await stripePaymentApi({
+//           amount,
+//           payment_for: "book_submission",
+//           book_submission_id,
+//         });
+
+//         const clientSecret = response?.data?.data?.client_secret;
+
+//         if (!clientSecret) {
+//           message.error("Payment initialization failed.");
+//           setLoading(false);
+//           return;
+//         }
+
+//         const result = await stripe.confirmCardPayment(clientSecret, {
+//           payment_method: {
+//             card: elements.getElement(CardElement),
+//           },
+//         });
+
+//         if (result.error) {
+//           setCardError(result.error.message);
+//         } else if (result.paymentIntent?.status === "succeeded") {
+//           message.success("Payment successful 🎉");
+//           onPaymentSuccess?.(result.paymentIntent);
+//           onCloseModal?.();
+//         }
+//       }
+
+//     } catch (err) {
+//       console.error("Stripe error:", err);
+//       message.error("Payment failed. Please try again.");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!stripe || !elements || loading) return;
+
+  setLoading(true);
+  setCardError("");
+
+  try {
+    let clientSecret = null;
+
+    /* ================= PLAN ================= */
+    if (modalType === "plan") {
+      const res = await CreateSubscriptionApi({
+        package_name: packageName,
       });
 
-      if (pmError) {
-        setCardError(pmError.message);
-        setLoading(false);
+      if (!res?.data?.success) {
+        message.error(res?.data?.message || "Subscription failed.");
         return;
       }
 
-      // ✅ Step 2 — call the correct API based on modalType
+      clientSecret = res?.data?.data?.client_secret;
+
+      // ✅ If backend already activated subscription
+      if (!clientSecret) {
+        message.success("Subscription activated 🎉");
+        onPaymentSuccess?.(res.data);
+        // onCloseModal?.();
+        return;
+      }
+    }
+
+    /* ================= PAYMENT API ================= */
+    if (modalType === "publish") {
+      const response = await stripePaymentApi({
+        amount,
+        package_name: packageName,
+      });
+
+      clientSecret = response?.data?.data?.client_secret;
+    }
+
+    if (payment_for === "book_submission") {
+      const response = await stripePaymentApi({
+        amount,
+        payment_for: "book_submission",
+        book_submission_id,
+      });
+
+      clientSecret = response?.data?.data?.client_secret;
+    }
+
+    /* ================= VALIDATION ================= */
+    if (!clientSecret) {
+      message.error("Payment initialization failed.");
+      return;
+    }
+
+    const cardElement = elements.getElement(CardElement);
+
+    if (!cardElement) {
+      message.error("Card details not found.");
+      return;
+    }
+
+    /* ================= STRIPE CONFIRM ================= */
+    const result = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: cardElement,
+      },
+    });
+
+    if (result.error) {
+      setCardError(result.error.message);
+      return;
+    }
+
+    /* ================= SUCCESS ================= */
+    if (result.paymentIntent?.status === "succeeded") {
       if (modalType === "plan") {
-        // ── PLAN: CreateSubscriptionApi({ package_name }) ──
-        const res = await CreateSubscriptionApi({
-          package_name: packageName,
-        });
-
-        if (res?.data?.success) {
-          message.success("Subscription activated 🎉");
-          onPaymentSuccess?.(res.data);
-          onCloseModal?.();
-        } else {
-          message.error(res?.data?.message || "Subscription failed.");
-        }
-
-      } else if (modalType === "publish") {
-        // ── PUBLISH: stripePaymentApi({ amount, package_name }) → confirmCardPayment ──
-        const response = await stripePaymentApi({
-          amount,
-          package_name: packageName,
-        });
-console.log(response,"clientSecret")
-        const clientSecret = response?.data?.data?.client_secret;
-
-        if (!clientSecret) {
-          message.error("Payment initialization failed.");
-          setLoading(false);
-          return;
-        }
-
-        const result = await stripe.confirmCardPayment(clientSecret, {
-          payment_method: {
-            card: elements.getElement(CardElement),
-          },
-        });
-
-        if (result.error) {
-          setCardError(result.error.message);
-        } else if (result.paymentIntent?.status === "succeeded") {
-          message.success("Payment successful 🎉");
-          onPaymentSuccess?.(result.paymentIntent);
-          onCloseModal?.();
-        }
-
-      } else if (payment_for === "book_submission") {
-        // ── BOOK SUBMISSION ──
-        const response = await stripePaymentApi({
-          amount,
-          payment_for: "book_submission",
-          book_submission_id,
-        });
-
-        const clientSecret = response?.data?.data?.client_secret;
-
-        if (!clientSecret) {
-          message.error("Payment initialization failed.");
-          setLoading(false);
-          return;
-        }
-
-        const result = await stripe.confirmCardPayment(clientSecret, {
-          payment_method: {
-            card: elements.getElement(CardElement),
-          },
-        });
-
-        if (result.error) {
-          setCardError(result.error.message);
-        } else if (result.paymentIntent?.status === "succeeded") {
-          message.success("Payment successful 🎉");
-          onPaymentSuccess?.(result.paymentIntent);
-          onCloseModal?.();
-        }
+        message.success("Subscription successful 🎉");
+      } else {
+        message.success("Payment successful 🎉");
       }
 
-    } catch (err) {
-      console.error("Stripe error:", err);
-      message.error("Payment failed. Please try again.");
-    } finally {
-      setLoading(false);
+      onPaymentSuccess?.(result.paymentIntent);
+      onCloseModal?.();
+    } else {
+      message.error("Payment not completed.");
     }
-  };
 
+  } catch (err) {
+    console.error("Stripe error:", err);
+    message.error("Payment failed. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
   const title = modalType === "plan" ? "Subscribe to Plan" : "Complete Purchase";
 
   return createPortal(
@@ -193,7 +292,7 @@ console.log(response,"clientSecret")
           </button>
         </div>
 
-       
+
 
         {/* Card form */}
         <form onSubmit={handleSubmit}>

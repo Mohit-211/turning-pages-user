@@ -10,7 +10,7 @@ const testimonials = [
     avatar:
       "https://images.unsplash.com/photo-1494790108755-2616b612b524?w=150&h=150&fit=crop&crop=face",
     content:
-      "Turning Pages transformed my writing process. The AI editing caught nuances I missed, and the professional editors helped me publish my bestselling novel.",
+      "Turning Pages transformed my writing process. The TAV editing caught nuances I missed, and the professional editors helped me publish my bestselling novel.",
     rating: 5,
   },
   {

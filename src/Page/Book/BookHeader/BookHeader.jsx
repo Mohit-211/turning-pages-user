@@ -603,6 +603,7 @@ export default function BookHeader({
   onSubmit,
   loading,
 }) {
+  
   const [sizeKey, setSizeKey] = useState("TRADE");
   const [showSizePick, setShowSizePick] = useState(false);
   const [showPrintModal, setShowPrintModal] = useState(false);
@@ -621,6 +622,7 @@ export default function BookHeader({
   console.log(bookIdDetails, "bookIdDetailsbookIdDetailsbookIdDetails")
   const isSubmitted = bookIdDetails?.book_submissions?.length > 0;
   const sz = PAGE_SIZES[sizeKey];
+
   return (
     <>
       <header className="book-header">
@@ -648,7 +650,8 @@ export default function BookHeader({
             {loading ? "Submitting..." : "Submit for Editing"}
           </button>
           {/* {bookIdDetails?.book_editors?.length} */}
-          {!bookIdDetails?.book_editors?.length <= 0
+          {bookIdDetails?.book_chat_room?.id &&
+          !bookIdDetails?.book_editors?.length <= 0
             &&
             <button
               className="action-btn submit-editing"

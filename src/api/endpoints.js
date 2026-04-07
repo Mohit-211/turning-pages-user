@@ -55,6 +55,7 @@ export const FEED_ENDPOINTS = {
   CREATE: "feeds",
   CREATE_COMMENT: "feeds/comment",
   GET_ALL: "feeds",
+  GET_ALL_MY_FEED: "feeds/getMyFeeds?page=1&limit=10",
   GET_ALL_FEED_BY_GENER_ID:(GENER_ID) =>`feeds?page=1&limit=10&genre_id=${GENER_ID}`,
   REPLAY_COMMENT: "feeds/comment",
   LIKE: (feedId) => `feeds/${feedId}/like`,

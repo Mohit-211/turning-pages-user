@@ -77,7 +77,7 @@ export default function GrammarAssistant({ text, setText, token }) {
     if (selected) {
       setSelectedText(selected);
       // Optional: console.log("Selected text:", selected);
-      // You can later send this to AI rewrite endpoint
+      // You can later send this to TAV rewrite endpoint
     } else {
       setSelectedText("");
     }

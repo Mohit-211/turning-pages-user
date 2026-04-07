@@ -163,7 +163,7 @@ export default function PricingPage() {
         <p className="pricing-page__eyebrow">Subscription plans</p>
         <h1 className="pricing-page__title">Pick your plan</h1>
         <p className="pricing-page__subtitle">
-          Monthly credits for AI-assisted writing and publishing workflows.
+          Monthly credits for TAV-assisted writing and publishing workflows.
         </p>
       </div>
 

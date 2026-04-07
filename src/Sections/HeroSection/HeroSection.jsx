@@ -17,7 +17,7 @@ const HeroSection = () => {
               </h1>
               <p>
                 Turning Pages helps authors draft, upload, and refine manuscripts with
-                AI-powered editorial support.
+                TAV-powered editorial support.
               </p>
             </div>
 
@@ -50,7 +50,7 @@ const HeroSection = () => {
           <div className="hero-image">
             <img
               src={heroImage}
-              alt="AI Book Writing Platform Illustration"
+              alt="TAV Book Writing Platform Illustration"
             />
           </div>
         </div>

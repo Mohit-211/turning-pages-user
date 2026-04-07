@@ -4,7 +4,7 @@ import "./FeedPage.scss";
 import ComposeBox from "./ComposeBox";
 import FeedCard from "./FeedCard";
 
-import { GetAllFeedApi } from "../../api/operations/feed.api";
+import { GetAllMyFeedApi } from "../../api/operations/feed.api";
 import { GetAllGenreApi } from "../../api/operations/genre.api";
 
 export default function FeedPage() {
@@ -14,7 +14,7 @@ export default function FeedPage() {
 
   const loadFeeds = async () => {
     try {
-      const res = await GetAllFeedApi();
+      const res = await GetAllMyFeedApi();
       setfeeds(res?.data?.data?.rows || []);
     } catch (err) {
       console.error("Feed fetch error", err);
