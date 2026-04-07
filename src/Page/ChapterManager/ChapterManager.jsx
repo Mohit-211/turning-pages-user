@@ -28,11 +28,12 @@ import ChapterEditor from "./chapterComponent/chapterEditor";
 import PdfViewer from "./PdfViewer/PdfViewer";
 import StripePayment from "../../component/StripePayment/StripePayment";
 import AIToolsGuide from "./chapterComponent/AIToolsGuide";
+import BookCoverPanel from "../Book/BookHeader/BookCoverPanel";
 
 export default function ChapterManager() {
 const [showAIGuide, setShowAIGuide] = useState(false);
   const { bookId } = useParams();
-
+const [showCoverPanel, setShowCoverPanel] = useState(false);
   const [booksubmiition, setBookSubmitton] = useState();
   const [submitLoading, setSubmitLoading] = useState(false);
   const [paymentOpen, setPaymentOpen] = useState(false);
@@ -71,24 +72,30 @@ const [showAIGuide, setShowAIGuide] = useState(false);
   }, [bookId]);
 
   const fetchBookAndChapters = async () => {
-    setLoading(true);
-    try {
-      const res = await GetBookByIdApi(bookId);
-      const data = res?.data?.data || {};
+  setLoading(true);
+  try {
+    const res = await GetBookByIdApi(bookId);
 
-      setBookDetails(data);
-      setChapters(data?.book_chapters || []);
+    // ✅ safer optional chaining
+    const data = res?.data?.data ?? {};
 
-      if (data?.book_chapters?.length > 0) {
-        setSelectedId(data.book_chapters[0].id);
-      }
+    setBookDetails(data);
+    setChapters(data?.book_chapters ?? []);
 
-    } catch {
-      message.error("Failed to load book");
-    } finally {
-      setLoading(false);
+    // ✅ avoid undefined crash
+    if (data?.book_chapters?.length > 0) {
+      setSelectedId(data.book_chapters[0]?.id);
+    } else {
+      setSelectedId(null);
     }
-  };
+
+  } catch (error) {
+    console.error(error); // 👈 always log error
+    message.error("Failed to load book");
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     if (!selectedId) return;
@@ -137,7 +144,7 @@ const [showAIGuide, setShowAIGuide] = useState(false);
       setBookSubmitton(submissionId);
       setEventName(event_name);
 
-      setPaymentOpen(true);
+      // setPaymentOpen(true);
 
     } finally {
 
@@ -165,7 +172,7 @@ const [showAIGuide, setShowAIGuide] = useState(false);
   //   }
   // };
 
-  /* ================= AI TOOLS ================= */
+  /* ================= TAV TOOLS ================= */
 
   const handleRunAITool = async (tool) => {
 
@@ -219,7 +226,7 @@ const [showAIGuide, setShowAIGuide] = useState(false);
 
     } catch {
 
-      message.error("AI Tool failed");
+      message.error("TAV Tool failed");
 
     } finally {
 
@@ -376,6 +383,7 @@ const [showAIGuide, setShowAIGuide] = useState(false);
           bookIdDetails={bookDetails}
           title={bookDetails?.title || "Untitled Book"}
           bookId={bookId}
+          onEditCover={() => setShowCoverPanel(true)}
           onSubmit={handleSubmitForEditing}
           loading={submitLoading}
         />
@@ -388,7 +396,7 @@ const [showAIGuide, setShowAIGuide] = useState(false);
   setViewMode={setViewMode}
   onToggleAIPanel={() => {
     setIsAIPanelOpen(!isAIPanelOpen);
-    setShowAIGuide(false); // 👈 reset guide if AI panel toggled
+    setShowAIGuide(false); // 👈 reset guide if TAV panel toggled
   }}
   isAIPanelOpen={isAIPanelOpen}
   onRunAITool={handleRunAITool}
@@ -476,7 +484,24 @@ const [showAIGuide, setShowAIGuide] = useState(false);
           onCloseModal={() => setPaymentOpen(false)}
         />
       </Modal>
+{showCoverPanel && (
+  <div
+    className="cover-modal-overlay"
+    onClick={() => setShowCoverPanel(false)}
+  >
+    <div
+      className="cover-modal"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <BookCoverPanel
+        bookdetails={bookDetails}
+        onClose={() => setShowCoverPanel(false)}
+          onUpdateBook={fetchBookAndChapters} 
+      />
 
+    </div>
+  </div>
+)}
     </div>
   );
 }

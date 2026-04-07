@@ -9,6 +9,8 @@ export const CreateFeedApi = (payload) =>
   });
 export const GetAllFeedApi = () =>
   client.get(FEED_ENDPOINTS.GET_ALL);
+export const GetAllMyFeedApi = () =>
+  client.get(FEED_ENDPOINTS.GET_ALL_MY_FEED);
 export const CreateFeedCommentApi = (payload) =>
   client.post(FEED_ENDPOINTS.CREATE_COMMENT, payload);
 export const ToggleFeedLikeApi = (feedId) =>

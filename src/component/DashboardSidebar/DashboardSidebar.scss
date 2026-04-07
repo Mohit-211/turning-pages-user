@@ -1,6 +1,5 @@
 /* =========================================
    Dashboard Sidebar – Modern Editorial SaaS
-   Final – Jan 2026 style
 ========================================= */
 
 .sidebar {
@@ -21,7 +20,7 @@
   width: 68px;
 }
 
-/* ── Toggle Button ── */
+/* Toggle */
 .sidebar-toggle {
   height: 48px;
   display: flex;
@@ -31,7 +30,7 @@
   border-radius: 10px;
   cursor: pointer;
   color: #6b7280;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
   align-self: flex-start;
 }
 
@@ -46,7 +45,7 @@
   height: 20px;
 }
 
-/* ── Navigation Group ── */
+/* Group */
 .sidebar-group {
   display: flex;
   flex-direction: column;
@@ -66,7 +65,7 @@
   display: none;
 }
 
-/* ── Menu List ── */
+/* Menu */
 .sidebar-menu {
   list-style: none;
   margin: 0;
@@ -77,7 +76,7 @@
   margin: 2px 0;
 }
 
-/* ── Menu Button ── */
+/* Button */
 .sidebar-menu-button {
   display: flex;
   align-items: center;
@@ -96,25 +95,22 @@
 .sidebar.collapsed .sidebar-menu-button {
   justify-content: center;
   padding: 12px 0;
-  margin: 2px 8px;
-  border-radius: 10px;
 }
 
 /* Icon */
-.sidebar-menu-button .icon {
+.icon {
   width: 19px;
   height: 19px;
-  flex-shrink: 0;
   color: #6b7280;
   transition: all 0.25s ease;
 }
 
 /* Title */
-.sidebar-menu-button .title {
+.title {
   white-space: nowrap;
 }
 
-.sidebar.collapsed .sidebar-menu-button .title {
+.sidebar.collapsed .title {
   display: none;
 }
 
@@ -127,23 +123,21 @@
 
 .sidebar-menu-button:hover .icon {
   color: #174f78;
-  transform: scale(1.12) translateY(-1px);
+  transform: scale(1.12);
 }
 
-/* ── Active State ── */
+/* Active */
 .sidebar-menu-button.active {
   background-color: rgba(23, 79, 120, 0.06);
   color: #174f78;
   font-weight: 600;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .sidebar-menu-button.active .icon {
   color: #174f78;
-  transform: scale(1.12) translateY(-1px);
 }
 
-/* Elegant vertical accent bar */
+/* Accent bar */
 .sidebar-menu-button.active::before {
   content: "";
   position: absolute;
@@ -151,16 +145,12 @@
   top: 50%;
   transform: translateY(-50%);
   width: 4px;
-  height: 38px;
+  height: 36px;
   background: linear-gradient(180deg, #ef4444, #b91c1c);
   border-radius: 0 4px 4px 0;
 }
 
-/* ── Collapsed Tooltips ── */
-.sidebar.collapsed .sidebar-menu-button {
-  position: relative;
-}
-
+/* Tooltip (collapsed) */
 .sidebar.collapsed .sidebar-menu-button::after {
   content: attr(data-tooltip);
   position: absolute;
@@ -172,18 +162,31 @@
   padding: 6px 12px;
   border-radius: 6px;
   font-size: 0.82rem;
-  font-weight: 500;
   white-space: nowrap;
-  pointer-events: none;
   opacity: 0;
   visibility: hidden;
-  transition: all 0.2s ease;
+  transition: 0.2s;
   z-index: 30;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
 }
 
 .sidebar.collapsed .sidebar-menu-button:hover::after {
   opacity: 1;
   visibility: visible;
-  transform: translateY(-50%) translateX(18px);
+}
+
+/* ✅ Credit Badge */
+.credit-badge {
+  margin-left: auto;
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 999px;
+  min-width: 28px;
+  text-align: center;
+}
+
+.sidebar.collapsed .credit-badge {
+  display: none;
 }

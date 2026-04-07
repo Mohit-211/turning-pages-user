@@ -13,9 +13,9 @@ const features = [
   },
   {
     icon: Brain,
-    title: "AI-Powered Editing",
+    title: "TAV-Powered Editing",
     description:
-      "Advanced AI algorithms analyze your writing for grammar, style, pacing, and structure. Get intelligent suggestions that preserve your unique voice.",
+      "Advanced TAV algorithms analyze your writing for grammar, style, pacing, and structure. Get intelligent suggestions that preserve your unique voice.",
   },
   {
     icon: Users,

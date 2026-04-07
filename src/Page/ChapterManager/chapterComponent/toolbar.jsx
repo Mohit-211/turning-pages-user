@@ -59,7 +59,7 @@ export default function Toolbar({
         {/* ✅ UPDATED LABEL */}
 <button className="toolbar-btn ai-guide-btn"   onClick={onOpenAIGuide}>
   <BookOpen size={18} />
-  <span>AI Guide</span>
+  <span>TAV Guide</span>
 </button>
         <div className="ai-tool-select">
           <select
@@ -88,7 +88,7 @@ export default function Toolbar({
           onClick={onToggleAIPanel}
         >
           {isAIPanelOpen ? <X size={18} /> : <PanelRight size={18} />}
-          <span>{isAIPanelOpen ? "Close AI" : "Open AI"}</span>
+          <span>{isAIPanelOpen ? "Close TAV Panel" : "Open TAV Panel"}</span>
         </button>
 
         {isEditMode ? (

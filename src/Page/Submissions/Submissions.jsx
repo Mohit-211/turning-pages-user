@@ -131,17 +131,17 @@ export default function Submissions() {
 
                 <div className="card-actions">
                   {/* PAYMENT PENDING */}
-                  {item.payment_status === "pending" && (
+                  {/* {item.payment_status === "pending" && (
                     <button
                       className="action-btn pay-btn"
                       onClick={() => {
                         setBookSubmissionId(item.id); // set correct submission ID
-                        setPaymentOpen(true);
+                        // setPaymentOpen(true);
                       }}
                     >
                       Pay Now
                     </button>
-                  )}
+                  )} */}
 
                   {status === "Waiting for Admin's approval" && (
                     <div className="status-message">Waiting for Admin's approval</div>

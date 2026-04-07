@@ -195,7 +195,7 @@ function App() {
 
 
         <Route
-          path="/dashboard/feed-page"
+          path="/dashboard/my-feed"
           element={
             <ProtectedRoute>
               <DashboardLayout>
@@ -268,7 +268,7 @@ function App() {
 
         {/* -------------------- MISC -------------------- */}
         <Route path="/create-book" element={<CreateBook />} />
-        <Route path="/sample-feed" element={<SampleFeedPage />} />
+        {/* <Route path="/sample-feed" element={<SampleFeedPage />} /> */}
 
       </Routes>
       <ToastContainer

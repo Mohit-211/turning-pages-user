@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const creditActivities = [
   { activity: "Create a chapter outline", credits: 1, category: "Planning" },
@@ -52,13 +53,14 @@ const navItems = [
 const tabs = ["Overview", "Use Credits", "Included", "Workflow", "Separate Services"];
 
 const categoryColors = {
-  Planning:   { bg: "#EFF6FF", text: "#1D4ED8" },
-  Writing:    { bg: "#F0FDF4", text: "#15803D" },
-  Editing:    { bg: "#FFF7ED", text: "#C2410C" },
+  Planning: { bg: "#EFF6FF", text: "#1D4ED8" },
+  Writing: { bg: "#F0FDF4", text: "#15803D" },
+  Editing: { bg: "#FFF7ED", text: "#C2410C" },
   Validation: { bg: "#FDF4FF", text: "#7E22CE" },
 };
 
 export default function CreditSystem() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Overview");
   const [selected, setSelected] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -159,22 +161,33 @@ export default function CreditSystem() {
             marginBottom: "16px", boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
           }}>
             <div>
-              <h1 style={{ margin: 0, fontSize: "22px", fontWeight: "700", color: "#1E3A5F",textAlign:"left" }}>Book Credits Guide</h1>
+              <h1 style={{ margin: 0, fontSize: "22px", fontWeight: "700", color: "#1E3A5F", textAlign: "left" }}>Book Credits Guide</h1>
               <p style={{ margin: "4px 0 0", color: "#64748B", fontSize: "13px" }}>Understand how Book Credits work and plan your writing journey</p>
             </div>
-            {/* <button style={{
-              background: "#1E3A5F", color: "#fff", border: "none", borderRadius: "8px",
-              padding: "10px 20px", cursor: "pointer", fontWeight: "600", fontSize: "13px",
-            }}>+ Buy More Credits</button> */}
+            <button
+              onClick={() => navigate("/dashboard/payment")}
+              style={{
+                background: "#1E3A5F",
+                color: "#fff",
+                border: "none",
+                borderRadius: "8px",
+                padding: "10px 20px",
+                cursor: "pointer",
+                fontWeight: "600",
+                fontSize: "13px",
+              }}
+            >
+              + Buy More Credits
+            </button>
           </div>
 
           {/* Stats */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "14px", marginBottom: "16px" }}>
             {[
               { label: "YOUR CREDITS", value: "316", color: "#1E3A5F" },
-              { label: "CREDITS USED", value: "84",  color: "#C0392B" },
-              { label: "AVG PER BOOK",  value: "~25", color: "#1E3A5F" },
-              { label: "ACTIVITIES",   value: "11",  color: "#1E3A5F" },
+              { label: "CREDITS USED", value: "84", color: "#C0392B" },
+              { label: "AVG PER BOOK", value: "~25", color: "#1E3A5F" },
+              { label: "ACTIVITIES", value: "11", color: "#1E3A5F" },
             ].map((s) => (
               <div key={s.label} style={{
                 background: "#fff", borderRadius: "12px", padding: "18px 20px",

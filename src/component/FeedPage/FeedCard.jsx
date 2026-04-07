@@ -26,12 +26,18 @@ export default function FeedCard({ feed, genreName, reloadFeeds }) {
 
   const [userProfile, setUserProfile] = useState(null);
 
+  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const formattedTime = new Date(feed.created_at).toLocaleString("en-US", {
+    timeZone: userTimeZone,
+    //  timeZone: "America/Chicago", 
+    year: "numeric",
     month: "short",
     day: "numeric",
     hour: "numeric",
     minute: "2-digit",
+    // second: "2-digit",
   });
+
 
   // ─────────────────────────────
   // USER PROFILE
@@ -166,11 +172,10 @@ export default function FeedCard({ feed, genreName, reloadFeeds }) {
         <button
           onClick={handleToggleLike}
           disabled={loadingLike}
-          className={`feed-card__like-btn ${
-            feed?.feed_likes?.some((like) => like.user_id === userProfile)
-              ? "feed-card__like-btn--liked"
-              : ""
-          }`}
+          className={`feed-card__like-btn ${feed?.feed_likes?.some((like) => like.user_id === userProfile)
+            ? "feed-card__like-btn--liked"
+            : ""
+            }`}
         >
           <span>
             {feed?.feed_likes?.some((like) => like.user_id === userProfile)
@@ -205,7 +210,7 @@ export default function FeedCard({ feed, genreName, reloadFeeds }) {
             <div key={comment.id} className="feed-card__comment">
               <div className="feed-card__comment-avatar">
                 {/* {getInitials(comment.user_id)} */}
-              {comment?.feed_comment_user?.user_profile?.name?.[0]?.toUpperCase() || "?"}
+                {comment?.feed_comment_user?.user_profile?.name?.[0]?.toUpperCase() || "?"}
 
               </div>
 

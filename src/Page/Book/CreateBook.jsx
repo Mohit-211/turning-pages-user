@@ -5,9 +5,11 @@ import { GetAllGenreApi } from "../../api/operations/genre.api";
 import { CreateBookApi } from "../../api/operations/book.api";
 import PricingCards from "../../Sections/PaymentPage/PricingPage"; // keep your component
 import "./CreateBook.scss";
+import { Button, Modal } from "antd";
 
 const CreateBook = () => {
   const navigate = useNavigate();
+  const [creditModal, setCreditModal] = useState(false);
   const [step, setStep] = useState(1);
   const [genres, setGenres] = useState([]);
   const [loadingGenres, setLoadingGenres] = useState(true);
@@ -57,31 +59,34 @@ const CreateBook = () => {
   const handlePrevious = () => setStep(1);
 console.log(formData,"formData")
   const handleCreate = async () => {
-    setLoadingCreate(true);
-    try {
-      const payload = {
-        title: formData.title.trim(),
-        description: formData.description.trim(),
-        genre_id: formData.genre_id,
-      };
+  setLoadingCreate(true);
 
-      const res = await CreateBookApi(payload);
-      alert(res?.data?.message || "Book created successfully!");
-      navigate("/dashboard");
-    } catch (err) {
-      const msg = err?.response?.data?.message || "Failed to create book";
+  try {
+    const payload = {
+      title: formData.title.trim(),
+      description: formData.description.trim(),
+      genre_id: formData.genre_id,
+    };
 
-      if (msg.includes("Insufficient credit") && !hasRetried) {
-        setHasRetried(true);
-        setShowPricing(true);
-      } else {
-        alert(msg);
-      }
-    } finally {
-      setLoadingCreate(false);
+    const res = await CreateBookApi(payload);
+
+    message.success(res?.data?.message || "Book created successfully!");
+    navigate("/dashboard");
+
+  } catch (err) {
+    const msg = err?.response?.data?.message || "Failed to create book";
+
+    if (msg.toLowerCase().includes("insufficient credit")) {
+      setCreditModal(true); // ✅ open popup
+      return;
     }
-  };
 
+    // message.error(msg);
+
+  } finally {
+    setLoadingCreate(false);
+  }
+};
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -265,7 +270,32 @@ console.log(formData,"formData")
           </div>
         </div>
       )}
+      <Modal
+  open={creditModal}
+  onCancel={() => setCreditModal(false)}
+  footer={null}
+  centered
+>
+  <div style={{ textAlign: "center", padding: "20px" }}>
+    <h2>Insufficient Credit</h2>
+    <p>Please purchase credits to continue creating your book.</p>
+
+    <Button
+      type="primary"
+      size="large"
+      onClick={() => {
+        setCreditModal(false);
+        navigate("/dashboard/payment", {
+          state: { from: "create_book" },
+        });
+      }}
+    >
+      Purchase Credit
+    </Button>
+  </div>
+</Modal>
     </div>
+    
   );
 };
 

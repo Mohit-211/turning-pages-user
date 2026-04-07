@@ -13,13 +13,13 @@ const steps = [
     icon: Upload,
     title: "Submit for Editing",
     description:
-      "Upload your draft and choose from AI editing or professional human editors.",
+      "Upload your draft and choose from TAV editing or professional human editors.",
   },
   {
     icon: Sparkles,
     title: "Editors Enhance",
     description:
-      "Our AI and human editors work on structure, style, grammar, and flow.",
+      "Our TAV and human editors work on structure, style, grammar, and flow.",
   },
   {
     icon: Download,

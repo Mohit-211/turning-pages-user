@@ -51,6 +51,7 @@
     background: linear-gradient(90deg, var(--accent) 0%, #e8955a 100%);
     opacity: 0;
     transition: opacity var(--transition);
+    margin-bottom: 10px;
   }
 
   &:hover::before {

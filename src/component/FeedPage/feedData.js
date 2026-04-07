@@ -8,7 +8,7 @@ export const feedData = [
     time: '2 min ago',
     type: 'milestone',
     content:
-      "Just completed Chapter 12 of 'The Infinite Cartographer'! 🎉 The AI draft assistant helped me break through my writer's block — the pacing suggestions were spot on. Now heading into the climax arc.",
+      "Just completed Chapter 12 of 'The Infinite Cartographer'! 🎉 The TAV draft assistant helped me break through my writer's block — the pacing suggestions were spot on. Now heading into the climax arc.",
     tags: ['Fantasy', 'Draft Complete'],
     likes: 48,
     comments: 12,
@@ -47,7 +47,7 @@ export const feedData = [
     time: '1 hr ago',
     type: 'cover',
     content:
-      "Look what the AI Cover Generator produced for my sci-fi novel! I gave it the theme 'ocean meets code' and it nailed the mood. Tweaked the typography a bit \u2014 what do you all think?",
+      "Look what the TAV Cover Generator produced for my sci-fi novel! I gave it the theme 'ocean meets code' and it nailed the mood. Tweaked the typography a bit \u2014 what do you all think?",
     tags: ['Cover Design', 'Sci-Fi'],
     likes: 93,
     comments: 24,
