@@ -1,135 +1,448 @@
+// ════════════════════════════════════════════════════════════
+// ChapterManager.scss — Enhanced UI
+// ════════════════════════════════════════════════════════════
+
+$blue:    #174f78;
+$blue-dk: #1e6091;
+$red:     #ed1c24;
+$ink:     #0f172a;
+$mid:     #64748b;
+$dim:     #94a3b8;
+$border:  #e5e7eb;
+$surface: #f8fafc;
+$purple:  #534ab7;
+$ease:    cubic-bezier(.4, 0, .2, 1);
+$t:       .18s $ease;
+
+// ── Root ─────────────────────────────────────────────────────
 .chapter-manager {
   display: flex;
   height: 100vh;
-  background: #f8fafc;
+  background: $surface;
   overflow: hidden;
 }
 
-/* Sidebar */
+// ════════════════════════════════════════════════════════════
+// SIDEBAR
+// ════════════════════════════════════════════════════════════
+
 .chapter-sider {
-  width: 280px;
-  background: white;
-  border-right: 1px solid #e5e7eb;
+  width: 264px;
+  flex-shrink: 0;
+  background: #fff;
+  border-right: 0.5px solid $border;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  transition: width $t;
 }
 
 .sider-header {
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid #f1f5f9;
+  padding: 14px 16px;
+  border-bottom: 0.5px solid #f1f5f9;
+  flex-shrink: 0;
 }
 
 .back-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  color: #4b5563;
+  gap: 6px;
+  color: $mid;
   text-decoration: none;
+  font-size: 13px;
   font-weight: 500;
+  transition: color $t;
+  padding: 4px 0;
+
+  svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+  &:hover { color: $blue; }
 }
 
-/* Main Content */
+// Chapter list section label
+.sider-section-label {
+  padding: 12px 16px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: $dim;
+  flex-shrink: 0;
+}
+
+// Scrollable chapter list
+.sider-list {
+  flex: 1;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar { width: 3px; }
+  &::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 99px;
+  }
+}
+
+// Individual chapter row
+.chapter-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background $t, border-color $t;
+  border-left: 2px solid transparent;
+  position: relative;
+
+  &:hover {
+    background: $surface;
+  }
+
+  &.active {
+    background: rgba($blue, 0.06);
+    border-left-color: $blue;
+
+    .ch-num {
+      background: $blue;
+      color: #fff;
+    }
+
+    .ch-title { color: $blue; }
+  }
+}
+
+.ch-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: $mid;
+  flex-shrink: 0;
+  transition: background $t, color $t;
+}
+
+.ch-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ch-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: $ink;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color $t;
+}
+
+.ch-meta {
+  font-size: 11px;
+  color: $dim;
+  margin-top: 1px;
+}
+
+.ch-delete-btn {
+  opacity: 0;
+  background: none;
+  border: none;
+  color: $dim;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 5px;
+  line-height: 0;
+  transition: opacity $t, color $t, background $t;
+
+  svg { width: 13px; height: 13px; }
+
+  &:hover {
+    color: $red;
+    background: rgba($red, 0.08);
+  }
+}
+
+.chapter-item:hover .ch-delete-btn { opacity: 1; }
+
+// Add chapter footer button
+.sider-footer {
+  padding: 12px 16px;
+  border-top: 0.5px solid #f1f5f9;
+  flex-shrink: 0;
+}
+
+.add-chapter-btn {
+  width: 100%;
+  display: flex;
+  // width: fit-content;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px;
+  background: $blue;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background $t, transform $t;
+
+  svg { width: 14px; height: 14px; }
+
+  &:hover {
+    background: $blue-dk;
+    transform: translateY(-1px);
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// MAIN CONTENT AREA
+// ════════════════════════════════════════════════════════════
+
 .chapter-content-area {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: white;
+  background: #fff;
   overflow: hidden;
+  min-width: 0;
 }
 
-/* NEW LAYOUT */
+// ── Content split layout ─────────────────────────────────────
 .content-layout {
   flex: 1;
   display: flex;
   overflow: hidden;
 }
 
-/* Editor */
+// ── Editor pane ───────────────────────────────────────────────
 .editor-container {
   flex: 1;
-  padding: 1.5rem 2rem;
+  padding: 28px 36px;
   overflow-y: auto;
-  background: #f9fafb;
+  background: #fafbfc;
+  min-width: 0;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 99px;
+  }
 }
 
-/* TAV Panel */
-.report-section {
-  width: 420px;
-  border-left: 1px solid #e5e7eb;
-  background: #ffffff;
-  overflow-y: auto;
-}
-.cover-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.65);
+// Chapter meta row inside editor
+.editor-meta {
   display: flex;
   align-items: center;
-  justify-content: center;
-  z-index: 9999;
+  gap: 10px;
+  font-size: 12px;
+  color: $dim;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
-.cover-modal {
-  // width: 90%;
-  max-width: 1000px;
-  // height: 90%;
+.editor-meta__dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #cbd5e1;
+  display: inline-block;
+}
+
+.editor-meta__status {
+  font-weight: 500;
+  color: $blue;
+}
+
+// ── AI report panel ───────────────────────────────────────────
+.report-section {
+  width: 360px;
+  flex-shrink: 0;
+  border-left: 0.5px solid $border;
   background: #fff;
-  border-radius: 12px;
-  overflow: hidden;
+  overflow-y: auto;
   display: flex;
-  animation: scaleIn 0.25s ease;
+  flex-direction: column;
+
+  &::-webkit-scrollbar { width: 3px; }
+  &::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 99px;
+  }
 }
 
-@keyframes scaleIn {
-  from {
-    transform: scale(0.9);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-/* Empty State */
+// ════════════════════════════════════════════════════════════
+// EMPTY STATE
+// ════════════════════════════════════════════════════════════
+
 .empty-state {
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #64748b;
-  font-size: 1.1rem;
-  gap: 1.5rem;
-}
+  gap: 16px;
+  color: $mid;
+
+  &__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba($blue, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $blue;
+
+    svg { width: 22px; height: 22px; }
+  }
+
+  &__title {
+    font-size: 15px;
+    font-weight: 500;
+    color: $ink;
+  }
+
+  &__desc {
+    font-size: 13px;
+    color: $dim;
+    text-align: center;
+    max-width: 240px;
+    line-height: 1.6;
+  }
 
   .add-chapter-btn {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.8rem 1.8rem;
-      background: #174f78;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.22s;
-
-      &:hover {
-        background: #1e6091;
-        transform: translateY(-1px);
-      }
-    }
-  
-
-/* Responsive */
-@media (max-width: 1200px) {
-  .report-section {
-    width: 350px;
+    width: auto;
+    padding: 10px 20px;
   }
+}
+
+// ════════════════════════════════════════════════════════════
+// LOADING STATE
+// ════════════════════════════════════════════════════════════
+
+.sider-loading {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skel-item {
+  height: 52px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  animation: skel-pulse 1.5s ease-in-out infinite;
+
+  @keyframes skel-pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.55; }
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// COVER MODAL OVERLAY
+// ════════════════════════════════════════════════════════════
+
+.cover-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: cm-fade .18s $ease;
+
+  @keyframes cm-fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+}
+
+.cover-modal {
+  max-width: 1000px;
+  width: 90%;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  animation: cm-scale .22s $ease;
+
+  @keyframes cm-scale {
+    from { transform: scale(.94); opacity: 0; }
+    to   { transform: none;       opacity: 1; }
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// PURCHASE / UPGRADE MODAL (inline Ant override)
+// ════════════════════════════════════════════════════════════
+
+.upgrade-modal-body {
+  text-align: center;
+  padding: 8px 0 4px;
+
+  &__icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: rgba($blue, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    color: $blue;
+
+    svg { width: 24px; height: 24px; }
+  }
+
+  h2 {
+    font-size: 17px;
+    font-weight: 600;
+    color: $ink;
+    margin-bottom: 8px;
+  }
+
+  p {
+    font-size: 13px;
+    color: $mid;
+    margin-bottom: 24px;
+    line-height: 1.6;
+  }
+}
+
+.upgrade-modal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: $blue;
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background $t, transform $t;
+
+  &:hover {
+    background: $blue-dk;
+    transform: translateY(-1px);
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// RESPONSIVE
+// ════════════════════════════════════════════════════════════
+
+@media (max-width: 1280px) {
+  .report-section { width: 320px; }
 }
 
 @media (max-width: 1024px) {
@@ -139,8 +452,49 @@
 
   .report-section {
     width: 100%;
-    height: 400px;
+    height: 360px;
     border-left: none;
-    border-top: 1px solid #e5e7eb;
+    border-top: 0.5px solid $border;
+  }
+}
+
+@media (max-width: 768px) {
+  .chapter-sider {
+    width: 220px;
+  }
+
+  .editor-container {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .chapter-manager {
+    flex-direction: column;
+  }
+
+  .chapter-sider {
+    width: 100%;
+    height: 200px;
+    border-right: none;
+    border-bottom: 0.5px solid $border;
+
+    .sider-list {
+      display: flex;
+      flex-direction: row;
+      overflow-x: auto;
+      overflow-y: hidden;
+
+      .chapter-item {
+        flex-shrink: 0;
+        border-left: none;
+        border-bottom: 2px solid transparent;
+
+        &.active {
+          border-bottom-color: $blue;
+          border-left-color: transparent;
+        }
+      }
+    }
   }
 }
