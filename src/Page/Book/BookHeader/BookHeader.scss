@@ -1,25 +1,19 @@
 // ════════════════════════════════════════════════════════════
-// BookHeader.scss — Complete with PDF size selector & print modal
+// BookHeader.scss — Enhanced UI
 // ════════════════════════════════════════════════════════════
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
 
-$red: #ed1c24;
-$red-dk: #d32f2f;
-$blue: #174f78;
-$ink: #0f172a;
-$mid: #64748b;
-$dim: #94a3b8;
-$border: #d1d5db;
-$ease: cubic-bezier(.4, 0, .2, 1);
-$t: .22s $ease;
-
-// ── Page margin tokens ────────────────────────────────────────
-// Top: 0.75in | Bottom: 1in | Inside/Left: 0.9in | Outside/Right: 0.6in
-$mg-top:     0.75in;
-$mg-bottom:  1in;
-$mg-inside:  0.9in;
-$mg-outside: 0.6in;
+$red:     #ed1c24;
+$red-dk:  #c4151c;
+$blue:    #174f78;
+$blue-dk: #1e6091;
+$ink:     #0f172a;
+$mid:     #64748b;
+$dim:     #94a3b8;
+$border:  #e5e7eb;
+$ease:    cubic-bezier(.4, 0, .2, 1);
+$t:       .2s $ease;
 
 // ── Root header ──────────────────────────────────────────────
 .book-header {
@@ -27,112 +21,155 @@ $mg-outside: 0.6in;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1.5rem;
+  padding: 12px 20px;
   background: white;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 0.5px solid $border;
   position: sticky;
   top: 0;
   z-index: 20;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 12px;
 }
 
-.book-title {
+// ── Book identity (left side) ─────────────────────────────────
+.book-identity {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  width: 20%;
+  gap: 10px;
+  min-width: 0;
 
-  .book-icon {
-    font-size: 1.6rem;
-    color: $red;
+  &__icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: rgba($blue, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: $blue;
   }
 
-  h3 {
+  &__text {
+    min-width: 0;
+  }
+
+  &__title {
     margin: 0;
-    font-size: 1.35rem;
-    font-weight: 700;
+    font-size: 15px;
+    font-weight: 600;
     color: $ink;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 320px;
+  }
+
+  &__meta {
+    display: block;
+    font-size: 11px;
+    color: $dim;
+    margin-top: 1px;
   }
 }
 
-.actions {
+// ── Actions row (right side) ──────────────────────────────────
+.bh-actions {
   display: flex;
   align-items: center;
-  gap: 0.9rem;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
+.bh-divider {
+  width: 0.5px;
+  height: 26px;
+  background: $border;
+  flex-shrink: 0;
+}
+
 // ── Base button ───────────────────────────────────────────────
-.action-btn {
+.bh-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.6rem 1.3rem;
-  font-size: 0.92rem;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 12.5px;
   font-weight: 500;
   border-radius: 8px;
   cursor: pointer;
   transition: all $t;
-  border: 1px solid $border;
-  background: white;
+  border: 0.5px solid;
+  white-space: nowrap;
+  line-height: 1;
+  font-family: 'DM Sans', sans-serif;
+
+  svg { flex-shrink: 0; }
 
   &:disabled {
     opacity: 0.55;
     cursor: not-allowed;
-  }
-
-  &:not(:disabled):hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  }
-
-  svg {
-    flex-shrink: 0;
+    pointer-events: none;
   }
 }
 
-// ── Specific buttons ──────────────────────────────────────────
-.edit-cover {
+// Variants
+.bh-btn--ghost-blue {
   color: $blue;
   border-color: rgba($blue, 0.3);
+  background: white;
 
   &:hover {
-    background: rgba($blue, 0.08);
+    background: rgba($blue, 0.07);
+    border-color: rgba($blue, 0.5);
+    transform: translateY(-1px);
   }
 }
 
-.save-draft {
-  color: $blue;
-  border-color: rgba($blue, 0.4);
-
-  &:hover {
-    background: rgba($blue, 0.1);
-  }
-}
-
-.submit-editing {
-  background: $red;
-  color: white;
-  border: none;
-
-  &:hover:not(:disabled) {
-    background: $red-dk;
-    box-shadow: 0 4px 12px rgba($red, 0.3);
-  }
-}
-
-.download-pdf {
+.bh-btn--ghost-red {
   color: $red;
-  border-color: rgba($red, 0.4);
+  border-color: rgba($red, 0.3);
+  background: white;
 
   &:hover {
     background: rgba($red, 0.06);
+    transform: translateY(-1px);
   }
 }
 
+.bh-btn--solid-red {
+  color: white;
+  background: $red;
+  border-color: transparent;
+
+  &:hover:not(:disabled) {
+    background: $red-dk;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba($red, 0.28);
+  }
+}
+
+.bh-btn--solid-blue {
+  color: white;
+  background: $blue;
+  border-color: transparent;
+
+  &:hover:not(:disabled) {
+    background: $blue-dk;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba($blue, 0.28);
+  }
+}
+
+.bh-btn--completed {
+  color: white;
+  background: #64748b;
+  border-color: transparent;
+  opacity: 0.7;
+}
+
 // ════════════════════════════════════════════════════════════
-// PDF GROUP — split Download button + Size toggle
+// PDF GROUP
 // ════════════════════════════════════════════════════════════
 
 .bh-pdf-group {
@@ -144,40 +181,35 @@ $mg-outside: 0.6in;
     border-radius: 8px 0 0 8px !important;
     border-right: none !important;
   }
+}
 
-  .bh-pdf-size-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-    padding: 0 10px;
-    background: white;
-    border: 1px solid rgba($red, 0.4);
-    border-left: 1px solid rgba($red, 0.18);
-    border-radius: 0 8px 8px 0;
-    color: $red;
-    cursor: pointer;
-    transition: all $t;
-    white-space: nowrap;
+.bh-pdf-size-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0 10px;
+  background: white;
+  border: 0.5px solid rgba($red, 0.3);
+  border-left: 0.5px solid rgba($red, 0.15);
+  border-radius: 0 8px 8px 0;
+  color: $red;
+  cursor: pointer;
+  transition: all $t;
+  white-space: nowrap;
 
-    &:hover:not(:disabled) {
-      background: rgba($red, 0.06);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
-    }
-
-    &:disabled {
-      opacity: .55;
-      cursor: not-allowed;
-    }
+  &:hover:not(:disabled) {
+    background: rgba($red, 0.06);
+    transform: translateY(-1px);
   }
 
-  .bh-pdf-size-label {
-    font-size: 10px;
-    font-weight: 700;
-    font-family: 'DM Mono', monospace;
-    letter-spacing: .04em;
-    opacity: .9;
-  }
+  &:disabled { opacity: .55; cursor: not-allowed; }
+}
+
+.bh-pdf-size-label {
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: .04em;
 }
 
 // ── Size Dropdown ─────────────────────────────────────────────
@@ -190,14 +222,14 @@ $mg-outside: 0.6in;
   max-height: 400px;
   overflow-y: auto;
   background: #fff;
-  border: 1px solid #e5e7eb;
+  border: 0.5px solid $border;
   border-radius: 12px;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, .14), 0 2px 8px rgba(0, 0, 0, .06);
+  box-shadow: 0 16px 48px rgba(0,0,0,.12), 0 2px 8px rgba(0,0,0,.06);
   animation: bh-drop-in .17s $ease;
 
   @keyframes bh-drop-in {
     from { opacity: 0; transform: translateY(6px) scale(.97); }
-    to   { opacity: 1; transform: translateY(0)   scale(1);   }
+    to   { opacity: 1; transform: none; }
   }
 
   &::-webkit-scrollbar { width: 4px; }
@@ -209,7 +241,7 @@ $mg-outside: 0.6in;
   align-items: center;
   justify-content: space-between;
   padding: 13px 16px 10px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 0.5px solid #f1f5f9;
 
   span {
     font-family: 'DM Sans', sans-serif;
@@ -236,7 +268,7 @@ $mg-outside: 0.6in;
   }
 }
 
-.bh-size-dropdown__group  { padding: 10px 16px 6px; }
+.bh-size-dropdown__group { padding: 10px 16px 6px; }
 
 .bh-size-dropdown__label {
   font-family: 'DM Sans', sans-serif;
@@ -263,7 +295,7 @@ $mg-outside: 0.6in;
   gap: 5px;
   padding: 9px 8px 8px;
   background: #fafafa;
-  border: 1.5px solid #e8e8e8;
+  border: 0.5px solid #e8e8e8;
   border-radius: 8px;
   cursor: pointer;
   transition: $t;
@@ -273,21 +305,21 @@ $mg-outside: 0.6in;
     background: #fff5f5;
     border-color: rgba($red, 0.35);
     transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba($red, 0.1);
+    box-shadow: 0 4px 10px rgba($red, 0.08);
   }
 
   &--on {
     background: #fff5f5 !important;
     border-color: $red !important;
-    box-shadow: 0 0 0 2px rgba($red, 0.12);
+    box-shadow: 0 0 0 2px rgba($red, 0.1);
   }
 }
 
 .bh-sz-card__paper {
   background: #fff;
-  border: 1px solid #d0d0d0;
+  border: 0.5px solid #d0d0d0;
   border-radius: 2px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, .10);
+  box-shadow: 0 1px 4px rgba(0,0,0,.08);
   overflow: hidden;
   position: relative;
   flex-shrink: 0;
@@ -341,7 +373,7 @@ $mg-outside: 0.6in;
 .bh-print-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.55);
+  background: rgba(15, 23, 42, 0.5);
   backdrop-filter: blur(4px);
   z-index: 1000;
   display: flex;
@@ -365,12 +397,12 @@ $mg-outside: 0.6in;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 32px 80px rgba(0, 0, 0, .22), 0 4px 16px rgba(0, 0, 0, .10);
+  box-shadow: 0 32px 80px rgba(0,0,0,.2), 0 4px 16px rgba(0,0,0,.08);
   animation: bh-modal-in .22s $ease;
 
   @keyframes bh-modal-in {
     from { opacity: 0; transform: translateY(18px) scale(.97); }
-    to   { opacity: 1; transform: translateY(0)    scale(1);   }
+    to   { opacity: 1; transform: none; }
   }
 }
 
@@ -379,7 +411,7 @@ $mg-outside: 0.6in;
   align-items: center;
   justify-content: space-between;
   padding: 16px 18px 14px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 0.5px solid #f1f5f9;
   flex-shrink: 0;
   gap: 12px;
 }
@@ -431,7 +463,7 @@ $mg-outside: 0.6in;
   transition: $t;
   white-space: nowrap;
 
-  &:hover  { background: $red-dk; box-shadow: 0 4px 12px rgba($red, 0.3); transform: translateY(-1px); }
+  &:hover  { background: $red-dk; box-shadow: 0 4px 12px rgba($red, 0.28); transform: translateY(-1px); }
   &:active { transform: scale(.96); }
 }
 
@@ -452,7 +484,7 @@ $mg-outside: 0.6in;
   &:hover { background: #e2e8f0; color: $ink; }
 }
 
-// ── Loading state ─────────────────────────────────────────────
+// ── Loading ───────────────────────────────────────────────────
 .bh-print-modal__loading {
   display: flex;
   flex-direction: column;
@@ -493,14 +525,14 @@ $mg-outside: 0.6in;
   overflow-y: auto;
   padding: 28px 20px 36px;
   background: #c8c8c8;
-  background-image: radial-gradient(circle, rgba(0, 0, 0, .11) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(0,0,0,.1) 1px, transparent 1px);
   background-size: 18px 18px;
 
   &::-webkit-scrollbar { width: 6px; }
   &::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, .2);
+    background: rgba(0,0,0,.2);
     border-radius: 99px;
-    &:hover { background: rgba(0, 0, 0, .3); }
+    &:hover { background: rgba(0,0,0,.3); }
   }
 }
 
@@ -522,7 +554,7 @@ $mg-outside: 0.6in;
 
   @keyframes bh-pg-in {
     from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0);    }
+    to   { opacity: 1; transform: none; }
   }
 }
 
@@ -532,9 +564,9 @@ $mg-outside: 0.6in;
   pointer-events: none;
   border-radius: 1px;
   box-shadow:
-    0 2px 4px rgba(0, 0, 0, .10),
-    0 8px 24px rgba(0, 0, 0, .18),
-    0 20px 40px rgba(0, 0, 0, .06);
+    0 2px 4px rgba(0,0,0,.08),
+    0 8px 24px rgba(0,0,0,.16),
+    0 20px 40px rgba(0,0,0,.05);
 }
 
 .bh-print-modal__page {
@@ -563,7 +595,7 @@ $mg-outside: 0.6in;
   margin-top: 7px;
   font-family: 'DM Sans', sans-serif;
   font-size: 10px;
-  color: rgba(0, 0, 0, .35);
+  color: rgba(0,0,0,.32);
   letter-spacing: .04em;
 }
 
@@ -572,10 +604,10 @@ $mg-outside: 0.6in;
   margin-top: 18px;
   font-family: 'DM Sans', sans-serif;
   font-size: 11px;
-  color: rgba(0, 0, 0, .4);
+  color: rgba(0,0,0,.38);
   letter-spacing: .02em;
   padding: 5px 14px;
-  background: rgba(0, 0, 0, .06);
+  background: rgba(0,0,0,.06);
   border-radius: 99px;
   display: inline-block;
   position: relative;
@@ -584,14 +616,17 @@ $mg-outside: 0.6in;
 }
 
 // ════════════════════════════════════════════════════════════
-// PRINT MEDIA — exact margins applied via @page + .print-body
+// PRINT MEDIA
 // ════════════════════════════════════════════════════════════
 
+$mg-top:     0.75in;
+$mg-bottom:  1in;
+$mg-inside:  0.9in;
+$mg-outside: 0.6in;
+
 @media print {
-
-  @page { margin: 0; }   // page element owns its own margins via padding
-
-  body { margin: 0; padding: 0; }
+  @page { margin: 0; }
+  body  { margin: 0; padding: 0; }
 
   .print-page {
     page-break-after: always;
@@ -599,7 +634,6 @@ $mg-outside: 0.6in;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    // Exact page margins: Top 0.75in | Bottom 1in | Inside/Left 0.9in | Outside/Right 0.6in
     padding: $mg-top $mg-outside $mg-bottom $mg-inside;
 
     &:last-child { page-break-after: avoid; }
@@ -620,7 +654,6 @@ $mg-outside: 0.6in;
     text-transform: uppercase;
     white-space: nowrap;
   }
-  
 
   .print-rhead-rule { flex: 1; height: .5px; background: #e4e4e4; }
 
@@ -630,12 +663,9 @@ $mg-outside: 0.6in;
     color: #ccc;
   }
 
-  // ── .print-body: @page handles margins, so padding: 0 here ─
-  // The $mg-* variables above are what drive the white space —
-  // do NOT add extra padding or it will double up.
   .print-body {
     flex: 1;
-    padding: 0;                   // @page margin owns the whitespace
+    padding: 0;
     font-family: "Georgia", serif;
     color: #1c1c1c;
     line-height: 1.8;
@@ -649,7 +679,6 @@ $mg-outside: 0.6in;
     h3  { font-size: 1.17em; font-weight: bold; margin: .3em 0 .25em; }
     strong, b { font-weight: bold; }
     em, i     { font-style: italic; }
-
     ul { list-style: disc;    padding-left: 1.5em; margin: .4em 0; }
     ol { list-style: decimal; padding-left: 1.5em; margin: .4em 0; }
 
@@ -665,7 +694,6 @@ $mg-outside: 0.6in;
     table { border-collapse: collapse; width: 100%; margin: .6em 0; }
     td, th { border: 1px solid #ddd; padding: 4px 8px; }
     th { background: #f5f5f5; font-weight: 600; }
-
     img { max-width: 100%; height: auto; display: block; margin: .4em auto; }
   }
 

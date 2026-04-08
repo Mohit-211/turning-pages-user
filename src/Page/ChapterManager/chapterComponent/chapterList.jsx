@@ -25,6 +25,7 @@ export default function ChapterList({
           onClick={onAdd}
           title="Add new chapter"
           aria-label="Add new chapter"
+          style={{width:"fit-content"}}
         >
           <Plus size={18} />
         </button>

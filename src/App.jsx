@@ -265,6 +265,16 @@ function App() {
             </ProtectedRoute>
           }
         />
+          <Route
+          path="/dashboard/publish-payment"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <PricingPage />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
 
         {/* -------------------- MISC -------------------- */}
         <Route path="/create-book" element={<CreateBook />} />

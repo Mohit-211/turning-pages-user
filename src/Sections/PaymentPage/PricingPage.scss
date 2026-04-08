@@ -27,7 +27,24 @@ $font-body:    'DM Sans', system-ui, sans-serif;
   max-width: 1100px;
   margin: 0 auto;
 }
+.publish-card__cta {
+  background: #1E3A5F;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
 
+/* 🔥 DISABLED STATE */
+.publish-card__cta:disabled {
+  background: #ccc !important;
+  color: #666 !important;
+  cursor: not-allowed !important;
+  opacity: 0.7;
+}
 // ── Section header ────────────────────────────────────────
 .pricing-page__section-header {
   margin-bottom: 1.75rem;

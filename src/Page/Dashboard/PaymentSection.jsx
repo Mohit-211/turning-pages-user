@@ -3,7 +3,7 @@ import "./PaymentSection.scss";
 import { useNavigate } from "react-router-dom";
 
 const PaymentSection = ({ user, onUpgrade, plan }) => {
-  const displayName = user?.user_profile?.name?.split(" ")[0] || "Creator";
+  const displayName = user?.user_profile?.name
 const navigate = useNavigate();
   return (
     <section className="payment-section-page">

@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useRef, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "./Chat.scss";
@@ -13,21 +14,21 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { db } from "../../config/firebaseConfig";
-console.log(db, "db")
+
 const Chat = () => {
   const { book_room_id } = useParams();
 
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-  console.log(selectedUser,"selectedUser")
   const [messagesByRoom, setMessagesByRoom] = useState({});
-  console.log(messagesByRoom,"messagesByRoom")
   const [text, setText] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
   const messagesEndRef = useRef(null);
 
   const senderId = localStorage.getItem("userId");
+  console.log(senderId,"senderId")
+  const senderRoleId = localStorage.getItem("role_id");
 
   // 👉 check if direct chat mode
   const isDirectChat = !!book_room_id;
@@ -36,7 +37,7 @@ const Chat = () => {
   const currentMessages = selectedUser
     ? messagesByRoom[selectedUser.id] || []
     : [];
-  console.log(currentMessages, "currentMessages")
+
   // 🚀 FETCH CHAT LIST + AUTO SELECT
   useEffect(() => {
     const fetchChatList = async () => {
@@ -53,22 +54,17 @@ const Chat = () => {
           role: item.role,
           avatar: "👤",
           last_message: item.chat_room?.last_message,
-
-          // ✅ ADD THIS (very important)
           chat_room: item.chat_room,
         }));
+
         setUsers(mappedUsers);
 
-        // ✅ If URL param exists → auto select that chat
         if (book_room_id) {
           const foundUser = mappedUsers.find(
             (u) => String(u.id) === String(book_room_id)
           );
-          if (foundUser) {
-            setSelectedUser(foundUser);
-          }
+          if (foundUser) setSelectedUser(foundUser);
         } else {
-          // ✅ Normal flow
           if (mappedUsers.length > 0) {
             setSelectedUser(mappedUsers[0]);
           }
@@ -81,7 +77,7 @@ const Chat = () => {
     fetchChatList();
   }, [book_room_id]);
 
-  // 🔥 REAL-TIME FIREBASE
+  // 🔥 REAL-TIME FIREBASE LISTENER
   useEffect(() => {
     if (!selectedUser?.id) return;
 
@@ -99,12 +95,16 @@ const Chat = () => {
         return {
           id: doc.id,
           text: data.text,
-          user: data.sender_id === senderId ? "self" : "other",
+
+          // ✅ ROLE BASED ALIGNMENT
+          user:
+            String(data.sender_role) === senderId ? "self" : "other",
+
           time: data.created_at?.toDate
             ? data.created_at.toDate().toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
+                hour: "2-digit",
+                minute: "2-digit",
+              })
             : "",
         };
       });
@@ -116,7 +116,7 @@ const Chat = () => {
     });
 
     return () => unsubscribe();
-  }, [selectedUser, senderId]);
+  }, [selectedUser]);
 
   // 📩 SEND MESSAGE
   const sendMessage = async (e) => {
@@ -128,37 +128,38 @@ const Chat = () => {
     const messageText = text;
 
     try {
-      // ✅ API
+      // ✅ API CALL
       await CreateChatApi({
         chat_room_id: chatRoomId,
         message: messageText,
       });
 
-      // // ✅ Firebase
-      // await addDoc(
-      //   collection(db, "messages", String(chatRoomId), "chat"),
-      //   {
-      //     sender_id: String(senderId),
-      //     text: messageText,
-      //     type: "TEXT",
-      //     created_at: serverTimestamp(),
-      //     updated_at: null,
-      //     read_by: [String(senderId)],
-      //     delivered_to: [],
-      //     is_edited: false,
-      //     is_deleted: false,
-      //     reply_to: null,
-      //     attachment: {
-      //       url: null,
-      //       type: null,
-      //       size: null,
-      //     },
-      //     meta: {
-      //       device: "web",
-      //       ip: null,
-      //     },
-      //   }
-      // );
+      // ✅ FIREBASE STORE
+      await addDoc(
+        collection(db, "messages", String(chatRoomId), "chat"),
+        {
+          sender_id: String(senderId),
+          sender_role_id: String(senderRoleId), // 🔥 IMPORTANT
+          text: messageText,
+          type: "TEXT",
+          created_at: serverTimestamp(),
+          updated_at: null,
+          read_by: [String(senderId)],
+          delivered_to: [],
+          is_edited: false,
+          is_deleted: false,
+          reply_to: null,
+          attachment: {
+            url: null,
+            type: null,
+            size: null,
+          },
+          meta: {
+            device: "web",
+            ip: null,
+          },
+        }
+      );
 
       setText("");
     } catch (err) {
@@ -168,17 +169,17 @@ const Chat = () => {
 
   // 🔍 SEARCH
   const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchQuery.toLowerCase())
+    user.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // 🔽 AUTO SCROLL
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [currentMessages]);
-  console.log(selectedUser, 'selectedUser')
+
   return (
     <div className="chat-panel">
-      {/* ✅ Sidebar (hidden in direct chat) */}
+      {/* ✅ Sidebar */}
       {!isDirectChat && (
         <div className="chat-sidebar">
           <h2>Chats</h2>
@@ -195,19 +196,18 @@ const Chat = () => {
             {filteredUsers.map((user) => (
               <div
                 key={user.id}
-                className={`chat-user ${selectedUser?.id === user.id ? "active" : ""
-                  }`}
+                className={`chat-user ${
+                  selectedUser?.id === user.id ? "active" : ""
+                }`}
                 onClick={() => setSelectedUser(user)}
               >
                 <div className="avatar">{user.avatar}</div>
+
                 <div>
                   <div className="user-name">
-                    <div className="user-name">
-  {user?.chat_room?.type === "BOOK_GROUP"
-    ? user?.chat_room?.book_details?.title
-    : user?.chat_room?.chat_participant_ad?.name}
-</div>
-
+                    {user?.chat_room?.type === "BOOK_GROUP"
+                      ? user?.chat_room?.book_details?.title
+                      : user?.chat_room?.chat_participant_ad?.name}
                   </div>
 
                   <div className="last-msg">{user.last_message}</div>
@@ -218,28 +218,20 @@ const Chat = () => {
         </div>
       )}
 
-      {/* Chat Content */}
+      {/* ✅ Chat Content */}
       <div className="chat-content">
         {selectedUser ? (
           <>
             <div className="chat-header">
               <div className="avatar">{selectedUser.avatar}</div>
-              <div>
-                <div className="user-name">
-                  {selectedUser?.chat_room?.type === "BOOK_GROUP"
-    ? selectedUser?.chat_room?.book_details?.title
-    : selectedUser?.chat_room?.chat_participant_ad?.name}
-                </div>
-                {/* <div className="user-role">{selectedUser.role}</div> */}
+              <div className="user-name">
+                {selectedUser?.chat_room?.type === "BOOK_GROUP"
+                  ? selectedUser?.chat_room?.book_details?.title
+                  : selectedUser?.chat_room?.chat_participant_ad?.name}
               </div>
             </div>
 
             <div className="chat-messages">
-              {/* {currentMessages.length === 0 && (
-                <div className="no-messages">
-                  <p>Start conversation</p>
-                </div>
-              )} */}
               {currentMessages.length === 0 && (
                 <div className="no-messages">
                   <p>Start conversation 👋</p>
@@ -249,8 +241,9 @@ const Chat = () => {
               {currentMessages.map((msg) => (
                 <div
                   key={msg.id}
-                  className={`chat-message ${msg.user === "self" ? "self" : "other"
-                    }`}
+                  className={`chat-message ${
+                    msg.user === "self" ? "other" : "self"
+                  }`}
                 >
                   <span>{msg.text}</span>
                   <div className="msg-time">{msg.time}</div>

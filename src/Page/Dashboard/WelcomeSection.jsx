@@ -18,7 +18,7 @@ const WelcomeSection = ({ user, onNewBook }) => {
         Start a New Book
       </button>
     </section>
-    <PaymentSection/>
+    <PaymentSection user={user}/>
     </>
   );
 };

@@ -62,7 +62,7 @@ const Dashboard = () => {
 
     loadData();
   }, []);
-
+console.log(user,"==>")
   const handleNewBook = () => {
     window.location.href = "/create-book";
   };

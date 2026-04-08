@@ -407,8 +407,11 @@ const ProfilePage = () => {
   const loadProfile = async () => {
     try {
       const res  = await UserProfileApi();
+      console.log(res,"==")
       const data = res?.data?.data;
+      console.log(data,"role_id")
       setUser(data);
+      localStorage.setItem("userId", data?.role_id);
       setFormData({
         name:   data?.user_profile?.name   || "",
         mobile: data?.user_profile?.mobile || "",

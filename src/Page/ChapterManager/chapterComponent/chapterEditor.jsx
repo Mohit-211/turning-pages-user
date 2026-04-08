@@ -11,7 +11,7 @@ export default function ChapterEditor({
   saving = false,
 }) {
   const [editorReady, setEditorReady] = useState(false);
-
+console.log(editorReady,"editorReady")
   return (
     <div className="editor-wrapper">
       {!editorReady && (

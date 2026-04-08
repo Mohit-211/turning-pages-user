@@ -1,40 +1,39 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, FileText, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, FileText, BookOpen, Tag, AlignLeft, CheckCircle2, AlertTriangle } from "lucide-react";
 import { GetAllGenreApi } from "../../api/operations/genre.api";
 import { CreateBookApi } from "../../api/operations/book.api";
-import PricingCards from "../../Sections/PaymentPage/PricingPage"; // keep your component
+import PricingCards from "../../Sections/PaymentPage/PricingPage";
 import "./CreateBook.scss";
-import { Button, Modal } from "antd";
+import { Button, Modal, message } from "antd";
+
+const TOTAL_STEPS = 2;
 
 const CreateBook = () => {
   const navigate = useNavigate();
+
   const [creditModal, setCreditModal] = useState(false);
   const [step, setStep] = useState(1);
   const [genres, setGenres] = useState([]);
   const [loadingGenres, setLoadingGenres] = useState(true);
   const [loadingCreate, setLoadingCreate] = useState(false);
   const [showPricing, setShowPricing] = useState(false);
-  const [hasRetried, setHasRetried] = useState(false);
+  const [userCredit, setUserCredit] = useState(0);
 
   const [formData, setFormData] = useState({
     title: "",
     genre_id: "",
- 
     description: "",
   });
 
   const [errors, setErrors] = useState({});
 
-  const totalSteps = 2;
-  const progress = (step / totalSteps) * 100;
+  const progress = (step / TOTAL_STEPS) * 100;
 
   useEffect(() => {
     GetAllGenreApi()
-      .then((res) => {
-        setGenres(res?.data?.data || []);
-      })
-      .catch(() => alert("Failed to load genres"))
+      .then((res) => setGenres(res?.data?.data || []))
+      .catch(() => message.error("Failed to load genres"))
       .finally(() => setLoadingGenres(false));
   }, []);
 
@@ -42,9 +41,7 @@ const CreateBook = () => {
     const newErrors = {};
     if (!formData.title.trim()) newErrors.title = "Book title is required";
     if (!formData.genre_id) newErrors.genre_id = "Please select a genre";
-    if (!formData.description.trim())
-      newErrors.description = "Description is required";
-
+    if (!formData.description.trim()) newErrors.description = "Description is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -57,8 +54,8 @@ const CreateBook = () => {
   };
 
   const handlePrevious = () => setStep(1);
-console.log(formData,"formData")
-  const handleCreate = async () => {
+
+const handleCreate = async () => {
   setLoadingCreate(true);
 
   try {
@@ -70,18 +67,19 @@ console.log(formData,"formData")
 
     const res = await CreateBookApi(payload);
 
-    message.success(res?.data?.message || "Book created successfully!");
+    message.success(
+      res?.data?.message || "Book created successfully!"
+    );
+
     navigate("/dashboard");
 
   } catch (err) {
-    const msg = err?.response?.data?.message || "Failed to create book";
+    const msg = err?.response?.data?.message || "";
 
-    if (msg.toLowerCase().includes("insufficient credit")) {
-      setCreditModal(true); // ✅ open popup
-      return;
-    }
-
-    // message.error(msg);
+    // ✅ ONLY FOR INSUFFICIENT CREDIT → SHOW MODAL
+    if (msg.toLowerCase().includes("insufficient credit remaining")) {
+      setCreditModal(true);
+    } 
 
   } finally {
     setLoadingCreate(false);
@@ -90,212 +88,285 @@ console.log(formData,"formData")
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
+
+  const selectedGenre = genres.find((g) => g.id === formData.genre_id);
 
   return (
     <div className="create-book">
-      <header className="header">
-        <div className="header-container">
-          <Link to="/dashboard" className="back-link">
-            <ArrowLeft size={18} /> Back to Dashboard
+
+      {/* ── HEADER ── */}
+      <header className="cb-header">
+        <div className="cb-header__inner">
+          <Link to="/dashboard" className="cb-back">
+            <ArrowLeft size={16} />
+            <span>Back to Dashboard</span>
           </Link>
-          <div className="logo-title">
-            <span className="emoji">📖</span>
+          <div className="cb-brand">
+            <BookOpen size={20} strokeWidth={1.8} />
             <span>Turning Pages</span>
           </div>
         </div>
       </header>
 
-      <main className="main-content">
-        <h1>Create a New Book</h1>
+      {/* ── MAIN ── */}
+      <main className="cb-main">
 
-        <div className="progress-bar">
-          <div className="progress-fill" style={{ width: `${progress}%` }} />
+        {/* Page title */}
+        <div className="cb-hero">
+          <h1>Create a new book</h1>
+          <p>Add your book details to the library</p>
         </div>
 
-        <div className="wizard-card">
+        {/* Stepper */}
+        <div className="cb-stepper">
+          {[
+            { n: 1, label: "Book details" },
+            { n: 2, label: "Review & publish" },
+          ].map(({ n, label }, i) => (
+            <React.Fragment key={n}>
+              <div className={`cb-step ${step === n ? "is-active" : step > n ? "is-done" : ""}`}>
+                <div className="cb-step__circle">
+                  {step > n ? <CheckCircle2 size={14} /> : n}
+                </div>
+                <span className="cb-step__label">{label}</span>
+              </div>
+              {i < 1 && (
+                <div className={`cb-step__connector ${step > 1 ? "is-done" : ""}`} />
+              )}
+            </React.Fragment>
+          ))}
+        </div>
+
+        {/* Card */}
+        <div className="cb-card">
+
+          {/* ── STEP 1 ── */}
           {step === 1 && (
-            <div className="step">
-              <h2>Book Details</h2>
-              <p className="step-desc">Let's start with the basics</p>
+            <div className="cb-form-step">
+              <div className="cb-card__head">
+                <h2>Book details</h2>
+                <p>Fill in the basics — you can edit these later.</p>
+              </div>
 
               {loadingGenres ? (
-                <div className="skeleton-form">
-                  <div className="skeleton-line long" />
-                  <div className="skeleton-line" />
-                  <div className="skeleton-line long" />
+                <div className="cb-skeleton">
+                  {[80, 60, 100].map((w, i) => (
+                    <div key={i} className="cb-skeleton__line" style={{ width: `${w}%` }} />
+                  ))}
                 </div>
               ) : (
-                <form className="book-form">
-                  <div className="form-field">
-                    <label>Book Title *</label>
+                <form className="cb-form" onSubmit={(e) => e.preventDefault()}>
+
+                  {/* Title */}
+                  <div className={`cb-field ${errors.title ? "has-error" : ""}`}>
+                    <label htmlFor="title">
+                      <FileText size={14} />
+                      Book title <span className="required">*</span>
+                    </label>
                     <input
+                      id="title"
                       name="title"
                       value={formData.title}
                       onChange={handleInputChange}
-                      placeholder="Enter book title"
-                      className={errors.title ? "input-error" : ""}
+                      placeholder="e.g. The Midnight Garden"
+                      maxLength={100}
+                      autoFocus
                     />
-                    {errors.title && (
-                      <span className="error">{errors.title}</span>
-                    )}
+                    <div className="cb-field__meta">
+                      {errors.title
+                        ? <span className="cb-field__error">{errors.title}</span>
+                        : <span className="cb-field__hint">Max 100 characters</span>
+                      }
+                      <span className="cb-field__count">{formData.title.length}/100</span>
+                    </div>
                   </div>
 
-                  <div className="form-field">
-                    <label>Genre *</label>
+                  {/* Genre */}
+                  <div className={`cb-field ${errors.genre_id ? "has-error" : ""}`}>
+                    <label htmlFor="genre">
+                      <Tag size={14} />
+                      Genre <span className="required">*</span>
+                    </label>
                     <select
-  value={formData.genre_id}
-  onChange={(e) => {
-    const selected = genres.find(
-      (g) => g.id === Number(e.target.value)
-    );
-
-    setFormData({
-      ...formData,
-      genre_id: selected.id,
-      genre_title: selected.title
-    });
-  }}
->
-  <option value="">Select Genre</option>
-
-  {genres.map((g) => (
-    <option key={g.id} value={g.id}>
-      {g.title}
-    </option>
-  ))}
-</select>
+                      id="genre"
+                      value={formData.genre_id}
+                      onChange={(e) => {
+                        setFormData((prev) => ({ ...prev, genre_id: Number(e.target.value) }));
+                        if (errors.genre_id) setErrors((prev) => ({ ...prev, genre_id: "" }));
+                      }}
+                    >
+                      <option value="">Select a genre…</option>
+                      {genres.map((g) => (
+                        <option key={g.id} value={g.id}>{g.title}</option>
+                      ))}
+                    </select>
                     {errors.genre_id && (
-                      <span className="error">{errors.genre_id}</span>
+                      <span className="cb-field__error">{errors.genre_id}</span>
                     )}
                   </div>
 
-                  <div className="form-field">
-                    <label>Short Description *</label>
+                  {/* Description */}
+                  <div className={`cb-field ${errors.description ? "has-error" : ""}`}>
+                    <label htmlFor="description">
+                      <AlignLeft size={14} />
+                      Short description <span className="required">*</span>
+                    </label>
                     <textarea
+                      id="description"
                       name="description"
                       value={formData.description}
                       onChange={handleInputChange}
-                      placeholder="Describe your book in a few sentences..."
                       rows={5}
-                      maxLength={3000}
-                      className={errors.description ? "input-error" : ""}
+                      placeholder="Give readers a glimpse of your book…"
                     />
-                    {errors.description && (
-                      <span className="error">{errors.description}</span>
-                    )}
+                    {errors.description
+                      ? <span className="cb-field__error">{errors.description}</span>
+                      : <span className="cb-field__hint">Appears on the book listing page.</span>
+                    }
                   </div>
+
                 </form>
               )}
             </div>
           )}
 
+          {/* ── STEP 2 ── */}
           {step === 2 && (
-            <div className="step">
-              <h2>Review & Create</h2>
-              <p className="step-desc">Confirm everything looks good</p>
+            <div className="cb-review-step">
+              <div className="cb-card__head">
+                <h2>Review & publish</h2>
+                <p>Double-check before publishing — this costs 1 credit.</p>
+              </div>
+{/* 
+              <div className="cb-credit-notice">
+                <AlertTriangle size={15} />
+                <span>Publishing uses <strong>1 credit</strong> from your balance.</span>
+              </div> */}
 
-              <div className="review-box">
-                <div className="review-item">
-                  <FileText size={18} />
-                  <div>
-                    <strong>Title</strong>
-                    <p>{formData.title || "—"}</p>
-                  </div>
+              <div className="cb-review">
+                <div className="cb-review__row">
+                  <span className="cb-review__key">Title</span>
+                  <span className="cb-review__val">{formData.title || "—"}</span>
                 </div>
-
-                <div className="review-item">
-                  <strong>Genre</strong>
-                  <p>
-                    {genres.find((g) => g.id === formData.genre_id)?.title ||
-                      "—"}
-                  </p>
+                <div className="cb-review__row">
+                  <span className="cb-review__key">Genre</span>
+                  <span className="cb-review__val">
+                    {selectedGenre
+                      ? <span className="cb-badge">{selectedGenre.title}</span>
+                      : "—"
+                    }
+                  </span>
                 </div>
-
-                <div className="review-item">
-                  <strong>Description</strong>
-                  <p>{formData.description || "—"}</p>
+                <div className="cb-review__row">
+                  <span className="cb-review__key">Description</span>
+                  <span className="cb-review__val cb-review__val--desc">
+                    {formData.description || "—"}
+                  </span>
                 </div>
               </div>
 
-              <div className="create-action">
-                <button
-                  className="btn-create"
-                  onClick={handleCreate}
-                  disabled={loadingCreate}
-                >
-                  {loadingCreate ? "Creating..." : "Create Project"}
-                </button>
-              </div>
+              <button
+                className="cb-btn cb-btn--publish"
+                onClick={handleCreate}
+                disabled={loadingCreate}
+              >
+                {loadingCreate ? (
+                  <>
+                    <span className="cb-spinner" />
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    <BookOpen size={16} />
+                    Create book
+                  </>
+                )}
+              </button>
             </div>
           )}
+
         </div>
 
-        <div className="wizard-controls">
+        {/* Nav controls */}
+        <div className="cb-nav">
           <button
-            className="btn-nav prev"
+            className="cb-btn cb-btn--ghost"
             onClick={handlePrevious}
             disabled={step === 1}
           >
-            <ArrowLeft size={18} /> Previous
+            <ArrowLeft size={16} /> Previous
           </button>
 
-          {step < totalSteps && (
-            <button className="btn-nav next" onClick={handleNext}>
-              Next <ArrowRight size={18} />
+          {step < TOTAL_STEPS && (
+            <button className="cb-btn cb-btn--primary" onClick={handleNext}>
+              Continue <ArrowRight size={16} />
             </button>
           )}
         </div>
+
       </main>
 
-      {/* Pricing overlay */}
+      {/* ── CREDIT MODAL ── */}
+      <Modal
+        open={creditModal}
+        onCancel={() => setCreditModal(false)}
+        footer={null}
+        centered
+        width={400}
+        className="cb-modal"
+      >
+        <div className="cb-modal__body">
+          <div className="cb-modal__icon">
+            <AlertTriangle size={26} />
+          </div>
+          <h3>Not enough credits</h3>
+          <p>
+            You need at least <strong>1 credit</strong> to publish a book.
+            Top up your account to continue.
+          </p>
+          <Button
+            type="primary"
+            size="large"
+            block
+            onClick={() => {
+              setCreditModal(false);
+              navigate("/dashboard/payment", { state: { from: "create_book" } });
+            }}
+          >
+            Buy credits
+          </Button>
+          <button
+            className="cb-modal__cancel"
+            onClick={() => setCreditModal(false)}
+          >
+            Maybe later
+          </button>
+        </div>
+      </Modal>
+
+      {/* ── PRICING OVERLAY ── */}
       {showPricing && (
-        <div className="pricing-overlay">
-          <div className="pricing-modal">
+        <div className="cb-overlay">
+          <div className="cb-overlay__modal">
             <button
-              className="close-pricing"
+              className="cb-overlay__close"
               onClick={() => setShowPricing(false)}
             >
-              <X size={24} />
+              ✕
             </button>
             <PricingCards
               onPaymentDone={() => {
                 setShowPricing(false);
-                handleCreate(); // retry
+                handleCreate();
               }}
             />
           </div>
         </div>
       )}
-      <Modal
-  open={creditModal}
-  onCancel={() => setCreditModal(false)}
-  footer={null}
-  centered
->
-  <div style={{ textAlign: "center", padding: "20px" }}>
-    <h2>Insufficient Credit</h2>
-    <p>Please purchase credits to continue creating your book.</p>
 
-    <Button
-      type="primary"
-      size="large"
-      onClick={() => {
-        setCreditModal(false);
-        navigate("/dashboard/payment", {
-          state: { from: "create_book" },
-        });
-      }}
-    >
-      Purchase Credit
-    </Button>
-  </div>
-</Modal>
     </div>
-    
   );
 };
 
