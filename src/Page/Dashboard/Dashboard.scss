@@ -1,52 +1,178 @@
 /* =========================================
-   Dashboard Layout & Page
-   Balanced #174f78 ↔ #ed1c24 editorial SaaS
+   Enhanced Dashboard Layout - Book Publishing Software
+   Modern Editorial SaaS UI (Blue #174f78 + Accent #ed1c24)
 ========================================= */
 
 .dashboard-layout {
   display: flex;
-  min-height: 100vh; // full viewport
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
 }
 
 .dashboard-main {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  flex: 1; // take remaining width
-  height: 100vh; // full viewport height
+  height: 100vh;
+  overflow: hidden;
 }
 
 .dashboard-content {
-  flex: 1; // take remaining vertical space below header
-  overflow-y: auto; // scroll if content exceeds height
-  padding: 24px; // optional spacing
-  background: #f5f7fb; // optional background
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px;
+  background: #f8fafc;
+      overflow: hidden;
 }
 
-/* Dashboard page wrapper (used in Dashboard.jsx) */
+/* Main Dashboard Page */
 .dashboard-page {
   display: flex;
   flex-direction: column;
   gap: 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
 
+.section {
+  background: white;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
 
-  >section {
-    background: white;
+  &:hover {
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+    transform: translateY(-4px);
+  }
+
+  @media (max-width: 768px) {
+    padding: 24px 20px;
+    border-radius: 16px;
+  }
+}
+
+.section-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 24px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 24px;
+    background: linear-gradient(135deg, #174f78, #ed1c24);
+    border-radius: 4px;
+  }
+}
+
+/* Welcome Section Enhancement */
+.welcome-card {
+  background: linear-gradient(135deg, #174f78 0%, #1e3a5f 100%);
+  color: white;
+  border-radius: 20px;
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -30%;
+    width: 300px;
+    height: 300px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+  }
+}
+
+/* Stats Cards - Modern Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+}
+
+.stat-card {
+  background: white;
+  padding: 28px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: #174f78;
+    transform: translateY(-6px);
+  }
+}
+
+.stat-value {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #174f78;
+  margin: 8px 0;
+}
+
+.stat-title {
+  color: #64748b;
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+/* Books Section */
+.books-section {
+  .books-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .new-book-btn {
+    background: linear-gradient(135deg, #ed1c24, #c81e1e);
+    color: white;
+    border: none;
+    padding: 14px 28px;
     border-radius: 12px;
-    padding: 28px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-    border: 1px solid #f1f5f9;
+    font-weight: 600;
+    font-size: 1.02rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
 
-    @media (max-width: 640px) {
-      padding: 20px 16px;
-      border-radius: 10px;
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(237, 28, 36, 0.3);
     }
   }
 }
 
-/* Optional global helpers for dashboard sections */
-.section-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #0f172a;
-  margin: 0 0 20px;
+/* Download Stats Button - Enhanced */
+.download-btn {
+  background: linear-gradient(135deg, #174f78, #1e3a5f);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  align-self: flex-end;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 15px rgba(23, 79, 120, 0.25);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(23, 79, 120, 0.35);
+  }
 }

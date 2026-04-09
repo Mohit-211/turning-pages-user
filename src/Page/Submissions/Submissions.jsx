@@ -129,7 +129,7 @@ export default function Submissions() {
     }
 
     if (action === "view") {
-      navigate(`/dashboard/chaptermanager/${bookId}`);
+      navigate(`/dashboard/chaptermanager/${bookId}/view`);
       return;
     }
 

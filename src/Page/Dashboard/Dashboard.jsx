@@ -17,40 +17,40 @@ const Dashboard = () => {
       try {
         setLoading(true);
 
-        // Fetch user
         const userRes = await UserProfileApi();
         setUser(userRes?.data?.data);
 
-        // Fetch books
         const booksRes = await GetAllBooksApi();
         const bookList = booksRes?.data?.data || [];
 
         setBooks(bookList);
 
-        // Calculate stats
+        // Enhanced Stats
         setStats([
-          { title: "Total Books", value: bookList.length },
+          { 
+            title: "Total Books", 
+            value: bookList.length,
+            icon: "📚"
+          },
           {
             title: "In Progress",
-            value: bookList.filter((b) =>
-              ["Draft", "In Editing"].includes(b.status)
-            ).length,
+            value: bookList.filter((b) => ["Draft", "In Editing"].includes(b.status)).length,
+            icon: "✍️"
           },
           {
             title: "Completed",
             value: bookList.filter((b) => b.status === "Completed").length,
+            icon: "✅"
           },
           {
-            title: "Total Words",
+            title: "Total Words Written",
             value: bookList
               .reduce((acc, book) => {
-                const words = parseInt(
-                  book.wordCount?.replace(/[^0-9]/g, "") || "0",
-                  10
-                );
+                const words = parseInt(book.wordCount?.replace(/[^0-9]/g, "") || "0", 10);
                 return acc + words;
               }, 0)
               .toLocaleString(),
+            icon: "📝"
           },
         ]);
       } catch (err) {
@@ -62,65 +62,58 @@ const Dashboard = () => {
 
     loadData();
   }, []);
-console.log(user,"==>")
+
   const handleNewBook = () => {
     window.location.href = "/create-book";
   };
+
   const downloadStatsCSV = () => {
     if (!stats || stats.length === 0) return;
 
     const header = "Title,Value\n";
-
-    const rows = stats
-      .map((item) => {
-        const title = `"${item.title}"`;
-        const value = `"${item.value}"`;
-        return `${title},${value}`;
-      })
-      .join("\n");
-
+    const rows = stats.map(item => `"${item.title}","${item.value}"`).join("\n");
     const csvContent = header + rows;
 
-    const blob = new Blob([csvContent], {
-      type: "text/csv;charset=utf-8;",
-    });
-
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
-
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", "dashboard-stats.csv");
-
+    link.download = `book-dashboard-stats-${new Date().toISOString().slice(0,10)}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
+
   return (
     <div className="dashboard-page">
-     <button
-  onClick={downloadStatsCSV}
-  style={{
-    background: "#1E3A5F",
-    color: "#fff",
-    border: "none",
-    borderRadius: "8px",
-    padding: "10px 16px",
-    cursor: "pointer",
-    fontWeight: "600",
-    width: "fit-content",
-    display: "flex",
-    alignSelf: "flex-end",
-    margin: "20px",
-  }}
->
-  Download Stats
-</button>
-      <WelcomeSection user={user} onNewBook={handleNewBook} />
+      {/* Enhanced Download Button */}
+      <button
+        onClick={downloadStatsCSV}
+        className="download-btn"
+      >
+        📊 Download Stats (CSV)
+      </button>
 
-      <StatsSection stats={stats} isLoading={loading} />
+      <WelcomeSection 
+        user={user} 
+        onNewBook={handleNewBook} 
+      />
 
-      <BooksSection books={books} isLoading={loading} />
-    </div >
+      <div className="section">
+        <h2 className="section-title">📈 Publishing Overview</h2>
+        <StatsSection stats={stats} isLoading={loading} />
+      </div>
+
+      {/* <div className="section">
+        <div className="books-header">
+          <h2 className="section-title">📖 My Books & Manuscripts</h2>
+          <button onClick={handleNewBook} className="new-book-btn">
+            ✨ Create New Book
+          </button>
+        </div>
+        <BooksSection books={books} isLoading={loading} />
+      </div> */}
+    </div>
   );
 };
 
