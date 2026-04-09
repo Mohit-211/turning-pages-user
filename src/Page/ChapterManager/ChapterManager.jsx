@@ -35,44 +35,44 @@ import AIToolsGuide from "./chapterComponent/AIToolsGuide";
 import BookCoverPanel from "../Book/BookHeader/BookCoverPanel";
 
 export default function ChapterManager() {
-  const navigate  = useNavigate();
-  const location  = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { bookId } = useParams();
 
   // ── UI state ──────────────────────────────────────────────
-  const [showAIGuide,       setShowAIGuide]       = useState(false);
-  const [showCoverPanel,    setShowCoverPanel]     = useState(false);
-  const [showPurchaseModal, setShowPurchaseModal]  = useState(false);
-  const [paymentOpen,       setPaymentOpen]        = useState(false);
+  const [showAIGuide, setShowAIGuide] = useState(false);
+  const [showCoverPanel, setShowCoverPanel] = useState(false);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [paymentOpen, setPaymentOpen] = useState(false);
 
   // ── Book / chapter state ──────────────────────────────────
-  const [bookDetails,   setBookDetails]   = useState({});
-  const [chapters,      setChapters]      = useState([]);
-  const [selectedId,    setSelectedId]    = useState(null);
+  const [bookDetails, setBookDetails] = useState({});
+  const [chapters, setChapters] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
   const [editorContent, setEditorContent] = useState("");
-  const [viewMode,      setViewMode]      = useState("edit");
+  const [viewMode, setViewMode] = useState("edit");
 
   // ── Loading flags ─────────────────────────────────────────
-  const [loading,        setLoading]        = useState(true);
-  const [saving,         setSaving]         = useState(false);
-  const [submitLoading,  setSubmitLoading]  = useState(false);
-  const [completeLoading,setCompleteLoading]= useState(false);
-  const [isCompleted,    setIsCompleted]    = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [completeLoading, setCompleteLoading] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
 
   // ── Modals ────────────────────────────────────────────────
-  const [addModalVisible,    setAddModalVisible]    = useState(false);
+  const [addModalVisible, setAddModalVisible] = useState(false);
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
 
   // ── AI panel ─────────────────────────────────────────────
-  const [isAIPanelOpen,     setIsAIPanelOpen]    = useState(false);
-  const [aiActiveTab,       setAiActiveTab]      = useState("");
-  const [aiLoading,         setAiLoading]        = useState(false);
+  const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
+  const [aiActiveTab, setAiActiveTab] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
   const [plagiarismModalOpen, setPlagiarismModalOpen] = useState(false);
-  const [factModalOpen,     setFactModalOpen]    = useState(false);
+  const [factModalOpen, setFactModalOpen] = useState(false);
 
   // ── Submission ────────────────────────────────────────────
   const [booksubmiition, setBookSubmitton] = useState();
-  const [eventName,      setEventName]     = useState("");
+  const [eventName, setEventName] = useState("");
 
   // ── AI results (persisted) ────────────────────────────────
   const [aiResults, setAiResults] = useState(() => {
@@ -92,7 +92,7 @@ export default function ChapterManager() {
   const fetchBookAndChapters = async () => {
     setLoading(true);
     try {
-      const res  = await GetBookByIdApi(bookId);
+      const res = await GetBookByIdApi(bookId);
       const data = res?.data?.data ?? {};
 
       setBookDetails(data);
@@ -114,38 +114,38 @@ export default function ChapterManager() {
   }, [selectedId, chapters]);
 
   // ── Submission helpers ────────────────────────────────────
-const createBookSubmission = async (event_name) => {
-  try {
-    const res = await GetBooksBySubmittion({
-      book_id: bookId,
-      event_name,
-    });
+  const createBookSubmission = async (event_name) => {
+    try {
+      const res = await GetBooksBySubmittion({
+        book_id: bookId,
+        event_name,
+      });
 
-    const submissionId = res?.data?.data?.id;
-    const messageText = res?.data?.message;
+      const submissionId = res?.data?.data?.id;
+      const messageText = res?.data?.message;
 
-    if (!submissionId) {
-      throw new Error("Submission failed");
-    }
-
-    if (res?.data?.status === 200) {
-      message.success(messageText || "Action successful");
-
-      // ✅ Redirect only for submit
-      if (event_name === "submit") {
-        setTimeout(() => {
-          navigate("/dashboard/submissions");
-        }, 1000); // small delay so user can see message
+      if (!submissionId) {
+        throw new Error("Submission failed");
       }
-    }
 
-    return submissionId;
-  } catch (error) {
-    console.error("Submission error:", error);
-    message.error("Something went wrong");
-    throw error;
-  }
-};
+      if (res?.data?.status === 200) {
+        message.success(messageText || "Action successful");
+
+        // ✅ Redirect only for submit
+        if (event_name === "submit") {
+          setTimeout(() => {
+            navigate("/dashboard/submissions");
+          }, 1000); // small delay so user can see message
+        }
+      }
+
+      return submissionId;
+    } catch (error) {
+      console.error("Submission error:", error);
+      message.error("Something went wrong");
+      throw error;
+    }
+  };
   const handleSubmitForEditing = async (event_name) => {
     try {
       setSubmitLoading(true);
@@ -237,7 +237,7 @@ const createBookSubmission = async (event_name) => {
     setAiActiveTab("plagiarism");
     setAiLoading(true);
     try {
-      const response  = await PlagiarismCheck(text);
+      const response = await PlagiarismCheck(text);
       const resultData = response?.data?.data || null;
       setAiResults((prev) => ({
         ...prev,
@@ -256,7 +256,7 @@ const createBookSubmission = async (event_name) => {
     setAiActiveTab("fact");
     setAiLoading(true);
     try {
-      const response  = await FactChecking(text);
+      const response = await FactChecking(text);
       const resultData = response?.data?.data || null;
       setAiResults((prev) => ({
         ...prev,
@@ -276,10 +276,10 @@ const createBookSubmission = async (event_name) => {
     try {
       const chapter = chapters.find((c) => c.id === selectedId);
       await UpdateChapterApi({
-        title:      chapter?.title,
-        book_id:    bookId,
+        title: chapter?.title,
+        book_id: bookId,
         chapter_id: selectedId,
-        content:    editorContent,
+        content: editorContent,
       });
       message.success("Chapter saved");
       fetchBookAndChapters();
@@ -303,6 +303,7 @@ const createBookSubmission = async (event_name) => {
   };
 
   const currentAIData = aiResults[selectedId] || {};
+  const onlyView = location.pathname.endsWith("/view");
 
   // ── Render ────────────────────────────────────────────────
   return (
@@ -359,6 +360,7 @@ const createBookSubmission = async (event_name) => {
           onMarkComplete={handleMarkAsComplete}
           isCompleted={isCompleted}
           loading={submitLoading || completeLoading}
+
         />
 
         <Toolbar
@@ -379,6 +381,7 @@ const createBookSubmission = async (event_name) => {
             setIsAIPanelOpen(true);
             setShowAIGuide(true);
           }}
+
         />
 
         <div className="content-layout">
@@ -409,6 +412,8 @@ const createBookSubmission = async (event_name) => {
               <ChapterEditor
                 content={editorContent}
                 setContent={setEditorContent}
+                onlyView={onlyView}
+
               />
             ) : (
               <PdfViewer htmlContent={editorContent} />

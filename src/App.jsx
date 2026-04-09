@@ -192,7 +192,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-
+<Route path="/dashboard/chaptermanager/:bookId/view" element={<ChapterManager />} />
 
         <Route
           path="/dashboard/my-feed"

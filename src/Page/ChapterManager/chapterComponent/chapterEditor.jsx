@@ -9,6 +9,7 @@ export default function ChapterEditor({
   setContent,
   onSave,
   saving = false,
+  onlyView
 }) {
   const [editorReady, setEditorReady] = useState(false);
 console.log(editorReady,"editorReady")
@@ -23,7 +24,8 @@ console.log(editorReady,"editorReady")
       <Editor
         apiKey="l8z8itk8wu9fzhh5rycablwg5569p08i4rnr84vdohk2wh3m"
         value={content || chapter?.content || ""}
-        
+        disabled={onlyView} // Disable editor in view mode
+        // disabled={false} // Keep editor enabled for both modes (view/edit) to allow content copying
         init={{
           height: 580,
           menubar: false,
