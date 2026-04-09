@@ -10,7 +10,6 @@ import {
   BookOpen,
 } from "lucide-react";
 import "./Toolbar.scss";
-
 export default function Toolbar({
   chapterTitle,
   saving = false,
@@ -23,21 +22,19 @@ export default function Toolbar({
   onSave,
   onOpenUploadModal,
   content = "", // 👈 pass editor content here (optional)
-  onOpenAIGuide
+  onOpenAIGuide,
+onlyView = !onlyView
 }) {
   const isEditMode = viewMode === "edit";
   const [selectedTool, setSelectedTool] = useState(activeTool || "");
-
   useEffect(() => {
     setSelectedTool(activeTool || "");
   }, [activeTool]);
-
   const handleRunTool = () => {
     if (!selectedTool) {
       alert("Please select a TAV Tool before running analysis.");
       return;
     }
-
     // ✅ OPTIONAL: 200 character validation
     if (content && content.length < 200) {
       alert(
@@ -45,22 +42,19 @@ export default function Toolbar({
       );
       return;
     }
-
     onRunAITool(selectedTool);
   };
-
   return (
     <div className="chapter-toolbar">
       <div className="chapter-title">
         <h2>{chapterTitle?.title || "Untitled Chapter"}</h2>
       </div>
-
       <div className="action-buttons">
         {/* ✅ UPDATED LABEL */}
-<button className="toolbar-btn ai-guide-btn"   onClick={onOpenAIGuide}>
-  <BookOpen size={18} />
-  <span>TAV Guide</span>
-</button>
+        <button className="toolbar-btn ai-guide-btn" onClick={onOpenAIGuide}>
+          <BookOpen size={18} />
+          <span>TAV Guide</span>
+        </button>
         <div className="ai-tool-select">
           <select
             value={selectedTool}
@@ -72,17 +66,14 @@ export default function Toolbar({
             <option value="summary">Generate Summary</option>
             <option value="fact">Fact Checking</option>
           </select>
-
           <button className="toolbar-btn run-ai-btn" onClick={handleRunTool}>
             <PlayCircle size={18} />
           </button>
         </div>
-
         <button className="toolbar-btn upload-btn" onClick={onOpenUploadModal}>
           <Upload size={18} />
           <span>Upload</span>
         </button>
-
         <button
           className={`toolbar-btn ${isAIPanelOpen ? "active" : ""}`}
           onClick={onToggleAIPanel}
@@ -90,7 +81,6 @@ export default function Toolbar({
           {isAIPanelOpen ? <X size={18} /> : <PanelRight size={18} />}
           <span>{isAIPanelOpen ? "Close TAV Panel" : "Open TAV Panel"}</span>
         </button>
-
         {isEditMode ? (
           <button className="toolbar-btn" onClick={() => setViewMode("preview")}>
             <Eye size={18} />
@@ -102,11 +92,10 @@ export default function Toolbar({
             <span>Edit</span>
           </button>
         )}
-
         <button
           className="toolbar-btn save-btn"
-          disabled={saving}
           onClick={onSave}
+          disabled={saving || onlyView}
         >
           <Save size={18} />
           <span>{saving ? "Saving..." : "Save"}</span>

@@ -381,6 +381,7 @@ export default function ChapterManager() {
             setIsAIPanelOpen(true);
             setShowAIGuide(true);
           }}
+          onlyView={onlyView}
 
         />
 
