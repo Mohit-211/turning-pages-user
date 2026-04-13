@@ -31,7 +31,9 @@
   background: var(--paper);
   border-radius: var(--radius-card);
   border: 1px solid var(--paper-3);
-  padding: 0;
+  // padding: 0;
+  padding: 20px;
+
   margin-bottom: 0;
   box-shadow: var(--shadow-card);
   transition: box-shadow var(--transition), transform var(--transition);
