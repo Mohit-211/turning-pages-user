@@ -1,0 +1,578 @@
+// ─── Variables ───────────────────────────────────────────────────────────────
+$navy: #1E3A5F;
+$red: #C0392B;
+$blue: #1D4ED8;
+$blue-light: #EFF6FF;
+$blue-border: #BFDBFE;
+$text-primary: #475569;
+$text-muted: #64748B;
+$text-hint: #94A3B8;
+$border: #E2E8F0;
+$border-light: #F1F5F9;
+$bg-page: #F0F4F8;
+$bg-white: #fff;
+$bg-faint: #FAFAFA;
+$bg-info: #F8FAFC;
+
+$radius-sm: 6px;
+$radius-md: 8px;
+$radius-lg: 10px;
+$radius-xl: 12px;
+
+$shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+$font: "'Segoe UI', Tahoma, sans-serif";
+
+// ─── Category colors ──────────────────────────────────────────────────────────
+$categories: (
+  Planning:   (#EFF6FF, #1D4ED8),
+  Writing:    (#F0FDF4, #15803D),
+  Editing:    (#FFF7ED, #C2410C),
+  Validation: (#FDF4FF, #7E22CE),
+);
+
+// ─── Root ─────────────────────────────────────────────────────────────────────
+.credit-system {
+  display: flex;
+  height: 100vh;
+  font-family: #{$font};
+  background: $bg-page;
+  overflow: hidden;
+}
+
+// ─── Main column ─────────────────────────────────────────────────────────────
+.cs-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+// ─── Scrollable content area ─────────────────────────────────────────────────
+.cs-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+// ─── Welcome banner ──────────────────────────────────────────────────────────
+.cs-welcome {
+  background: $bg-white;
+  border-radius: $radius-xl;
+  padding: 22px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  box-shadow: $shadow-card;
+
+  &__title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: $navy;
+    text-align: left;
+  }
+
+  &__subtitle {
+    margin: 4px 0 0;
+    color: $text-muted;
+    font-size: 13px;
+  }
+
+  &__btn {
+    background: $navy;
+    color: $bg-white;
+    border: none;
+    border-radius: $radius-md;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+}
+
+// ─── Stats grid ──────────────────────────────────────────────────────────────
+.cs-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.cs-stat-card {
+  background: $bg-white;
+  border-radius: $radius-xl;
+  padding: 18px 20px;
+  box-shadow: $shadow-card;
+
+  &__label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: $text-hint;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  &__value {
+    font-size: 30px;
+    font-weight: 700;
+  }
+}
+
+// ─── Tabbed card ─────────────────────────────────────────────────────────────
+.cs-card {
+  background: $bg-white;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-card;
+  overflow: hidden;
+}
+
+.cs-tabs {
+  display: flex;
+  border-bottom: 1px solid $border;
+  padding: 0 16px;
+  overflow-x: auto;
+}
+
+.cs-tab {
+  padding: 13px 16px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: $text-muted;
+  font-weight: 400;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+  margin-bottom: -1px;
+  transition: all 0.15s;
+
+  &--active {
+    border-bottom-color: $red;
+    color: $red;
+    font-weight: 600;
+  }
+}
+
+.cs-panel {
+  padding: 22px;
+}
+
+// ─── Overview tab ────────────────────────────────────────────────────────────
+.cs-overview {
+  &__intro {
+    color: $text-primary;
+    font-size: 14px;
+    line-height: 1.75;
+    margin-top: 0;
+    margin-bottom: 18px;
+
+    strong {
+      color: $navy;
+
+      &.accent {
+        color: $red;
+      }
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+}
+
+.cs-overview-card {
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  background: $bg-faint;
+
+  &__icon {
+    font-size: 20px;
+  }
+
+  &__title {
+    font-weight: 600;
+    color: $navy;
+    font-size: 13px;
+    margin-bottom: 3px;
+  }
+
+  &__desc {
+    color: $text-muted;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+}
+
+// ─── Use Credits tab ─────────────────────────────────────────────────────────
+.cs-credits {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+
+  &__hint {
+    margin: 0;
+    color: $text-muted;
+    font-size: 13px;
+  }
+
+  &__summary {
+    background: $blue-light;
+    border: 1px solid $blue-border;
+    border-radius: $radius-md;
+    padding: 7px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__summary-count {
+    color: $blue;
+    font-size: 13px;
+  }
+
+  &__summary-total {
+    color: $navy;
+    font-weight: 700;
+    font-size: 17px;
+  }
+
+  &__summary-clear {
+    background: none;
+    border: none;
+    color: $text-hint;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
+.cs-activity {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  cursor: pointer;
+  background: $bg-faint;
+  transition: all 0.15s;
+
+  &--selected {
+    border: 1.5px solid $blue;
+    background: #F0F7FF;
+  }
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__check {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 2px solid #CBD5E1;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &--checked {
+      border: none;
+      background: $blue;
+    }
+  }
+
+  &__checkmark {
+    color: $bg-white;
+    font-size: 10px;
+  }
+
+  &__label {
+    font-size: 13px;
+    color: $text-primary;
+    font-weight: 400;
+
+    &--selected {
+      color: $navy;
+      font-weight: 600;
+    }
+  }
+
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  &__credits {
+    background: #E2E8F0;
+    color: $text-primary;
+    padding: 3px 11px;
+    border-radius: $radius-sm;
+    font-size: 12px;
+    font-weight: 600;
+    min-width: 48px;
+    text-align: center;
+    transition: all 0.15s;
+
+    &--selected {
+      background: $blue;
+      color: $bg-white;
+    }
+  }
+}
+
+// ─── Category badge colors ────────────────────────────────────────────────────
+.cs-badge {
+  &--Planning   { background: #EFF6FF; color: #1D4ED8; }
+  &--Writing    { background: #F0FDF4; color: #15803D; }
+  &--Editing    { background: #FFF7ED; color: #C2410C; }
+  &--Validation { background: #FDF4FF; color: #7E22CE; }
+}
+
+// ─── Included tab ────────────────────────────────────────────────────────────
+.cs-included {
+  &__intro {
+    color: $text-muted;
+    font-size: 13px;
+    margin-top: 0;
+    margin-bottom: 18px;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+}
+
+.cs-feature-card {
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: $bg-faint;
+
+  &__icon {
+    font-size: 18px;
+  }
+
+  &__label {
+    color: $navy;
+    font-size: 13px;
+    font-weight: 500;
+  }
+}
+
+// ─── Workflow tab ─────────────────────────────────────────────────────────────
+.cs-workflow {
+  &__intro {
+    color: $text-muted;
+    font-size: 13px;
+    margin-top: 0;
+    margin-bottom: 18px;
+  }
+
+  &__table {
+    border: 1px solid $border;
+    border-radius: $radius-lg;
+    overflow: hidden;
+  }
+
+  &__thead {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    padding: 9px 16px;
+    background: $bg-info;
+    border-bottom: 1px solid $border;
+  }
+
+  &__col-label {
+    font-size: 10px;
+    color: $text-hint;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  &__row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding: 13px 16px;
+    border-bottom: 1px solid $border-light;
+
+    &:last-of-type {
+      border-bottom: none;
+    }
+
+    &--even { background: $bg-white; }
+    &--odd  { background: $bg-faint; }
+  }
+
+  &__row-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__step-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: $blue-light;
+    color: $blue;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  &__task-name {
+    color: $navy;
+    font-size: 13px;
+  }
+
+  &__row-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__bar-track {
+    width: 55px;
+    height: 5px;
+    background: $border;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  &__bar-fill {
+    height: 100%;
+    background: $blue;
+    border-radius: 3px;
+  }
+
+  &__credit-val {
+    font-weight: 700;
+    color: $red;
+    font-size: 14px;
+    min-width: 28px;
+    text-align: right;
+  }
+
+  &__total-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    padding: 13px 16px;
+    background: $navy;
+  }
+
+  &__total-label {
+    color: $bg-white;
+    font-weight: 600;
+    font-size: 13px;
+  }
+
+  &__total-val {
+    color: $bg-white;
+    font-weight: 700;
+    font-size: 17px;
+  }
+}
+
+// ─── Separate Services tab ───────────────────────────────────────────────────
+.cs-services {
+  &__intro {
+    color: $text-muted;
+    font-size: 13px;
+    margin-top: 0;
+    margin-bottom: 18px;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+}
+
+.cs-service-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid #FEE2E2;
+  border-radius: $radius-lg;
+  padding: 14px 16px;
+  background: #FFF5F5;
+
+  &__icon { font-size: 18px; }
+
+  &__label {
+    color: $navy;
+    font-size: 13px;
+    font-weight: 500;
+    flex: 1;
+  }
+
+  &__tag {
+    background: #FEE2E2;
+    color: #B91C1C;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+}
+
+.cs-services-note {
+  background: $blue-light;
+  border: 1px solid $blue-border;
+  border-radius: $radius-lg;
+  padding: 14px 16px;
+
+  p {
+    color: $blue;
+    font-size: 13px;
+    line-height: 1.7;
+    margin: 0;
+  }
+}
