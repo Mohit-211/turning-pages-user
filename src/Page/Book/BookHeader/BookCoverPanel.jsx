@@ -107,10 +107,6 @@ const saveCover = async () => {
     const res = await GetBookByIdApi(bookdetails.id);
 
     if (res?.data) {
-      // update parent or local state
-      // Example:
-      // setBookDetails(res.data);
-      // OR call parent callback if exists
       onUpdateBook && onUpdateBook(res.data);
     }
 
@@ -140,21 +136,23 @@ const saveCover = async () => {
         </div>
 
         <div className="field-group">
-          <label>Title</label>
+          <label>Title <span style={{ color: "red" }}>*</span></label>
           <Input
             placeholder="e.g. The Forgotten Garden"
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
+            status={!form.title && form.title !== undefined ? "error" : ""}
           />
         </div>
 
         <div className="field-group">
-          <label>Genre</label>
+          <label>Genre <span style={{ color: "red" }}>*</span></label>
           <Select
             placeholder="Select genre…"
             value={form.genre || undefined}
             style={{ width: "100%" }}
             onChange={(value) => setForm({ ...form, genre: value })}
+            status={!form.genre ? "error" : ""}
           >
             {genres.map((g) => (
               <Option key={g.id} value={g.id}>
@@ -165,11 +163,12 @@ const saveCover = async () => {
         </div>
 
         <div className="field-group">
-          <label>Author</label>
+          <label>Author <span style={{ color: "red" }}>*</span></label>
           <Input
             placeholder="e.g. Jane Doe"
             value={form.author}
             onChange={(e) => setForm({ ...form, author: e.target.value })}
+            status={!form.author && form.author !== undefined ? "error" : ""}
           />
         </div>
 

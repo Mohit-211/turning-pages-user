@@ -11,24 +11,19 @@ import ProfilePage from "./Page/ProfilePage/ProfilePage";
 import AddChapterPage from "./Page/AddChapterPage/AddChapterPage";
 import ChapterManager from "./Page/ChapterManager/ChapterManager";
 import Submissions from "./Page/Submissions/Submissions";
-
 /* Layouts */
 import AuthLayout from "./Page/Auth/AuthLayout";
 import DashboardLayout from "./Page/Dashboard/DashboardLayout";
-
 /* Auth Forms */
 import LoginForm from "./Page/Auth/forms/LoginForm";
 import SignUpForm from "./Page/Auth/forms/SignUpForm";
 import OtpVerification from "./Page/Auth/forms/OtpVerification";
-
 /* Routes Guards */
 import PublicRoute from "./Page/AuthRoutes/PublicRoute";
 import ProtectedRoute from "./Page/AuthRoutes/ProtectedRoute";
-
 /* Payments */
 import SupportDashboard from "./Page/Support/Support";
 import FeedPage from "./component/FeedPage/FeedPage";
-import SampleFeedPage from "./component/FeedPage/SampleFeedPage";
 import QuotesPage from "./component/Quotesmodule/QuotesPage";
 import Chat from "./Page/Chat/Chat";
 import DirectoryPage from "./component/FeedPage/DirectoryPage";
@@ -38,7 +33,6 @@ import ChangePassword from "./Page/Auth/forms/ChangePassword";
 import CreditSystem from "./Page/CreditPage/CreditPage";
 import AIToolsGuide from "./Page/ChapterManager/chapterComponent/AIToolsGuide";
 import PricingPage from "./Sections/PaymentPage/PricingPage";
-
 function App() {
   return (
     <BrowserRouter>
@@ -96,7 +90,6 @@ function App() {
             </PublicRoute>
           }
         />
-
         <Route
           path="/otp-verify"
           element={
@@ -107,8 +100,7 @@ function App() {
             </PublicRoute>
           }
         />
-
-         <Route
+        <Route
           path="/dashboard/change-password"
           element={
             <ProtectedRoute>
@@ -118,7 +110,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         {/* -------------------- DASHBOARD -------------------- */}
         <Route
           path="/dashboard"
@@ -130,7 +121,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/dashboard/profile"
           element={
@@ -141,7 +131,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/dashboard/books"
           element={
@@ -152,7 +141,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/dashboard/addchapter"
           element={
@@ -161,7 +149,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/dashboard/submissions"
           element={
@@ -182,8 +169,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
-
         <Route
           path="/dashboard/chaptermanager/:bookId"
           element={
@@ -192,8 +177,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-<Route path="/dashboard/chaptermanager/:bookId/view" element={<ChapterManager />} />
-
+        <Route path="/dashboard/chaptermanager/:bookId/view" element={<ChapterManager />} />
         <Route
           path="/dashboard/my-feed"
           element={
@@ -214,7 +198,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-         <Route
+        <Route
           path="/dashboard/ai-tools-guide"
           element={
             <ProtectedRoute>
@@ -244,7 +228,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/dashboard/chat/:book_room_id?"
           element={
@@ -255,7 +238,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-          <Route
+        <Route
           path="/dashboard/payment"
           element={
             <ProtectedRoute>
@@ -265,7 +248,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-          <Route
+        <Route
           path="/dashboard/publish-payment"
           element={
             <ProtectedRoute>
@@ -275,11 +258,16 @@ function App() {
             </ProtectedRoute>
           }
         />
-
-        {/* -------------------- MISC -------------------- */}
-        <Route path="/create-book" element={<CreateBook />} />
-        {/* <Route path="/sample-feed" element={<SampleFeedPage />} /> */}
-
+         <Route
+          path="/create-book"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <CreateBook />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
       </Routes>
       <ToastContainer
         position="top-right"
@@ -292,5 +280,4 @@ function App() {
     </BrowserRouter>
   );
 }
-
 export default App;

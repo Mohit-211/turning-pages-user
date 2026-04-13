@@ -1,24 +1,24 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Bell, User, Settings, LogOut, ChevronDown, Key } from "lucide-react";
+import { User, LogOut, ChevronDown, Key } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "./DashboardHeader.scss";
 import ProfileIcon from "../../assets/profileicon.jpg";
-import { logoutApi } from "../../api/auth/auth.api";
-import CreditBar from "./CreditBar";
-import logo from "../../../public/logo.jpg"
+import logo from "../../../public/logo.jpg";
+
 const DashboardHeader = ({
   user,
   notifications = [],
   unreadCount = 0,
- 
   maxCredits = 200,
 }) => {
   const navigate = useNavigate();
-  console.log(user,"user")
+
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+
   const notifRef = useRef(null);
   const profileRef = useRef(null);
+
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -31,9 +31,11 @@ const DashboardHeader = ({
         setShowProfile(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
   const handleLogout = async () => {
     try {
       localStorage.removeItem("book_publish_token");
@@ -43,56 +45,21 @@ const DashboardHeader = ({
       alert("Logout failed. Please try again.");
     }
   };
+
   return (
     <header className="dashboard-header">
       <div className="left-section">
         <div className="logo">
           <span className="emoji">
-            <img src={logo} width={50} height={50}/>
+            <img src={logo} width={50} height={50} />
           </span>
           <span className="title">Turning Pages</span>
         </div>
       </div>
-      <div className="center-section">
-        {/* <CreditBar
-          credits={user?.total_credit}
-          maxCredits={maxCredits}
-          onMoreCredits={() => navigate("/dashboard/billing")}
-        /> */}
-      </div>
+
+      <div className="center-section"></div>
+
       <div className="right-section">
-        {/* Notifications */}
-        {/* <div className="dropdown-wrapper" ref={notifRef}>
-          <button
-            className="icon-btn"
-            onClick={() => {
-              setShowNotifications((s) => !s);
-              setShowProfile(false);
-            }}
-          >
-            <Bell size={20} />
-            {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
-          </button>
-          {showNotifications && (
-            <div className="dropdown notification-dropdown">
-              <div className="dropdown-header">Notifications</div>
-              {notifications.length > 0 ? (
-                notifications.map((n) => (
-                  <div
-                    key={n.id}
-                    className={`notification-item ${n.unread ? "unread" : ""}`}
-                  >
-                    <p className="message">{n.message}</p>
-                    <span className="time">{n.time}</span>
-                  </div>
-                ))
-              ) : (
-                <div className="empty">No new notifications</div>
-              )}
-            </div>
-          )}
-        </div> */}
-        {/* Profile */}
         <div className="dropdown-wrapper" ref={profileRef}>
           <div
             className="profile-trigger"
@@ -107,37 +74,52 @@ const DashboardHeader = ({
             </span>
             <ChevronDown size={16} />
           </div>
-          {showProfile && (
-            <div className="dropdown profile-dropdown">
-              {/* <div className="profile-header">
-                <p className="name">{user?.user_profile?.name || "User"}</p>
-                <p className="email">{user?.email || "—"}</p>
-              </div> */}
-              <div
-                className="dropdown-item"
-                onClick={() => navigate("/dashboard/profile")}
-              >
-                <User size={16} />
-                Profile
-              </div>
-        
- <div
-                className="dropdown-item"
-                onClick={() => navigate("/dashboard/change-password")}
-              >
-                <Key size={16} />
-                Change Password
-              </div>
-              <div className="divider" />
-              <div className="dropdown-item danger" onClick={handleLogout}>
-                <LogOut size={16} />
-                Sign Out
-              </div>
-            </div>
-          )}
+
+     {showProfile && (
+  <div
+    className="dropdown profile-dropdown"
+    onClick={(e) => e.stopPropagation()}
+  >
+    <div
+      className="dropdown-item"
+      onClick={() => {
+        setShowProfile(false); // ✅ close dropdown
+        navigate("/dashboard/profile");
+      }}
+    >
+      <User size={16} />
+      Profile
+    </div>
+
+    <div
+      className="dropdown-item"
+      onClick={() => {
+        setShowProfile(false); // ✅ close dropdown
+        navigate("/dashboard/change-password");
+      }}
+    >
+      <Key size={16} />
+      Change Password
+    </div>
+
+    <div className="divider" />
+
+    <div
+      className="dropdown-item danger"
+      onClick={() => {
+        setShowProfile(false); // ✅ close dropdown
+        handleLogout();
+      }}
+    >
+      <LogOut size={16} />
+      Sign Out
+    </div>
+  </div>
+)}
         </div>
       </div>
     </header>
   );
 };
+
 export default DashboardHeader;
