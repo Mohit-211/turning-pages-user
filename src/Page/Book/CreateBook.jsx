@@ -96,28 +96,10 @@ const handleCreate = async () => {
   return (
     <div className="create-book">
 
-      {/* ── HEADER ── */}
-      <header className="cb-header">
-        <div className="cb-header__inner">
-          <Link to="/dashboard" className="cb-back">
-            <ArrowLeft size={16} />
-            <span>Back to Dashboard</span>
-          </Link>
-          <div className="cb-brand">
-            <BookOpen size={20} strokeWidth={1.8} />
-            <span>Turning Pages</span>
-          </div>
-        </div>
-      </header>
 
       {/* ── MAIN ── */}
       <main className="cb-main">
 
-        {/* Page title */}
-        <div className="cb-hero">
-          <h1>Create a new book</h1>
-          <p>Add your book details to the library</p>
-        </div>
 
         {/* Stepper */}
         <div className="cb-stepper">
