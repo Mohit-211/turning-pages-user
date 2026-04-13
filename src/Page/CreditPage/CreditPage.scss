@@ -52,7 +52,8 @@ $categories: (
 .cs-content {
   flex: 1;
   padding: 20px;
-  overflow-y: auto;
+  overflow-y: scroll;
+      scrollbar-width: none;
 }
 
 // ─── Welcome banner ──────────────────────────────────────────────────────────
@@ -137,7 +138,7 @@ $categories: (
   display: flex;
   border-bottom: 1px solid $border;
   padding: 0 16px;
-  overflow-x: auto;
+  // overflow-x: auto;
 }
 
 .cs-tab {
