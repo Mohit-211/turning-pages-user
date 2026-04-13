@@ -58,11 +58,13 @@ export default function FeedPage() {
 
       <div className="feed-page__body">
         <main className="feed-page__main">
+<div style={{marginTop:"20px"}}>
 
           <ComposeBox onfeedCreated={handlefeedCreated}  
                reloadFeeds={loadFeeds}  
-          
-          />
+               
+               />
+               </div>
 
           {loading && <p>Loading feeds…</p>}
 

@@ -160,7 +160,7 @@ console.log(user,"user")
   )}
 </div>
 
-        <div className="compose-box__body">
+        <div className="compose-box__body pt-10">
           {expanded && (
             <input
               className="compose-box__title"
