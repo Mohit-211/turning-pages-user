@@ -1,106 +1,89 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,300&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-/* ===============================
-   CSS Variables
-================================ */
-
 :root {
-  --ink: #0d0d14;
-  --ink-muted: #5a5a72;
-  --ink-faint: #a0a0b8;
-  --paper: #fafaf8;
-  --paper-2: #f2f2ef;
+  --tp-navy: #174f78;
+  --tp-red: #ed1c24;
+  --tp-gradient: linear-gradient(90deg, #174f78 0%, #ed1c24 100%);
+
+  --ink: #1a1a2e;
+  --ink-muted: #4a4a62;
+  --ink-faint: #9a9ab0;
+  --paper: #ffffff;
+  --paper-2: #f5f5f3;
   --paper-3: #e8e8e3;
-  --accent: #c96a2e;
-  --accent-light: #f5e6d8;
-  --accent-2: #3d5a99;
-  --accent-2-light: #dde4f0;
-  --radius-card: 4px;
+  --paper-4: #d8d8d2;
+
+  --radius-card: 6px;
   --radius-pill: 100px;
-  --radius-sm: 3px;
-  --shadow-card: 0 1px 3px rgba(13,13,20,0.06), 0 4px 16px rgba(13,13,20,0.04);
-  --shadow-hover: 0 2px 6px rgba(13,13,20,0.08), 0 12px 32px rgba(13,13,20,0.08);
+  --radius-sm: 4px;
+  --shadow-card: 0 1px 4px rgba(23,79,120,0.07), 0 4px 18px rgba(23,79,120,0.05);
+  --shadow-hover: 0 2px 8px rgba(23,79,120,0.10), 0 14px 36px rgba(23,79,120,0.09);
   --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
-/* ===============================
-   Feed Card Container
-================================ */
 
 .feed-card {
   background: var(--paper);
   border-radius: var(--radius-card);
   border: 1px solid var(--paper-3);
-  // padding: 0;
-  padding: 20px;
-
-  margin-bottom: 0;
+  padding: 0;
   box-shadow: var(--shadow-card);
   transition: box-shadow var(--transition), transform var(--transition);
   overflow: hidden;
-  font-family: 'DM Sans', sans-serif;
+   ;
 
   &:hover {
-    transform: translateY(-1px);
+    transform: translateY(-2px);
     box-shadow: var(--shadow-hover);
   }
 
-  /* Top accent bar — color-coded by genre */
+  // Gradient top stripe on hover — mirrors the hero banner
   &::before {
     content: '';
     display: block;
     height: 3px;
-    background: linear-gradient(90deg, var(--accent) 0%, #e8955a 100%);
+    background: var(--tp-gradient);
     opacity: 0;
     transition: opacity var(--transition);
-    margin-bottom: 10px;
   }
 
   &:hover::before {
     opacity: 1;
   }
+
+  &__inner {
+    padding: 20px 22px 16px;
+  }
 }
-
-/* ===============================
-   Inner Padding Wrapper
-================================ */
-
-.feed-card__inner {
-  // padding: 24px 26px 20px;
-}
-
-/* ===============================
-   Header
-================================ */
 
 .feed-card__header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .feed-card__author-row {
   display: flex;
-  align-items: flex-start !important;
+  align-items: flex-start;
   gap: 12px;
 }
 
+// Avatar uses the project gradient — consistent with hero and buttons
 .feed-card__avatar {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--tp-gradient);
+  color: #fff;
   font-weight: 600;
   font-size: 13px;
-  font-family: 'DM Sans', sans-serif;
+   ;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   letter-spacing: 0.03em;
-  border: 2px solid var(--paper-3);
+  box-shadow: 0 0 0 2px rgba(23,79,120,0.15);
 }
 
 .feed-card__author-name {
@@ -118,40 +101,37 @@
   letter-spacing: 0.01em;
 }
 
-/* ===============================
-   Genre Pill
-================================ */
-
+// Genre pills — styled to match the category pill row in your screenshot
 .feed-card__role-pill {
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 600;
-  font-family: 'DM Sans', sans-serif;
-  background: var(--accent-light);
-  color: var(--accent);
-  padding: 4px 10px;
+   ;
+  padding: 4px 12px;
   border-radius: var(--radius-pill);
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
-  border: 1px solid rgba(201, 106, 46, 0.18);
   white-space: nowrap;
   flex-shrink: 0;
   margin-top: 2px;
+  border: 1px solid var(--paper-4);
+  background: var(--paper-2);
+  color: var(--ink-muted);
 
-  /* Genre color variants */
-  &.genre-1 { background: #f5e6d8; color: #c96a2e; border-color: rgba(201,106,46,0.18); }
-  &.genre-2 { background: #dde4f0; color: #3d5a99; border-color: rgba(61,90,153,0.18); }
-  &.genre-3 { background: #e4f0e6; color: #2e7a45; border-color: rgba(46,122,69,0.18); }
-  &.genre-4 { background: #f0e4f0; color: #8a3d99; border-color: rgba(138,61,153,0.18); }
-  &.genre-5 { background: #f0f0e4; color: #7a6a2e; border-color: rgba(122,106,46,0.18); }
+  // genre-1: active navy pill (mirrors the "ALL" active pill)
+  &.genre-1 { background: var(--tp-navy); color: #fff; border-color: var(--tp-navy); }
+  // genre-2: navy tint
+  &.genre-2 { background: #dde8f0; color: #174f78; border-color: rgba(23,79,120,0.2); }
+  // genre-3: teal
+  &.genre-3 { background: #e4f5ee; color: #1a6b5e; border-color: rgba(26,107,94,0.2); }
+  // genre-4: purple
+  &.genre-4 { background: #ede8f5; color: #6b3d9e; border-color: rgba(107,61,158,0.2); }
+  // genre-5: red tint
+  &.genre-5 { background: #fde8e8; color: #c01018; border-color: rgba(237,28,36,0.2); }
 }
 
-/* ===============================
-   Title
-================================ */
-
 .feed-card__title {
-  font-family: 'Fraunces', serif;
-  font-size: 22px;
+   
+  font-size: 21px;
   font-weight: 500;
   line-height: 1.35;
   margin: 0 0 10px;
@@ -159,28 +139,17 @@
   letter-spacing: -0.02em;
 }
 
-/* ===============================
-   Content
-================================ */
-
 .feed-card__body {
   font-size: 14.5px;
   line-height: 1.75;
   color: var(--ink-muted);
-  margin-bottom: 16px;
+  margin-bottom: 4px;
   font-weight: 400;
 }
 
-/* ===============================
-   Image
-================================ */
-
 .feed-card__image {
-  margin: 0 0 0;
-
   img {
     width: 100%;
-    // max-height: 340px;
     object-fit: cover;
     display: block;
     border-top: 1px solid var(--paper-3);
@@ -188,28 +157,24 @@
   }
 }
 
-/* ===============================
-   Actions
-================================ */
-
 .feed-card__actions {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 14px 26px 14px;
+  padding: 12px 22px;
   border-top: 1px solid var(--paper-3);
   background: var(--paper-2);
 }
 
 .feed-card__like-btn,
 .feed-card__comment-btn {
-  border: 1px solid var(--paper-3);
+  border: 1px solid var(--paper-4);
   background: var(--paper);
   color: var(--ink-muted);
   padding: 6px 14px;
   border-radius: var(--radius-pill);
   font-size: 12.5px;
-  font-family: 'DM Sans', sans-serif;
+   ;
   font-weight: 500;
   display: inline-flex;
   align-items: center;
@@ -221,7 +186,7 @@
   &:hover {
     background: var(--paper-3);
     color: var(--ink);
-    border-color: var(--ink-faint);
+    border-color: var(--paper-4);
   }
 
   span:first-child {
@@ -231,14 +196,14 @@
 }
 
 .feed-card__like-btn--liked {
-  background: #fff1ee;
-  color: #d94f35;
-  border-color: rgba(217,79,53,0.22);
+  background: #fde8e8;
+  color: var(--tp-red);
+  border-color: rgba(237,28,36,0.25);
 
   &:hover {
-    background: #ffe4df;
-    border-color: rgba(217,79,53,0.35);
-    color: #d94f35;
+    background: #fbd0d1;
+    border-color: rgba(237,28,36,0.38);
+    color: #c8151c;
   }
 }
 
@@ -249,27 +214,18 @@
   text-align: center;
 }
 
-/* ===============================
-   Comments Section
-================================ */
-
 .feed-card__comments {
-  padding: 20px 26px;
+  padding: 18px 22px;
   border-top: 1px solid var(--paper-3);
   background: var(--paper-2);
   display: flex;
   flex-direction: column;
-  gap: 0;
 }
-
-/* ===============================
-   Comment Item
-================================ */
 
 .feed-card__comment {
   display: flex;
   gap: 10px;
-  padding: 12px 0;
+  padding: 11px 0;
   border-bottom: 1px solid var(--paper-3);
 
   &:last-of-type {
@@ -281,16 +237,15 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--tp-gradient);
+  color: #fff;
   font-size: 11px;
-  font-family: 'DM Sans', sans-serif;
+   ;
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: 1.5px solid var(--paper-3);
 }
 
 .feed-card__comment-content {
@@ -312,50 +267,37 @@
   letter-spacing: 0.01em;
 }
 
-/* ===============================
-   Reply Button
-================================ */
-
 .feed-card__reply-btn {
   border: none;
   background: transparent;
-  color: var(--accent-2);
+  color: var(--tp-navy);
   font-size: 11.5px;
-  font-family: 'DM Sans', sans-serif;
+   ;
   font-weight: 600;
   margin-top: 6px;
   cursor: pointer;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
   padding: 0;
   display: inline-flex;
   align-items: center;
   gap: 3px;
   text-transform: uppercase;
-  opacity: 0.8;
+  opacity: 0.75;
   transition: opacity var(--transition);
 
-  &:hover {
-    opacity: 1;
-    text-decoration: none;
-  }
+  &:hover { opacity: 1; }
 }
 
-/* ===============================
-   Replies
-================================ */
-
+// Reply indent — navy left border matches the "ALL" active pill navy
 .feed-card__reply {
   display: flex;
   gap: 8px;
   margin-top: 10px;
-  margin-left: 0;
   padding: 10px 12px;
   background: var(--paper);
   border-radius: var(--radius-sm);
   border: 1px solid var(--paper-3);
-  font-size: 13px;
-  color: var(--ink-muted);
-  border-left: 2px solid var(--accent-2);
+  border-left: 2px solid var(--tp-navy);
 
   p {
     margin: 0 0 3px;
@@ -370,10 +312,6 @@
   }
 }
 
-/* ===============================
-   Reply Box
-================================ */
-
 .feed-card__reply-box {
   display: flex;
   gap: 6px;
@@ -382,17 +320,18 @@
   input {
     flex: 1;
     border-radius: var(--radius-pill);
-    border: 1px solid var(--paper-3);
+    border: 1px solid var(--paper-4);
     padding: 7px 14px;
     font-size: 13px;
-    font-family: 'DM Sans', sans-serif;
+     ;
     background: var(--paper);
     color: var(--ink);
     transition: border-color var(--transition);
 
     &:focus {
       outline: none;
-      border-color: var(--accent-2);
+      border-color: var(--tp-navy);
+      box-shadow: 0 0 0 3px rgba(23,79,120,0.1);
     }
 
     &::placeholder { color: var(--ink-faint); }
@@ -400,25 +339,22 @@
 
   button {
     border: none;
-    background: var(--ink);
-    color: var(--paper);
+    background: var(--tp-gradient);
+    color: #fff;
     border-radius: var(--radius-pill);
-    padding: 7px 16px;
-    font-family: 'DM Sans', sans-serif;
+    padding: 7px 18px;
+     ;
     font-size: 12.5px;
     font-weight: 600;
     cursor: pointer;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
     transition: opacity var(--transition);
 
     &:hover { opacity: 0.85; }
-    &:disabled { opacity: 0.5; cursor: not-allowed; }
+    &:disabled { opacity: 0.45; cursor: not-allowed; }
   }
 }
-
-/* ===============================
-   Add Comment Box
-================================ */
 
 .feed-card__comment-box {
   display: flex;
@@ -432,41 +368,43 @@
 .feed-card__comment-input {
   flex: 1;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--paper-3);
+  border: 1px solid var(--paper-4);
   padding: 10px 16px;
   font-size: 13.5px;
-  font-family: 'DM Sans', sans-serif;
+   ;
   background: var(--paper);
   color: var(--ink);
   transition: border-color var(--transition), box-shadow var(--transition);
 
   &:focus {
     outline: none;
-    border-color: var(--ink-muted);
-    box-shadow: 0 0 0 3px rgba(13,13,20,0.06);
+    border-color: var(--tp-navy);
+    box-shadow: 0 0 0 3px rgba(23,79,120,0.1);
   }
 
   &::placeholder { color: var(--ink-faint); }
 }
 
+// Post button — full gradient pill, matches the project's hero CTA style
 .feed-card__comment-send {
   border: none;
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--tp-gradient);
+  color: #fff;
   border-radius: var(--radius-pill);
-  padding: 10px 20px;
-  font-family: 'DM Sans', sans-serif;
+  padding: 10px 22px;
+   ;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
   transition: opacity var(--transition), transform var(--transition);
   white-space: nowrap;
 
   &:hover {
-    opacity: 0.85;
+    opacity: 0.88;
     transform: scale(0.98);
   }
 
-  &:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+  &:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 }

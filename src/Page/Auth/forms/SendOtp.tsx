@@ -21,9 +21,7 @@ const SendOtp = () => {
             navigate(`/otp-verify?email=${encodedEmail}&type=${encodedType}`);
 
         } catch (error: any) {
-            message.error(
-                error?.response?.data?.message || "Something went wrong"
-            );
+           
         } finally {
             setLoading(false);
         }

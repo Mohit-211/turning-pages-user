@@ -228,7 +228,6 @@ const [hasRunPlagiarism, setHasRunPlagiarism] = useState(false);
   /* ================= FACT ================= */
 
   const renderFact = () => {
-    console.log(data,"uuuuuu")
     const f = data?.fact;
     if (!f?.length)
       return <EmptyState text="No fact check report available." />;

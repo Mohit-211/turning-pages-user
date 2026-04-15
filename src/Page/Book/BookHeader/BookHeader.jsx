@@ -440,7 +440,13 @@ export default function BookHeader({
   const isSubmitted = bookIdDetails?.book_submissions?.length > 0;
   const sz = PAGE_SIZES[sizeKey];
   const chapterCount = bookIdDetails?.book_chapters?.length ?? 0;
-console.log(bookIdDetails,"bookIdDetails")
+  
+
+const handleMarkAsComplete = (type) => {
+  if (type === "completed") {
+    CompleteApiCall();
+  }
+};
   return (
     <>
       <header className="book-header">
@@ -462,42 +468,37 @@ console.log(bookIdDetails,"bookIdDetails")
           {/* Edit cover */}
           <button className="bh-btn bh-btn--ghost-blue" onClick={onEditCover}>
             <ImageIcon size={14} />
-            Edit cover
+            Cover
           </button>
 
           <div className="bh-divider" />
 
-          {/* Submit for editing */}
-          <button
-            className="bh-btn bh-btn--solid-red"
-            onClick={() => {
-              // if (isSubmitted) {
-              //   toast.info("You already submitted this book. Waiting for admin approval.");
-              //   return;
-              // }
-              onSubmit?.("submit");
-            }}
-            disabled={loading}
-          >
-            <Send size={14} />
-            {loading ? "Submitting…" : "Submit for editing"}
-          </button>
+         {/* Submit for editing */}
+<button
+  type="button"
+  className="bh-btn bh-btn--solid-red"
+  onClick={() => onSubmit?.("submit")}
+  disabled={loading}
+>
+  <Send size={14} />
+  {loading ? "Submitting…" : "Submit for editing"}
+</button>
 
-          {/* Mark as complete */}
-          <button
-            className={`bh-btn ${isCompleted ? "bh-btn--completed" : "bh-btn--solid-blue"}`}
-            onClick={() => {
-              if (isCompleted) {
-                toast.info("This book is already completed.");
-                return;
-              }
-              onMarkComplete?.();
-            }}
-            // disabled={loading || isCompleted}
-          >
-            <CheckCircle size={14} />
-            Mark as complete
-          </button>
+{/* Mark as complete */}
+<button
+  type="button"
+  className={`bh-btn ${isCompleted ? "bh-btn--completed" : "bh-btn--solid-blue"}`}
+  onClick={() => {
+    if (isCompleted) {
+      toast.info("This book is already completed.");
+      return;
+    }
+    onMarkComplete?.("completed");
+  }}
+>
+  <CheckCircle size={14} />
+  Mark as complete
+</button>
 
           {/* Chat */}
           {bookIdDetails?.book_chat_room?.id && (

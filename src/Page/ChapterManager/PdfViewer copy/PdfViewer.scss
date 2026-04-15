@@ -37,7 +37,7 @@ $t:             0.16s $ease;
   flex-direction: column;
   height: 100vh;
   width: 100%;
-  font-family: $font-ui;
+    
   overflow: hidden;
   background: $canvas-bg;
 }
@@ -80,7 +80,7 @@ $t:             0.16s $ease;
   border: 1px solid rgba(255,255,255,0.15);
   border-radius: $r-sm;
   color: rgba(255,255,255,0.85);
-  font-family: $font-ui;
+    
   font-size: 12.5px;
   font-weight: 500;
   cursor: pointer;
@@ -140,7 +140,7 @@ $t:             0.16s $ease;
   border: 1px solid rgba(255,255,255,0.2);
   border-radius: $r-sm;
   color: rgba(255,255,255,0.75);
-  font-family: $font-ui;
+    
   font-size: 12.5px;
   font-weight: 500;
   cursor: pointer;
@@ -219,7 +219,7 @@ $t:             0.16s $ease;
   background: #fff;
   border: 1px solid $border;
   border-radius: $r-sm;
-  font-family: $font-mono;
+   
   font-size: 12px;
   text-align: center;
   color: $text-ink;
@@ -239,7 +239,7 @@ $t:             0.16s $ease;
 .pdv__pg-of {
   font-size: 12px;
   color: $text-muted;
-  font-family: $font-mono;
+   
 }
 
 // Zoom
@@ -256,7 +256,7 @@ $t:             0.16s $ease;
   background: #fff;
   border: 1px solid $border;
   border-radius: $r-sm;
-  font-family: $font-mono;
+   
   font-size: 11.5px;
   color: $text-mid;
   cursor: pointer;
@@ -289,7 +289,7 @@ $t:             0.16s $ease;
   border: 1px solid $border;
   background: #fff;
   font-size: 9px;
-  font-family: $font-mono;
+   
   color: $text-muted;
   cursor: pointer;
   transition: $t;
@@ -343,7 +343,7 @@ $t:             0.16s $ease;
   p {
     font-size: 13px;
     color: $text-muted;
-    font-family: $font-ui;
+      
   }
 }
 
@@ -424,7 +424,7 @@ $t:             0.16s $ease;
 }
 
 .pdv__running-title {
-  font-family: $font-ui;
+    
   font-size: 8px;
   font-weight: 600;
   letter-spacing: 0.18em;
@@ -441,7 +441,7 @@ $t:             0.16s $ease;
 
 // Body content typography
 .pdv__body {
-  font-family: $font-body;
+  
   font-size: 13.5px;
   line-height: 1.85;
   color: $text-ink;
@@ -459,7 +459,7 @@ $t:             0.16s $ease;
 
   // Headings
   h1, h2, h3, h4, h5, h6 {
-    font-family: $font-ui;
+      
     font-weight: 600;
     color: $navy;
     margin: 1.4em 0 0.5em;
@@ -496,7 +496,7 @@ $t:             0.16s $ease;
 
   // Code
   code {
-    font-family: $font-mono;
+     
     font-size: 12px;
     background: #f4f4f4;
     padding: 1px 5px;
@@ -522,7 +522,7 @@ $t:             0.16s $ease;
 }
 
 .pdv__folio-num {
-  font-family: $font-ui;
+    
   font-size: 10px;
   color: $text-muted;
   letter-spacing: 0.06em;

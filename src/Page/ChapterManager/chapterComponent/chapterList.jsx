@@ -1,31 +1,31 @@
 import React from "react";
 import { Plus, Trash2 } from "lucide-react";
 import "./ChapterList.scss";
+import { Popconfirm } from "antd";
+import { DeleteChapterApi } from "../../../api/operations/chapter.api";
 
 export default function ChapterList({
   chapters = [],
   selectedId,
   onSelect,
   onAdd,
-  onDelete,
+  onDelete
 }) {
-  const handleDeleteClick = (chapterId, e) => {
-    e.stopPropagation(); // Prevent selecting the chapter when clicking delete
-    if (window.confirm("Delete this chapter permanently?")) {
-      onDelete?.(chapterId);
-    }
-  };
+const handleDelete = (chapterId) => {
+  onDelete?.(chapterId);
+};
 
   return (
     <div className="chapter-list-wrapper">
       <div className="sider-header">
         <h3>Chapters</h3>
+
         <button
           className="add-chapter-btn"
           onClick={onAdd}
           title="Add new chapter"
           aria-label="Add new chapter"
-          style={{width:"fit-content"}}
+          style={{ width: "fit-content" }}
         >
           <Plus size={18} />
         </button>
@@ -52,19 +52,26 @@ export default function ChapterList({
                 <span className="chapter-title">
                   {chapter.title || "Untitled Chapter"}
                 </span>
+
                 <span className="chapter-meta">
                   {chapter.word_count || 0} words
                 </span>
               </div>
-
-              <button
-                className="delete-btn"
-                onClick={(e) => handleDeleteClick(chapter.id, e)}
-                title="Delete chapter"
-                aria-label="Delete chapter"
-              >
-                <Trash2 size={16} />
-              </button>
+<Popconfirm
+  title="Delete this chapter permanently?"
+  okText="Delete"
+  cancelText="Cancel"
+  onConfirm={() => handleDelete(chapter.id)}
+>
+                <button
+                  className="delete-btn"
+                  onClick={(e) => e.stopPropagation()}
+                  title="Delete chapter"
+                  aria-label="Delete chapter"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </Popconfirm>
             </li>
           ))}
         </ul>

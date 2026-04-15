@@ -18,7 +18,6 @@ const CreditBar = ({ maxCredits = 100 }) => {
       const userData = res?.data?.data;
       setCredits(userData?.total_credit || 0);
     } catch (error) {
-      console.log("Profile fetch failed");
     } finally {
       setLoading(false);
     }

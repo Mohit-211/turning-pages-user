@@ -13,59 +13,40 @@ import { UserProfileApi } from "../../api/users/users.api";
 export default function FeedCard({ feed, genreName, reloadFeeds }) {
   const IMAGE_BASE = import.meta.env.VITE_BOOK_IMAGE_URL;
 
-  const [liked, setLiked] = useState(feed.is_liked || false);
   const [showBox, setShowBox] = useState(false);
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState("");
   const [replyText, setReplyText] = useState("");
   const [replyBoxId, setReplyBoxId] = useState(null);
-
   const [loadingComment, setLoadingComment] = useState(false);
   const [loadingReply, setLoadingReply] = useState(false);
   const [loadingLike, setLoadingLike] = useState(false);
-
   const [userProfile, setUserProfile] = useState(null);
 
-  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const formattedTime = new Date(feed.created_at).toLocaleString("en-US", {
-    timeZone: userTimeZone,
-    //  timeZone: "America/Chicago", 
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     year: "numeric",
     month: "short",
     day: "numeric",
     hour: "numeric",
     minute: "2-digit",
-    // second: "2-digit",
   });
 
-
-  // ─────────────────────────────
-  // USER PROFILE
-  // ─────────────────────────────
   useEffect(() => {
     UserProfileApi()
-      .then((res) => {
-        setUserProfile(res?.id);
-      })
-      .catch((e) => console.log(e));
+      .then((res) => setUserProfile(res?.id))
+      .catch(() => {});
   }, []);
 
-  // ─────────────────────────────
-  // LOAD COMMENTS
-  // ─────────────────────────────
   const loadComments = async () => {
     try {
       const res = await GetAllFeedCommentApi(feed.id);
-      const commentData = res?.data?.data || [];
-      setComments(commentData);
-    } catch (error) {
-      console.log("Comment fetch error", error);
+      setComments(res?.data?.data || []);
+    } catch {
+      // silently ignore
     }
   };
 
-  // ─────────────────────────────
-  // TOGGLE LIKE
-  // ─────────────────────────────
   const handleToggleLike = async () => {
     try {
       setLoadingLike(true);
@@ -78,20 +59,11 @@ export default function FeedCard({ feed, genreName, reloadFeeds }) {
     }
   };
 
-  // ─────────────────────────────
-  // CREATE COMMENT
-  // ─────────────────────────────
   const handleCreateComment = async () => {
     if (!commentText.trim()) return;
-
     try {
       setLoadingComment(true);
-
-      await CreateFeedCommentApi({
-        feed_id: feed.id,
-        content: commentText,
-      });
-
+      await CreateFeedCommentApi({ feed_id: feed.id, content: commentText });
       setCommentText("");
       await loadComments();
     } catch (err) {
@@ -101,21 +73,15 @@ export default function FeedCard({ feed, genreName, reloadFeeds }) {
     }
   };
 
-  // ─────────────────────────────
-  // REPLY COMMENT
-  // ─────────────────────────────
   const handleReply = async (parentId) => {
     if (!replyText.trim()) return;
-
     try {
       setLoadingReply(true);
-
       await ReplayCommentOnFeedApi({
         feed_id: feed.id,
         content: replyText,
         parent_id: parentId,
       });
-
       setReplyText("");
       setReplyBoxId(null);
       await loadComments();
@@ -126,18 +92,16 @@ export default function FeedCard({ feed, genreName, reloadFeeds }) {
     }
   };
 
-  const getInitials = (id) => `U${id}`;
+  const isLiked = feed?.feed_likes?.some((like) => like.user_id === userProfile);
 
   return (
     <article className="feed-card">
       <div className="feed-card__inner">
-        {/* HEADER */}
         <div className="feed-card__header">
           <div className="feed-card__author-row">
             <div className="feed-card__avatar">
               {feed?.feed_user?.user_profile?.name?.[0]?.toUpperCase() || "?"}
             </div>
-
             <div>
               <span className="feed-card__author-name">
                 {feed?.feed_user?.user_profile?.name}
@@ -145,7 +109,6 @@ export default function FeedCard({ feed, genreName, reloadFeeds }) {
               <p className="feed-card__time">{formattedTime}</p>
             </div>
           </div>
-
           {genreName && (
             <span className={`feed-card__role-pill genre-${feed.genre_id}`}>
               {genreName}
@@ -153,36 +116,23 @@ export default function FeedCard({ feed, genreName, reloadFeeds }) {
           )}
         </div>
 
-        {/* TITLE */}
         {feed.title && <h3 className="feed-card__title">{feed.title}</h3>}
-
-        {/* CONTENT */}
         <p className="feed-card__body">{feed.content}</p>
       </div>
 
-      {/* IMAGE */}
       {feed.img_uri && (
         <div className="feed-card__image">
           <img src={`${IMAGE_BASE}${feed.img_uri}`} alt="feed visual" />
         </div>
       )}
 
-      {/* ACTIONS */}
       <div className="feed-card__actions">
         <button
           onClick={handleToggleLike}
           disabled={loadingLike}
-          className={`feed-card__like-btn ${feed?.feed_likes?.some((like) => like.user_id === userProfile)
-            ? "feed-card__like-btn--liked"
-            : ""
-            }`}
+          className={`feed-card__like-btn${isLiked ? " feed-card__like-btn--liked" : ""}`}
         >
-          <span>
-            {feed?.feed_likes?.some((like) => like.user_id === userProfile)
-              ? "❤️"
-              : "🤍"}
-          </span>
-
+          <span>{isLiked ? "❤️" : "🤍"}</span>
           <span className="feed-card__action-count">
             {feed?.feed_likes?.length || 0}
           </span>
@@ -192,9 +142,9 @@ export default function FeedCard({ feed, genreName, reloadFeeds }) {
           className="feed-card__comment-btn"
           onClick={() => {
             setShowBox((prev) => {
-              const newState = !prev;
-              if (newState) loadComments();
-              return newState;
+              const next = !prev;
+              if (next) loadComments();
+              return next;
             });
           }}
         >
@@ -203,20 +153,15 @@ export default function FeedCard({ feed, genreName, reloadFeeds }) {
         </button>
       </div>
 
-      {/* COMMENTS */}
       {showBox && (
         <div className="feed-card__comments">
-          {comments?.map((comment) => (
+          {comments.map((comment) => (
             <div key={comment.id} className="feed-card__comment">
               <div className="feed-card__comment-avatar">
-                {/* {getInitials(comment.user_id)} */}
                 {comment?.feed_comment_user?.user_profile?.name?.[0]?.toUpperCase() || "?"}
-
               </div>
-
               <div className="feed-card__comment-content">
                 <p className="feed-card__comment-text">{comment.content}</p>
-
                 <span className="feed-card__comment-time">
                   {new Date(comment.created_at).toLocaleString("en-US", {
                     month: "short",
@@ -225,25 +170,20 @@ export default function FeedCard({ feed, genreName, reloadFeeds }) {
                     minute: "2-digit",
                   })}
                 </span>
-
                 <button
                   className="feed-card__reply-btn"
                   onClick={() =>
-                    setReplyBoxId(
-                      replyBoxId === comment.id ? null : comment.id
-                    )
+                    setReplyBoxId(replyBoxId === comment.id ? null : comment.id)
                   }
                 >
                   ↩ Reply
                 </button>
 
-                {/* REPLIES */}
                 {comment.replies?.map((reply) => (
                   <div key={reply.id} className="feed-card__reply">
                     <div className="feed-card__comment-avatar">
-                      {getInitials(reply.user_id)}
+                      {reply?.user_profile?.name?.[0]?.toUpperCase() || "?"}
                     </div>
-
                     <div>
                       <p>{reply.content}</p>
                       <span>
@@ -256,7 +196,6 @@ export default function FeedCard({ feed, genreName, reloadFeeds }) {
                   </div>
                 ))}
 
-                {/* REPLY BOX */}
                 {replyBoxId === comment.id && (
                   <div className="feed-card__reply-box">
                     <input
@@ -267,7 +206,6 @@ export default function FeedCard({ feed, genreName, reloadFeeds }) {
                         if (e.key === "Enter") handleReply(comment.id);
                       }}
                     />
-
                     <button
                       onClick={() => handleReply(comment.id)}
                       disabled={loadingReply}
@@ -280,13 +218,10 @@ export default function FeedCard({ feed, genreName, reloadFeeds }) {
             </div>
           ))}
 
-          {/* ADD COMMENT */}
           <div className="feed-card__comment-box">
             <div className="feed-card__comment-avatar">
               {feed?.feed_user?.user_profile?.name?.[0]?.toUpperCase() || "?"}
-
             </div>
-
             <input
               className="feed-card__comment-input"
               placeholder="Add a comment…"
@@ -296,7 +231,6 @@ export default function FeedCard({ feed, genreName, reloadFeeds }) {
                 if (e.key === "Enter") handleCreateComment();
               }}
             />
-
             <button
               className="feed-card__comment-send"
               onClick={handleCreateComment}

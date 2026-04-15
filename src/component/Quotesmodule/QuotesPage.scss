@@ -1,61 +1,78 @@
 // ============================================================
-// QuotesPage.scss
-// Editorial magazine-style Quotes UI
+// QuotesPage.scss — Themed to match "Turning Pages" dashboard
 // ============================================================
 
-// --- Google Fonts ---
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Nunito:wght@400;500;600;700;800&display=swap');
 
 // ============================================================
-// Variables
+// Variables — Turning Pages EXACT palette (from screenshot)
 // ============================================================
 
-$bg-base:        #f5f0e8;
-$bg-card:        #fffdf8;
-$bg-footer:      #f0ebe0;
-$ink:            #2a2118;
-$ink-muted:      #9a8e80;
-$border:         #d8d0c0;
-$border-card:    #e0d8c8;
+$bg-base:        #eef0f3;       // exact page background
+$bg-card:        #ffffff;       // white nav + cards
+$bg-stat:        #e8eaed;       // stat card background (darker gray)
+$bg-banner:      #fff3e8;       // upgrade plan peach banner
+$bg-footer:      #e2e5ea;
+$ink:            #1e2d40;       // exact dark navy from headings
+$ink-muted:      #7e8c9a;
+$border:         #d8dce3;
+$border-card:    #e4e7ec;
 
-$font-display:   'Playfair Display', serif;
-$font-ui:        'DM Sans', sans-serif;
+$red:            #e8323c;       // exact "+ Start a New Book" red
+$orange:         #f47b20;       // exact "Purchase or Upgrade Plan" orange
+$navy:           #1e2d40;
 
-// Tag accent colors
+$font-display:    ;
+$font-ui:        'Nunito', sans-serif;   // closest to app's rounded sans
+$primary-gradient: linear-gradient(90deg, #174f78, #ed1c24);
+
+// Tag accents
 $accents: (
-  'all':         #c8a96e,
-  'motivation':  #e07b5d,
-  'wisdom':      #6b9080,
-  'life':        #8b7bb5,
-  'inspiration': #c8a96e,
-  'love':        #d96d8a,
+  'all':         #1e2d40,
+  'motivation':  #e8323c,
+  'wisdom':      #2e7d6e,
+  'life':        #5a4fcf,
+  'inspiration': #f47b20,
+  'love':        #c2405a,
 );
+
+// Accent override map for JS (matches tagAccents in JSX)
+// All:        #1e2d40
+// Motivation: #e8323c
+// Wisdom:     #2e7d6e
+// Life:       #5a4fcf
+// Inspiration:#f4803a
+// Love:       #c2405a
 
 // ============================================================
 // Mixins
 // ============================================================
 
-@mixin font-label($size: 11px, $spacing: 0.1em) {
-  font-family: $font-ui;
+@mixin font-label($size: 11px, $spacing: 0.08em) {
+    
   font-size: $size;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: $spacing;
   text-transform: uppercase;
 }
 
-@mixin smooth($props: all, $dur: 0.3s, $ease: ease) {
+@mixin smooth($props: all, $dur: 0.25s, $ease: ease) {
   transition: $props $dur $ease;
+}
+
+@mixin card-shadow {
+  box-shadow: 0 2px 8px rgba($navy, 0.07);
 }
 
 @mixin card-shadow-hover {
   &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 40px rgba($ink, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba($navy, 0.12);
   }
 }
 
 // ============================================================
-// Reset & Base
+// Reset
 // ============================================================
 
 *,
@@ -71,14 +88,8 @@ $accents: (
 // ============================================================
 
 @keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes skeleton-shimmer {
@@ -92,46 +103,48 @@ $accents: (
 
 .quotes-page {
   min-height: 100vh;
-  font-family: $font-display;
+  background: $bg-base;
+    
 }
 
 // ============================================================
-// Header
+// Header — matches dashboard card style
 // ============================================================
 
 .quotes-header {
-  text-align: center;
-  padding: 64px 40px 48px;
+  background: $primary-gradient;
   border-bottom: 1px solid $border;
-  margin-bottom: 48px;
+  text-align: center;
+  padding: 48px 40px 36px;
+  margin-bottom: 32px;
+  color: #fff;
+  @include card-shadow;
 
   &__eyebrow {
-    @include font-label(11px, 0.2em);
-    color: var(--accent, #c8a96e);
-    margin-bottom: 16px;
-    @include smooth(color, 0.4s);
+    @include font-label(11px, 0.18em);
+    color: rgba(255, 255, 255, 0.75);
+    margin-bottom: 12px;
   }
 
   &__title {
-    font-family: $font-display;
-    font-size: clamp(40px, 6vw, 72px);
-    font-weight: 900;
-    color: $ink;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
+     
+    font-size: clamp(32px, 5vw, 58px);
+    font-weight: 700;
+    color: #fff;
 
     em {
       font-style: italic;
       font-weight: 400;
+      color: rgba(255, 255, 255, 0.85);
     }
   }
 
   &__rule {
-    width: 60px;
+    width: 48px;
     height: 3px;
-    background: var(--accent, #c8a96e);
-    margin: 12px auto 24px; // extra bottom margin before search
-    @include smooth(background, 0.4s);
+    border-radius: 2px;
+    background: #fff;
+    margin: 14px auto 20px;
   }
 }
 
@@ -150,17 +163,18 @@ $accents: (
   align-items: center;
   gap: 10px;
   width: 100%;
-  max-width: 560px;
+  max-width: 520px;
   border: 1.5px solid $border;
-  border-radius: 3px;
+  border-radius: 8px;
   padding: 0 14px;
-  background: $bg-card;
-  @include smooth(border-color box-shadow, 0.25s);
+  background: $bg-base;
+  @include smooth(border-color box-shadow, 0.2s);
 
   &:focus-within,
   &--active {
-    border-color: var(--accent, #c8a96e);
-    box-shadow: 0 0 0 3px rgba(200, 169, 110, 0.12);
+    border-color: var(--accent, $navy);
+    background: $bg-card;
+    box-shadow: 0 0 0 3px rgba($navy, 0.08);
   }
 
   &__icon {
@@ -175,14 +189,12 @@ $accents: (
     border: none;
     outline: none;
     background: transparent;
-    font-family: $font-ui;
+      
     font-size: 14px;
     color: $ink;
-    padding: 12px 0;
+    padding: 11px 0;
 
-    &::placeholder {
-      color: $ink-muted;
-    }
+    &::placeholder { color: $ink-muted; }
   }
 
   &__clear {
@@ -193,13 +205,11 @@ $accents: (
     cursor: pointer;
     color: $ink-muted;
     padding: 4px;
-    border-radius: 2px;
+    border-radius: 4px;
     flex-shrink: 0;
     @include smooth();
 
-    &:hover {
-      color: $ink;
-    }
+    &:hover { color: $ink; }
   }
 }
 
@@ -210,25 +220,23 @@ $accents: (
 .quotes-main {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 0 32px 80px;
+  padding: 0 28px 80px;
 }
 
 // ============================================================
-// Tags Row (All Categories btn + scrollable tags)
+// Tags Row
 // ============================================================
 
 .quotes-tags-row {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 40px;
-  overflow: hidden; // clip so inner scroll doesn't bleed
+  margin-bottom: 28px;
+  overflow: hidden;
   @include smooth(opacity, 0.25s);
 
-  // While search is active, dim the tag row to signal it's not filtering
   &--search-active {
     opacity: 0.45;
-    // pointer-events still on — clicking a tag clears search and navigates
   }
 }
 
@@ -236,24 +244,24 @@ $accents: (
   display: flex;
   align-items: center;
   gap: 7px;
-  border: 1.5px solid $ink;
-  background: transparent;
+  border: 1.5px solid $border;
+  background: $bg-card;
   color: $ink;
-  @include font-label(11px, 0.1em);
+  @include font-label(11px, 0.08em);
   padding: 8px 16px;
   cursor: pointer;
-  border-radius: 2px;
+  border-radius: 8px;
   white-space: nowrap;
   flex-shrink: 0;
+  @include card-shadow;
   @include smooth();
 
-  svg {
-    flex-shrink: 0;
-  }
+  svg { flex-shrink: 0; }
 
   &:hover {
     background: $ink;
-    color: $bg-base;
+    color: #fff;
+    border-color: $ink;
   }
 }
 
@@ -267,44 +275,49 @@ $accents: (
   -ms-overflow-style: none;
   scrollbar-width: none;
 
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  &::-webkit-scrollbar { display: none; }
 
   &__inner {
     display: flex;
-    gap: 10px;
-    width: max-content; // FIX: was wrongly set to 145dvh
+    gap: 8px;
+    width: max-content;
     padding: 4px 0;
   }
 }
 
 .tag-btn {
-  border: 1.5px solid $ink;
-  background: transparent;
+  border: 1.5px solid $border;
+  background: $bg-card;
   color: $ink;
-  @include font-label(12px, 0.12em);
-  padding: 8px 20px;
+  @include font-label(11px, 0.1em);
+  padding: 7px 18px;
   cursor: pointer;
-  border-radius: 2px;
+  border-radius: 20px;      // pill shape — matches dashboard badges
   @include smooth();
+  @include card-shadow;
   white-space: nowrap;
 
   &__dot {
     display: inline-block;
     width: 5px;
     height: 5px;
-    background: var(--accent, #c8a96e);
+    background: var(--accent, $red);
     border-radius: 50%;
-    margin-left: 8px;
+    margin-left: 7px;
     vertical-align: middle;
-    @include smooth(background, 0.4s);
+    @include smooth(background, 0.35s);
   }
 
-  &:hover,
+  &:hover {
+     background: $primary-gradient;
+    border-color: darken($border, 6%);
+  }
+
   &--active {
-    background: $ink;
-    color: $bg-base;
+  background: $primary-gradient;
+    color: #fff;
+    border-color: $ink;
+    box-shadow: 0 4px 14px rgba($navy, 0.2);
   }
 }
 
@@ -315,7 +328,7 @@ $accents: (
 .quotes-divider {
   border: none;
   border-top: 1px solid $border;
-  margin-bottom: 40px;
+  margin-bottom: 28px;
 }
 
 // ============================================================
@@ -326,17 +339,17 @@ $accents: (
   display: flex;
   align-items: baseline;
   gap: 8px;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 
   &__number {
-    font-family: $font-display;
-    font-size: 32px;
+     
+    font-size: 30px;
     font-weight: 700;
     color: $ink;
   }
 
   &__label {
-    @include font-label(13px, 0.1em);
+    @include font-label(12px, 0.08em);
     color: $ink-muted;
   }
 }
@@ -347,100 +360,83 @@ $accents: (
 
 .quotes-grid {
   columns: 3;
-  column-gap: 20px;
+  column-gap: 18px;
 
-  @media (max-width: 900px) {
-    columns: 2;
-  }
-
-  @media (max-width: 560px) {
-    columns: 1;
-  }
+  @media (max-width: 900px) { columns: 2; }
+  @media (max-width: 560px) { columns: 1; }
 }
 
 // ============================================================
-// Quote Card
+// Quote Card — white card, rounded, subtle shadow
 // ============================================================
 
 .quote-card {
   background: $bg-card;
   border: 1px solid $border-card;
-  border-radius: 3px;
-  padding: 32px 28px;
+  border-radius: 12px;
+  padding: 28px 24px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   break-inside: avoid;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   position: relative;
   overflow: hidden;
-  @include smooth(transform box-shadow, 0.3s, ease);
+  @include card-shadow;
+  @include smooth(transform box-shadow, 0.25s, ease);
+  @include card-shadow-hover;
   animation: fadeUp 0.4s ease both;
 
-  @include card-shadow-hover;
-
-  // Decorative opening quote mark
+  // Subtle left accent bar
   &::before {
-    content: '\201C';
+    content: '';
     position: absolute;
-    top: -10px;
-    left: 16px;
-    font-family: $font-display;
-    font-size: 120px;
-    color: var(--accent, #c8a96e);
-    opacity: 0.12;
-    line-height: 1;
-    pointer-events: none;
-    @include smooth(color, 0.4s);
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+        background: linear-gradient(180deg, #174f78, #ed1c24); // 🔥 gradient
+
+    opacity: 0.7;
+    border-radius: 12px 0 0 12px;
+    @include smooth(background, 0.35s);
   }
 
   &--tall {
-    padding: 40px 28px;
+    padding: 36px 24px;
   }
 
-  // Skeleton variant — override ::before decorative mark
   &--skeleton {
-    background: darken($bg-card, 4%);
+    background: darken($bg-card, 2%);
     border-color: $border-card;
     min-height: 160px;
     position: relative;
     overflow: hidden;
 
-    &::before {
-      display: none; // hide quote-mark on skeleton
-    }
+    &::before { display: none; }
 
     &::after {
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.6),
-        transparent
-      );
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent);
       animation: skeleton-shimmer 1.2s infinite;
     }
   }
 
-  // Staggered animation delays
   @for $i from 1 through 6 {
-    &:nth-child(#{$i}) {
-      animation-delay: #{($i - 1) * 0.06}s;
-    }
+    &:nth-child(#{$i}) { animation-delay: #{($i - 1) * 0.06}s; }
   }
 }
 
 .quote-text {
-  font-family: $font-display;
-  font-size: 17px;
+   
+  font-size: 16px;
   font-style: italic;
-  line-height: 1.75;
+  line-height: 1.8;
   color: $ink;
   margin-bottom: 20px;
-  position: relative;
-  z-index: 1;
+  padding-left: 12px;   // indent from accent bar
 }
 
 .quote-footer {
@@ -448,61 +444,59 @@ $accents: (
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  position: relative;
-  z-index: 1;
+  padding-left: 12px;
 }
 
 .quote-meta {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .quote-author {
-  @include font-label(12px, 0.08em);
+  @include font-label(11px, 0.06em);
   color: $ink;
 }
 
 .quote-tag {
-  @include font-label(11px, 0.06em);
-  font-weight: 400;
-  color: var(--accent, #c8a96e);
-  @include smooth(color, 0.4s);
+    
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent, $red);
+  @include smooth(color, 0.35s);
 }
 
 // ============================================================
-// Copy Button
+// Copy Button — matches dashboard button style
 // ============================================================
 
 .copy-btn {
   display: flex;
   align-items: center;
   gap: 6px;
-  border: 1px solid $border;
-  background: transparent;
+  border: 1.5px solid $border;
+  background: $bg-base;
   color: $ink-muted;
-  @include font-label(11px, 0.08em);
-  padding: 7px 14px;
+  @include font-label(11px, 0.06em);
+  padding: 6px 14px;
   cursor: pointer;
-  border-radius: 2px;
+  border-radius: 6px;
   @include smooth();
   flex-shrink: 0;
 
   &:hover {
-    background: var(--accent, #c8a96e);
-    border-color: var(--accent, #c8a96e);
-    color: $bg-card;
+    background: $primary-gradient;
+    color: #fff;
   }
 
   &--copied {
-    background: map-get($accents, 'wisdom');
-    border-color: map-get($accents, 'wisdom');
-    color: $bg-card;
+       background: $primary-gradient;
+
+    border-color: #2e7d6e;
+    color: #fff;
   }
 
-  svg {
-    flex-shrink: 0;
-  }
+  svg { flex-shrink: 0; }
 }
 
 // ============================================================
@@ -515,8 +509,8 @@ $accents: (
   grid-column: 1 / -1;
 
   &__title {
-    font-family: $font-display;
-    font-size: 22px;
+     
+    font-size: 20px;
     font-weight: 700;
     color: $ink;
     margin-bottom: 8px;
@@ -535,40 +529,40 @@ $accents: (
 .cat-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba($ink, 0.45);
+  background: rgba($navy, 0.4);
   z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(4px);
   animation: fadeUp 0.2s ease both;
 }
 
 .cat-modal {
   background: $bg-card;
   border: 1px solid $border-card;
-  border-radius: 4px;
+  border-radius: 14px;
   width: 100%;
   max-width: 480px;
   max-height: 80vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 24px 60px rgba($ink, 0.18);
+  box-shadow: 0 24px 60px rgba($navy, 0.2);
 
   &__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 24px 16px;
+    padding: 18px 22px 14px;
     border-bottom: 1px solid $border;
     flex-shrink: 0;
   }
 
   &__title {
-    font-family: $font-display;
-    font-size: 20px;
+     
+    font-size: 18px;
     font-weight: 700;
     color: $ink;
   }
@@ -577,17 +571,15 @@ $accents: (
     display: flex;
     align-items: center;
     justify-content: center;
-    background: none;
-    border: none;
+    background: $bg-base;
+    border: 1px solid $border;
     cursor: pointer;
     color: $ink-muted;
-    padding: 4px;
-    border-radius: 2px;
+    padding: 6px;
+    border-radius: 6px;
     @include smooth();
 
-    &:hover {
-      color: $ink;
-    }
+    &:hover { color: $ink; background: $bg-footer; }
   }
 
   &__search {
@@ -610,14 +602,12 @@ $accents: (
       border: none;
       outline: none;
       background: transparent;
-      font-family: $font-ui;
+        
       font-size: 13px;
       color: $ink;
       padding: 12px 0;
 
-      &::placeholder {
-        color: $ink-muted;
-      }
+      &::placeholder { color: $ink-muted; }
     }
 
     &-clear {
@@ -628,7 +618,7 @@ $accents: (
       cursor: pointer;
       color: $ink-muted;
       padding: 4px;
-      border-radius: 2px;
+      border-radius: 4px;
       @include smooth();
 
       &:hover { color: $ink; }
@@ -639,7 +629,7 @@ $accents: (
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 8px;
-    padding: 16px;
+    padding: 14px;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: $border transparent;
@@ -650,41 +640,45 @@ $accents: (
     align-items: center;
     gap: 8px;
     border: 1.5px solid $border;
-    background: transparent;
+    background: $bg-base;
     color: $ink;
-    @include font-label(11px, 0.08em);
+    @include font-label(11px, 0.06em);
     padding: 10px 14px;
     cursor: pointer;
-    border-radius: 3px;
+    border-radius: 8px;
     @include smooth();
     text-align: left;
 
     &:hover {
-      background: $bg-footer;
+      background: $bg-stat;
       border-color: darken($border, 8%);
     }
 
     &--active {
-      background: $ink;
-      color: $bg-base;
+        background: $primary-gradient;
+      color: #fff;
       border-color: $ink;
     }
   }
 
   &__dot {
-    width: 6px;
-    height: 6px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     flex-shrink: 0;
   }
 
   &__active-badge {
     margin-left: auto;
-    @include font-label(9px, 0.06em);
-    background: var(--accent, #c8a96e);
-    color: $bg-card;
+      
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background: var(--accent, $red);
+    color: #fff;
     padding: 2px 6px;
-    border-radius: 2px;
+    border-radius: 4px;
   }
 
   &__empty {
@@ -702,9 +696,9 @@ $accents: (
 
 .quotes-footer {
   border-top: 1px solid $border;
-  padding: 32px 40px;
+  padding: 28px 40px;
   text-align: center;
-  background: $bg-footer;
+  background: $bg-card;
 
   p {
     @include font-label(12px, 0.1em);

@@ -7,7 +7,6 @@ const ChangePassword = () => {
 
 const onFinish = async (values: any) => {
   if (values.new_password !== values.confirm_password) {
-    return message.error("Passwords do not match");
   }
 
   setLoading(true);
@@ -30,13 +29,10 @@ const onFinish = async (values: any) => {
       // ✅ redirect
       window.location.href = "/login";
     } else {
-      message.error(response?.data?.message || "Failed to change password");
     }
 
   } catch (error: any) {
-    message.error(
-      error?.response?.data?.message || "Something went wrong"
-    );
+  
   } finally {
     setLoading(false);
   }

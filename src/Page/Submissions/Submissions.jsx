@@ -74,8 +74,6 @@ export default function Submissions() {
       const data = res?.data?.data || [];
       setSubmissions(Array.isArray(data) ? data : []);
     } catch (err) {
-      console.error("Error fetching submission history", err);
-      message.error("Failed to load submissions");
     } finally {
       setLoading(false);
     }
@@ -99,11 +97,9 @@ export default function Submissions() {
         message.success(messageText || `${eventName} successful`);
         loadSubmissions();
       } else {
-        message.error(messageText || "Action failed");  // ✅ show server message on failure too
       }
     } catch (err) {
       console.error(`${eventName} failed`, err);
-      message.error("Something went wrong");
     }
   };
 
@@ -163,11 +159,9 @@ export default function Submissions() {
         setSelectedBookId(null);
         loadSubmissions();
       } else {
-        message.error(res?.data?.message || "Resubmission failed");  // ✅ show server message
       }
     } catch (err) {
       console.error("Resubmit failed", err);
-      message.error("Something went wrong");
     } finally {
       setNoteLoading(false);
     }

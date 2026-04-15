@@ -35,7 +35,7 @@ const PdfViewer = ({ htmlContent, title = "Document", onClose }) => {
       position: fixed;
       top: -99999px; left: -99999px;
       width: ${contentWidth}px;
-      font-family: 'Lora', Georgia, serif;
+       
       font-size: 13.5px;
       line-height: 1.85;
       color: #1a1a1a;

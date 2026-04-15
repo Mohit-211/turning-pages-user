@@ -23,7 +23,6 @@ export default function Support() {
       const res = await GetAllSupportApi();
       setTickets(res?.data?.data || []);
     } catch (err) {
-      message.error("Failed to fetch tickets");
       console.error(err);
     } finally {
       setLoading(false);
@@ -41,7 +40,6 @@ export default function Support() {
       setSelectedTicket(res?.data?.data);
       setIsDetailsModalVisible(true);
     } catch (err) {
-      message.error("Failed to fetch ticket details");
       console.error(err);
     }
   };
@@ -67,7 +65,6 @@ export default function Support() {
       setPriority("low");
       fetchTickets(); // Refresh ticket list
     } catch (err) {
-      message.error("Failed to create ticket");
       console.error(err);
     }
   };

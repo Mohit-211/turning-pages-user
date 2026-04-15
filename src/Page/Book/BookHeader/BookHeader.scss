@@ -102,7 +102,7 @@ $t:       .2s $ease;
   border: 0.5px solid;
   white-space: nowrap;
   line-height: 1;
-  font-family: 'DM Sans', sans-serif;
+   ;
 
   svg { flex-shrink: 0; }
 
@@ -208,7 +208,6 @@ $t:       .2s $ease;
 .bh-pdf-size-label {
   font-size: 10px;
   font-weight: 700;
-  font-family: 'DM Mono', monospace;
   letter-spacing: .04em;
 }
 
@@ -244,7 +243,7 @@ $t:       .2s $ease;
   border-bottom: 0.5px solid #f1f5f9;
 
   span {
-    font-family: 'DM Sans', sans-serif;
+     
     font-size: 13px;
     font-weight: 700;
     color: $ink;
@@ -271,7 +270,7 @@ $t:       .2s $ease;
 .bh-size-dropdown__group { padding: 10px 16px 6px; }
 
 .bh-size-dropdown__label {
-  font-family: 'DM Sans', sans-serif;
+   
   font-size: 9px;
   font-weight: 700;
   letter-spacing: .12em;
@@ -345,14 +344,13 @@ $t:       .2s $ease;
 }
 
 .bh-sz-card__label {
-  font-family: 'DM Sans', sans-serif;
+   
   font-size: 11px;
   font-weight: 700;
   color: $ink;
 }
 
 .bh-sz-card__desc {
-  font-family: 'DM Mono', monospace;
   font-size: 8px;
   color: $dim;
 }
@@ -425,7 +423,7 @@ $t:       .2s $ease;
   svg { color: $red; flex-shrink: 0; }
 
   span:first-of-type {
-    font-family: 'DM Sans', sans-serif;
+     
     font-size: 14px;
     font-weight: 700;
     color: $ink;
@@ -434,8 +432,7 @@ $t:       .2s $ease;
 }
 
 .bh-print-modal__desc {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
+     font-size: 10px;
   color: $dim;
   white-space: nowrap;
 }
@@ -456,7 +453,7 @@ $t:       .2s $ease;
   border: none;
   border-radius: 8px;
   color: #fff;
-  font-family: 'DM Sans', sans-serif;
+   ;
   font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
@@ -492,7 +489,7 @@ $t:       .2s $ease;
   gap: 16px;
   padding: 64px 20px;
 
-  p { font-family: 'DM Sans', sans-serif; font-size: 13px; color: $mid; }
+  p {  font-size: 13px; color: $mid; }
 }
 
 .bh-spinner {
@@ -593,7 +590,7 @@ $t:       .2s $ease;
 .bh-print-modal__page-num {
   text-align: center;
   margin-top: 7px;
-  font-family: 'DM Sans', sans-serif;
+   ;
   font-size: 10px;
   color: rgba(0,0,0,.32);
   letter-spacing: .04em;
@@ -602,7 +599,7 @@ $t:       .2s $ease;
 .bh-print-modal__total {
   text-align: center;
   margin-top: 18px;
-  font-family: 'DM Sans', sans-serif;
+   ;
   font-size: 11px;
   color: rgba(0,0,0,.38);
   letter-spacing: .02em;
@@ -646,7 +643,7 @@ $mg-outside: 0.6in;
   }
 
   .print-rhead-label {
-    font-family: 'DM Sans', sans-serif;
+     
     font-size: 7px;
     font-weight: 700;
     letter-spacing: .22em;
@@ -658,15 +655,14 @@ $mg-outside: 0.6in;
   .print-rhead-rule { flex: 1; height: .5px; background: #e4e4e4; }
 
   .print-rhead-size {
-    font-family: 'DM Mono', monospace;
-    font-size: 7px;
+         font-size: 7px;
     color: #ccc;
   }
 
   .print-body {
     flex: 1;
     padding: 0;
-    font-family: "Georgia", serif;
+     
     color: #1c1c1c;
     line-height: 1.8;
     word-break: break-word;
@@ -706,7 +702,7 @@ $mg-outside: 0.6in;
   .print-folio-rule { flex: 1; height: .5px; background: #e4e4e4; }
 
   .print-folio-num {
-    font-family: 'DM Sans', sans-serif;
+     
     font-size: 9px;
     color: #aaa;
     letter-spacing: .07em;
@@ -721,7 +717,7 @@ $mg-outside: 0.6in;
     gap: 24px;
 
     img { max-width: 60%; max-height: 400px; object-fit: contain; border-radius: 4px; }
-    h1  { font-family: "Georgia", serif; font-weight: 700; color: #0f172a; }
-    h3  { font-family: 'DM Sans', sans-serif; font-weight: 400; color: #555; }
+    h1  {   font-weight: 700; color: #0f172a; }
+    h3  {   font-weight: 400; color: #555; }
   }
 }

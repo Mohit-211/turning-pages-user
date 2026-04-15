@@ -11,7 +11,7 @@ import { Skeleton } from "antd";
 /* ==================== Icons ==================== */
 const IconCopy = () => (
   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+    <rect x="9" y="9" width="13" height="13" rx="2" />
     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
   </svg>
 );
@@ -47,12 +47,12 @@ const IconGrid = () => (
 
 /* ==================== Accent Colors ==================== */
 const tagAccents = {
-  All: "#c8a96e",
-  Motivation: "#e07b5d",
-  Wisdom: "#6b9080",
-  Life: "#8b7bb5",
-  Inspiration: "#c8a96e",
-  Love: "#d96d8a",
+  All: "#1e2d40",
+  Motivation: "#e8323c",
+  Wisdom: "#2e7d6e",
+  Life: "#5a4fcf",
+  Inspiration: "#f47b20",
+  Love: "#c2405a",
 };
 
 const getItemTag = (item) => {
@@ -88,34 +88,27 @@ export default function QuotesPage() {
   const fullQuotesRef = useRef([]);
   const fullFetchedRef = useRef(false);
 
-  /* Fetch Tags */
   const fetchTags = async () => {
     try {
       const res = await GetTagsApi();
       const tagList = res?.data?.data?.data || [];
       setTags(["All", ...tagList.map(t => t.title.trim())]);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch {}
   };
 
-  /* Fetch All Quotes for Global Search */
   const fetchAllForSearch = async () => {
     if (fullFetchedRef.current) return fullQuotesRef.current;
-
     try {
       const res = await GetAllQuotesApi(1, 9999);
-      const quoteList = res?.data?.data?.data || [];
-      fullQuotesRef.current = quoteList;
+      const list = res?.data?.data?.data || [];
+      fullQuotesRef.current = list;
       fullFetchedRef.current = true;
-      return quoteList;
-    } catch (err) {
-      console.log(err);
+      return list;
+    } catch {
       return [];
     }
   };
 
-  /* Fetch Quotes by Tag */
   const fetchQuotesByTag = async (tag) => {
     setIsLoading(true);
     try {
@@ -123,14 +116,13 @@ export default function QuotesPage() {
         ? await GetAllQuotesApi(1, 30)
         : await GetQuotesByTagApi(tag, 1, 30);
 
-      const quoteList = res?.data?.data?.data || [];
-      const total = res?.data?.data?.total || quoteList.length;
+      const list = res?.data?.data?.data || [];
+      const total = res?.data?.data?.total || list.length;
 
-      setAllQuotes(quoteList);
-      setQuotes(quoteList);
+      setAllQuotes(list);
+      setQuotes(list);
       setTotalCount(total);
-    } catch (err) {
-      console.log(err);
+    } catch {
       setQuotes([]);
       setTotalCount(0);
     } finally {
@@ -138,17 +130,12 @@ export default function QuotesPage() {
     }
   };
 
-  /* Handle Search (Press Enter) */
   const handleSearchSubmit = async () => {
     const q = searchQuery.trim();
-    if (!q) {
-      setQuotes(allQuotes);
-      return;
-    }
+    if (!q) return setQuotes(allQuotes);
 
     setSearchLoading(true);
 
-    // If user searches for a tag name → switch to that tag
     const matchedTag = tags.find(t => t.toLowerCase() === q.toLowerCase());
     if (matchedTag) {
       setActiveTag(matchedTag);
@@ -157,13 +144,11 @@ export default function QuotesPage() {
       return;
     }
 
-    // Full text search
     const source = fullFetchedRef.current
       ? fullQuotesRef.current
       : await fetchAllForSearch();
 
-    const results = filterQuotes(source, q);
-    setQuotes(results);
+    setQuotes(filterQuotes(source, q));
     setSearchLoading(false);
   };
 
@@ -173,25 +158,26 @@ export default function QuotesPage() {
     searchRef.current?.focus();
   };
 
-  /* Load quotes when tag changes */
-  useEffect(() => {
-    fetchQuotesByTag(activeTag);
-  }, [activeTag]);
+  const handleCatSelect = (tag) => {
+    setActiveTag(tag);
+    setSearchQuery("");
+    setShowCatModal(false);
+  };
 
-  /* Initial Load */
-  useEffect(() => {
-    fetchTags();
-  }, []);
+  useEffect(() => { fetchTags(); }, []);
+  useEffect(() => { fetchQuotesByTag(activeTag); }, [activeTag]);
 
   const isSearchActive = searchQuery.trim().length > 0;
-  const accent = tagAccents[activeTag] || "#c8a96e";
-console.log(activeTag,"activeTag")
+
   return (
     <div className="quotes-page">
+
       {/* Header */}
-      <header className="quotes-header" style={{ "--accent": accent }}>
+      <header className="quotes-header">
         <p className="quotes-header__eyebrow">A curated collection</p>
-        <h1 className="quotes-header__title">Words that <br /><em>move the soul</em></h1>
+        <h1 className="quotes-header__title">
+          Words that <br /><em>move the soul</em>
+        </h1>
         <div className="quotes-header__rule" />
 
         <div className="quotes-search-wrap">
@@ -214,7 +200,7 @@ console.log(activeTag,"activeTag")
         </div>
       </header>
 
-      <main className="quotes-main">
+        <main className="quotes-main">
         {/* Tags Row */}
         <div className={`quotes-tags-row ${isSearchActive ? "quotes-tags-row--search-active" : ""}`}>
           <button className="all-cats-btn" onClick={() => setShowCatModal(true)}>
@@ -227,7 +213,7 @@ console.log(activeTag,"activeTag")
                 <button
                   key={tag}
                   className={`tag-btn ${activeTag === tag ? "tag-btn--active" : ""}`}
-                  style={{ "--accent": tagAccents[tag] || "#c8a96e" }}
+                  style={{ "--accent": tagAccents[tag] || "#1e2d40" }}
                   onClick={() => {
                     setActiveTag(tag);
                     setSearchQuery("");
@@ -255,8 +241,7 @@ console.log(activeTag,"activeTag")
           <span className="quotes-count__label">
             {searchLoading || isLoading
               ? "Loading..."
-              
-                : `quote${totalCount !== 1 ? "s" : ""}${activeTag !== "All" ? ` in ${activeTag}` : ""}`
+              : `quote${totalCount !== 1 ? "s" : ""}${activeTag !== "All" ? ` in ${activeTag}` : ""}`
             }
           </span>
         </div>
@@ -265,7 +250,10 @@ console.log(activeTag,"activeTag")
         {(isLoading || searchLoading) && (
           <div className="quotes-grid">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className={`quote-card quote-card--skeleton ${i % 3 === 0 ? "quote-card--tall" : ""}`} />
+              <div
+                key={i}
+                className={`quote-card quote-card--skeleton ${i % 3 === 0 ? "quote-card--tall" : ""}`}
+              />
             ))}
           </div>
         )}
@@ -277,7 +265,7 @@ console.log(activeTag,"activeTag")
               <article
                 key={quote.id}
                 className={`quote-card ${i % 4 === 0 ? "quote-card--tall" : ""}`}
-                style={{ "--accent": tagAccents[getItemTag(quote)] || "#c8a96e" }}
+                style={{ "--accent": tagAccents[getItemTag(quote)] || "#1e2d40" }}
               >
                 <p className="quote-text">"{quote.quote}"</p>
                 <footer className="quote-footer">
@@ -309,7 +297,7 @@ console.log(activeTag,"activeTag")
         )}
       </main>
 
-      {/* Modal remains same */}
+      {/* All Categories Modal */}
       {showCatModal && (
         <div className="cat-modal-overlay" onClick={() => setShowCatModal(false)}>
           <div className="cat-modal" onClick={(e) => e.stopPropagation()}>
@@ -341,10 +329,10 @@ console.log(activeTag,"activeTag")
                   <button
                     key={tag}
                     className={`cat-modal__item ${activeTag === tag ? "cat-modal__item--active" : ""}`}
-                    style={{ "--accent": tagAccents[tag] || "#c8a96e" }}
+                    style={{ "--accent": tagAccents[tag] || "#1e2d40" }}
                     onClick={() => handleCatSelect(tag)}
                   >
-                    <span className="cat-modal__dot" style={{ background: tagAccents[tag] }} />
+                    <span className="cat-modal__dot" style={{ background: tagAccents[tag] || "#1e2d40" }} />
                     {tag}
                     {activeTag === tag && <span className="cat-modal__active-badge">Active</span>}
                   </button>
@@ -353,6 +341,7 @@ console.log(activeTag,"activeTag")
           </div>
         </div>
       )}
+
     </div>
   );
 }

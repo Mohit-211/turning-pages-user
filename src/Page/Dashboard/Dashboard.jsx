@@ -56,7 +56,6 @@ const Dashboard = () => {
     link.click();
     document.body.removeChild(link);
   };
-console.log(user?.user_profile?.name,"user")
   return (
     <div className="dashboard-page">
 

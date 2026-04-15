@@ -27,7 +27,6 @@ const Chat = () => {
   const messagesEndRef = useRef(null);
 
   const senderId = localStorage.getItem("userId");
-  console.log(senderId,"senderId")
   const senderRoleId = localStorage.getItem("role_id");
 
   // 👉 check if direct chat mode

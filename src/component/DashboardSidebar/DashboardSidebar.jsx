@@ -49,9 +49,7 @@ const DashboardSidebar = () => {
     const fetchProfile = async () => {
       try {
         const res = await UserProfileApi();
-        console.log(res, "res")
         const score = Number(res?.data?.data?.total_credit);
-        console.log(score, "score")
         setCreditScore(score);
       } catch (error) {
         console.error("Error fetching profile:", error);

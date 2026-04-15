@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./CreditPage.scss";
+import { GetCreditApi } from "../../api/operations/credit.api"; // adjust path
 
 const creditActivities = [
   { activity: "Create a chapter outline", credits: 1, category: "Planning" },
@@ -46,18 +47,46 @@ export default function CreditSystem() {
   const [activeTab, setActiveTab] = useState("Overview");
   const [selected, setSelected] = useState([]);
 
+  // ✅ NEW: API state
+  const [stats, setStats] = useState({
+    total: 0,
+    used: 0,
+    avg: 0,
+    activities: creditActivities.length,
+  });
+
+  // ✅ NEW: API call
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      const res = await GetCreditApi();
+      console.log(res,"res")
+      const data = res?.data?.data;
+console.log(data,"data")
+      setStats({
+        total: data.total_credits,
+        used: data.credits_used ,
+        avg: data.avg_credits_per_book,
+        activities: data.activities
+,
+      });
+    } catch (err) {
+      console.log("Credit API Error:", err);
+    }
+  };
+
   const totalSelected = selected.reduce((s, i) => s + creditActivities[i].credits, 0);
   const workflowTotal = sampleWorkflow.reduce((s, r) => s + r.credits, 0);
+
   const toggle = (idx) =>
     setSelected((p) => (p.includes(idx) ? p.filter((i) => i !== idx) : [...p, idx]));
 
   return (
     <div className="credit-system">
-      {/* Sidebar commented out — preserved as-is */}
-
       <div className="cs-main">
-        {/* Header commented out — preserved as-is */}
-
         <main className="cs-content">
 
           {/* Welcome */}
@@ -76,13 +105,13 @@ export default function CreditSystem() {
             </button>
           </div>
 
-          {/* Stats */}
+          {/* ✅ FIXED STATS ONLY */}
           <div className="cs-stats">
             {[
-              { label: "YOUR CREDITS", value: "316", color: "#1E3A5F" },
-              { label: "CREDITS USED", value: "84", color: "#C0392B" },
-              { label: "AVG PER BOOK", value: "~25", color: "#1E3A5F" },
-              { label: "ACTIVITIES", value: "11", color: "#1E3A5F" },
+              { label: "YOUR CREDITS", value: stats.total, color: "#1E3A5F" },
+              { label: "CREDITS USED", value: stats.used, color: "#C0392B" },
+              { label: "AVG PER BOOK", value: `~${stats.avg}`, color: "#1E3A5F" },
+              { label: "ACTIVITIES", value: stats.activities, color: "#1E3A5F" },
             ].map((s) => (
               <div key={s.label} className="cs-stat-card">
                 <div className="cs-stat-card__label">{s.label}</div>
@@ -93,7 +122,7 @@ export default function CreditSystem() {
             ))}
           </div>
 
-          {/* Tabbed card */}
+            {/* Tabbed card */}
           <div className="cs-card">
             <div className="cs-tabs">
               {tabs.map((tab) => (

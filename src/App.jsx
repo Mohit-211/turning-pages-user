@@ -33,6 +33,7 @@ import ChangePassword from "./Page/Auth/forms/ChangePassword";
 import CreditSystem from "./Page/CreditPage/CreditPage";
 import AIToolsGuide from "./Page/ChapterManager/chapterComponent/AIToolsGuide";
 import PricingPage from "./Sections/PaymentPage/PricingPage";
+// import MySubscriptionPage from "./Sections/PaymentPage/MySubscriptionPage/MySubscriptionPage";
 function App() {
   return (
     <BrowserRouter>
@@ -248,6 +249,16 @@ function App() {
             </ProtectedRoute>
           }
         />
+        {/* <Route
+          path="/dashboard/my-subscriptions"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <MySubscriptionPage/>
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        /> */}
         <Route
           path="/dashboard/publish-payment"
           element={

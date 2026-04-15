@@ -6,19 +6,17 @@ import "./ForgotPassword.scss"
 const ForgotPassword = () => {
   const navigate = useNavigate();
   const location = useLocation();
-console.log(location,"======")
   const { email, token } = location.state || {};
 
   const [loading, setLoading] = useState(false);
 
   const onFinish = async (values: any) => {
     if (!email || !token) {
-      message.error("Invalid request. Please try again.");
       return;
     }
 
     if (values.password !== values.confirm_password) {
-      return message.error("Passwords do not match");
+      return 
     }
 
     setLoading(true);
@@ -38,9 +36,7 @@ console.log(location,"======")
         navigate("/login");
       }
     } catch (error: any) {
-      message.error(
-        error?.response?.data?.message || "Something went wrong"
-      );
+    
     } finally {
       setLoading(false);
     }

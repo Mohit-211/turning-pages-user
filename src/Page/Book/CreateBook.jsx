@@ -33,7 +33,7 @@ const CreateBook = () => {
   useEffect(() => {
     GetAllGenreApi()
       .then((res) => setGenres(res?.data?.data || []))
-      .catch(() => message.error("Failed to load genres"))
+      .catch(() => {})
       .finally(() => setLoadingGenres(false));
   }, []);
 
@@ -71,7 +71,7 @@ const handleCreate = async () => {
       res?.data?.message || "Book created successfully!"
     );
 
-    navigate("/dashboard");
+    navigate("/dashboard/books");
 
   } catch (err) {
     const msg = err?.response?.data?.message || "";

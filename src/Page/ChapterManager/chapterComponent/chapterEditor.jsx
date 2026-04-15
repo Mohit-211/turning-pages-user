@@ -12,7 +12,6 @@ export default function ChapterEditor({
   onlyView
 }) {
   const [editorReady, setEditorReady] = useState(false);
-console.log(editorReady,"editorReady")
   return (
     <div className="editor-wrapper">
       {!editorReady && (

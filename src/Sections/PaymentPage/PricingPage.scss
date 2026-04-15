@@ -21,7 +21,7 @@ $font-body:    'DM Sans', system-ui, sans-serif;
 
 // ── Page ──────────────────────────────────────────────────
 .pricing-page {
-  font-family: $font-body;
+  // 
   color: $text-primary;
   padding: 2rem 1.5rem 4rem;
   max-width: 1100px;
@@ -60,7 +60,7 @@ $font-body:    'DM Sans', system-ui, sans-serif;
 }
 
 .pricing-page__title {
-  font-family: $font-display;
+  //  
   font-size: 28px;
   font-weight: 400;
   line-height: 1.2;
@@ -86,7 +86,23 @@ $font-body:    'DM Sans', system-ui, sans-serif;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 12px;
 }
+.plan-card--active {
+  border: 2px solid #22c55e;
+  background: #f0fdf4;
+  position: relative;
+}
 
+.plan-card__current {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #22c55e;
+  color: white;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
 // ── Plan card ─────────────────────────────────────────────
 .plan-card {
   background: #ffffff;
@@ -125,14 +141,14 @@ $font-body:    'DM Sans', system-ui, sans-serif;
   }
 
   &__price {
-    font-family: $font-display;
+    //  
     font-size: 28px;
     font-weight: 400;
     margin-bottom: 0.2rem;
     color: $text-primary;
 
     span {
-      font-family: $font-body;
+      // 
       font-size: 13px;
       font-weight: 400;
       color: $text-secondary;
@@ -149,7 +165,7 @@ $font-body:    'DM Sans', system-ui, sans-serif;
   &__cta {
     width: 100%;
     padding: 8px 12px;
-    font-family: $font-body;
+    // 
     font-size: 13px;
     font-weight: 500;
     border-radius: $radius-md;
@@ -185,6 +201,7 @@ $font-body:    'DM Sans', system-ui, sans-serif;
 
 // ── Publish card ──────────────────────────────────────────
 .publish-card {
+  position: relative;
   background: #ffffff;
   border: 0.5px solid $border-light;
   border-radius: $radius-lg;
@@ -192,7 +209,23 @@ $font-body:    'DM Sans', system-ui, sans-serif;
   display: flex;
   flex-direction: column;
   transition: border-color 0.15s ease;
+.publish-card--active {
+  border: 2px solid #3b82f6;
+  background: #eff6ff;
+  position: relative;
+}
 
+.publish-card__badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #3b82f6;
+  color: #fff;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
   &:hover {
     border-color: $border-mid;
   }
@@ -205,7 +238,7 @@ $font-body:    'DM Sans', system-ui, sans-serif;
   }
 
   &__price {
-    font-family: $font-display;
+    //  
     font-size: 30px;
     font-weight: 400;
     color: $text-primary;
@@ -237,7 +270,7 @@ $font-body:    'DM Sans', system-ui, sans-serif;
   &__cta {
     width: 100%;
     padding: 9px 12px;
-    font-family: $font-body;
+    // 
     font-size: 13px;
     font-weight: 500;
     border-radius: $radius-md;

@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { message } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
 import StripePayment from "../../component/StripePayment/StripePayment";
+import { UserProfileApi } from "../../api/users/users.api";
 
 const PUBLISH_PACKAGES = [
   {
@@ -43,9 +44,12 @@ const PUBLISH_PACKAGES = [
   },
 ];
 
-function PublishCard({ pkg, onBuy, disablePayment }) {
+function PublishCard({ pkg, onBuy, disablePayment, isActive }) {
   return (
-    <div className="publish-card">
+    <div className={`publish-card ${isActive ? "publish-card--active" : ""}`}>
+      
+      {isActive && <div className="publish-card__badge">Purchased</div>}
+
       <div className="publish-card__name">{pkg.name}</div>
       <div className="publish-card__price">${pkg.price}</div>
 
@@ -60,7 +64,7 @@ function PublishCard({ pkg, onBuy, disablePayment }) {
         onClick={() => onBuy(pkg)}
         disabled={disablePayment}
       >
-        Buy now
+        {isActive ? "Purchased" : "Buy now"}
       </button>
     </div>
   );
@@ -68,10 +72,22 @@ function PublishCard({ pkg, onBuy, disablePayment }) {
 
 export default function PublishPricing({ disablePayment }) {
   const [selectedPackage, setSelectedPackage] = useState(null);
-
+const [hasPublishing, setHasPublishing] = useState(false);
+const [currentPackage, setCurrentPackage] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
+useEffect(() => {
+  const fetchUser = async () => {
+    const res = await UserProfileApi();
 
+    if (res?.data?.success) {
+      setHasPublishing(res.data.data.publishing_package);
+      setCurrentPackage(res.data.data.publishing_package_name); // ✅ important
+    }
+  };
+
+  fetchUser();
+}, []);
   const handlePaymentSuccess = () => {
     message.success("Package purchased 🎉");
 
@@ -90,15 +106,16 @@ export default function PublishPricing({ disablePayment }) {
       </div>
 
       <div className="publish-grid">
-        {PUBLISH_PACKAGES.map((pkg, i) => (
-          <PublishCard
-            key={i}
-            pkg={pkg}
-            onBuy={setSelectedPackage}
-            disablePayment={disablePayment}
-          />
-        ))}
-      </div>
+  {PUBLISH_PACKAGES.map((pkg, i) => (
+    <PublishCard
+      key={i}
+      pkg={pkg}
+      onBuy={setSelectedPackage}
+      disablePayment={disablePayment || hasPublishing}
+      isActive={currentPackage === pkg.value} // ✅ match
+    />
+  ))}
+</div>
 
       {selectedPackage && (
         <StripePayment

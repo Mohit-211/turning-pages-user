@@ -57,7 +57,6 @@ const handleSubmit = async (e) => {
       });
 
       if (!res?.data?.success) {
-        message.error(res?.data?.message || "Subscription failed.");
         return;
       }
 
@@ -94,14 +93,12 @@ const handleSubmit = async (e) => {
 
     /* ================= VALIDATION ================= */
     if (!clientSecret) {
-      message.error("Payment initialization failed.");
       return;
     }
 
     const cardElement = elements.getElement(CardElement);
 
     if (!cardElement) {
-      message.error("Card details not found.");
       return;
     }
 
@@ -128,12 +125,10 @@ const handleSubmit = async (e) => {
       onPaymentSuccess?.(result.paymentIntent);
       onCloseModal?.();
     } else {
-      message.error("Payment not completed.");
     }
 
   } catch (err) {
     console.error("Stripe error:", err);
-    message.error("Payment failed. Please try again.");
   } finally {
     setLoading(false);
   }

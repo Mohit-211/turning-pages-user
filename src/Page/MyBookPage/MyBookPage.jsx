@@ -13,7 +13,6 @@ const MyBookPage = () => {
       const bookData = await GetAllBooksApi();
       setBooks(bookData?.data?.data || []);
     } catch (error) {
-      message.error("Failed to load books");
       console.error("Load books error:", error);
     }
   };
@@ -26,7 +25,6 @@ const MyBookPage = () => {
       loadData();
     } catch (error) {
       console.error("Delete error:", error);
-      message.error("Failed to delete book!");
     }
   };
   useEffect(() => {

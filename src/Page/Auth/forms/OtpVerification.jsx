@@ -42,7 +42,6 @@ const OtpVerification = () => {
 
       if (response?.data?.success) {
         message.success(response?.data?.message || "OTP verified successfully");
-        console.log(response, "response")
         const token = response?.data?.data?.token
         // ✅ CONDITIONAL REDIRECT
         if (type === "forgot_password") {
@@ -54,9 +53,7 @@ const OtpVerification = () => {
         }
       }
     } catch (error) {
-      message.error(
-        error?.response?.data?.message || "OTP verification failed"
-      );
+     
     } finally {
       setLoading(false);
     }
