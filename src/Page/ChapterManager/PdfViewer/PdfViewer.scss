@@ -25,7 +25,7 @@ $t: .15s $ease;
 .pdv {
   display: flex; flex-direction: column;
   height: 100vh; width: 100%;
-  font-family: $font-ui; overflow: hidden;
+     overflow: hidden;
   *, *::before, *::after { box-sizing: border-box; }
 }
 
@@ -45,7 +45,7 @@ $t: .15s $ease;
   display: flex; align-items: center; gap: 5px; padding: 5px 12px;
   background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.18);
   border-radius: 5px; color: rgba(255,255,255,.85);
-  font-family: $font-ui; font-size: 12.5px; font-weight: 500;
+     font-size: 12.5px; font-weight: 500;
   cursor: pointer; transition: $t; white-space: nowrap;
   &:hover  { background: rgba(255,255,255,.16); color: #fff; }
   &:active { transform: scale(.96); }
@@ -71,7 +71,7 @@ $t: .15s $ease;
   border: 1px solid rgba(255,255,255,.22);
   border-radius: 6px;
   color: rgba(255,255,255,.9);
-  font-family: $font-ui; font-size: 12.5px; font-weight: 600;
+     font-size: 12.5px; font-weight: 600;
   cursor: pointer; transition: $t; white-space: nowrap;
 
   &:hover { background: rgba(255,255,255,.18); border-color: rgba(255,255,255,.4); }
@@ -85,7 +85,7 @@ $t: .15s $ease;
 .pdv__print-btn {
   display: flex; align-items: center; gap: 6px; padding: 5px 13px;
   background: transparent; border: 1px solid rgba(255,255,255,.22); border-radius: 5px;
-  color: rgba(255,255,255,.75); font-family: $font-ui; font-size: 12.5px; font-weight: 500;
+  color: rgba(255,255,255,.75);    font-size: 12.5px; font-weight: 500;
   cursor: pointer; transition: $t; white-space: nowrap;
   &:hover { background: rgba(255,255,255,.1); color: #fff; }
 }
@@ -116,13 +116,13 @@ $t: .15s $ease;
 .pdv__jump {
   flex-shrink: 0; min-width: 28px; height: 26px; padding: 0 7px;
   background: #fff; border: 1px solid $border; border-radius: 4px;
-  font-size: 11px; font-family: $font-mono; color: $mid; cursor: pointer; transition: $t;
+  font-size: 11px;   color: $mid; cursor: pointer; transition: $t;
   &:hover { border-color: $accent; color: $accent; background: rgba(47,111,191,.07); }
 }
 .pdv__zoom-row { display: flex; align-items: center; gap: 4px; }
 .pdv__zoom-val {
   min-width: 46px; height: 26px; padding: 0 6px; background: #fff;
-  border: 1px solid $border; border-radius: 5px; font-family: $font-mono;
+  border: 1px solid $border; border-radius: 5px;  
   font-size: 11.5px; color: $mid; cursor: pointer; transition: $t; text-align: center;
   &:hover { border-color: $border2; color: $ink; }
 }
@@ -146,7 +146,7 @@ $t: .15s $ease;
 .pdv__loading, .pdv__empty {
   display: flex; flex-direction: column; align-items: center;
   gap: 16px; padding-top: 100px;
-  p   { font-size: 13px; color: #888; font-family: $font-ui; }
+  p   { font-size: 13px; color: #888;    }
   svg { color: #bbb; }
 }
 .pdv__spinner {
@@ -198,12 +198,12 @@ $t: .15s $ease;
   flex-shrink: 0; margin-bottom: 8px;
 }
 .pdv__rhead-label {
-  font-family: $font-ui; font-size: 7px; font-weight: 700;
+     font-size: 7px; font-weight: 700;
   letter-spacing: .22em; color: $dim; white-space: nowrap;
 }
 .pdv__rhead-rule { flex: 1; height: .5px; background: #e4e4e4; }
 .pdv__rhead-size {
-  font-family: $font-mono; font-size: 7px; color: #ccc;
+    font-size: 7px; color: #ccc;
   white-space: nowrap;
 }
 
@@ -240,8 +240,8 @@ $t: .15s $ease;
     th { background: #f5f5f5; font-weight: 600; }
   }
   img   { max-width: 100%; height: auto; display: block; margin: .4em auto; }
-  code  { font-family: $font-mono; font-size: .88em; background: #f4f4f4; padding: 1px 4px; border-radius: 3px; }
-  pre   { font-family: $font-mono; font-size: .88em; background: #f4f4f4; padding: 10px; border-radius: 4px; overflow-x: auto; }
+  code  {   font-size: .88em; background: #f4f4f4; padding: 1px 4px; border-radius: 3px; }
+  pre   {   font-size: .88em; background: #f4f4f4; padding: 10px; border-radius: 4px; overflow-x: auto; }
   hr    { border: none; border-top: 1px solid #e8e8e8; margin: .8em 0; }
   a     { color: #2f6fbf; }
   figure    { margin: .6em 0; }
@@ -256,7 +256,7 @@ $t: .15s $ease;
   display: flex; align-items: center; gap: 10px; flex-shrink: 0;
 }
 .pdv__folio-rule { flex: 1; height: .5px; background: #e4e4e4; }
-.pdv__folio-num  { font-family: $font-ui; font-size: 9px; color: $dim; letter-spacing: .07em; }
+.pdv__folio-num  {    font-size: 9px; color: $dim; letter-spacing: .07em; }
 
 // ════════════════════════════════════════════════════════════
 // SIZE SELECTOR MODAL
@@ -297,7 +297,7 @@ $t: .15s $ease;
 
   span {
     font-size: 15px; font-weight: 700; color: $navy;
-    font-family: $font-ui; letter-spacing: -.01em;
+       letter-spacing: -.01em;
   }
 
   button {
@@ -312,7 +312,7 @@ $t: .15s $ease;
 .sz-modal__group { padding: 16px 22px 8px; }
 
 .sz-modal__group-label {
-  font-family: $font-ui; font-size: 10.5px; font-weight: 700;
+     font-size: 10.5px; font-weight: 700;
   letter-spacing: .1em; text-transform: uppercase;
   color: #bbb; margin: 0 0 12px;
 }
@@ -367,12 +367,12 @@ $t: .15s $ease;
 }
 
 .sz-card__label {
-  font-family: $font-ui; font-size: 12px; font-weight: 700;
+     font-size: 12px; font-weight: 700;
   color: $ink; letter-spacing: -.01em;
 }
 
 .sz-card__desc {
-  font-family: $font-mono; font-size: 9.5px; color: $dim;
+    font-size: 9.5px; color: $dim;
   letter-spacing: .01em;
 }
 

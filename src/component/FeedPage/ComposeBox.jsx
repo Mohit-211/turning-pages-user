@@ -10,109 +10,52 @@ export default function ComposeBox({ onPostCreated, reloadFeeds }) {
   const [text, setText] = useState("");
   const [genreId, setGenreId] = useState("");
   const [genres, setGenres] = useState([]);
-
   const [user, setUser] = useState(null);
-
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
-
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
   const fileRef = useRef(null);
-
   const isReady = title.trim() && text.trim() && genreId && !loading;
-console.log(user,"user")
-  // ─────────────────────────────────
-  // LOAD GENRES
-  // ─────────────────────────────────
-  useEffect(() => {
-    const loadGenres = async () => {
-      try {
-        const res = await GetAllGenreApi();
-        setGenres(res.data?.data || res.data || []);
-      } catch (err) {
-        console.error("Genre fetch error", err);
-      }
-    };
 
-    loadGenres();
+  useEffect(() => {
+    GetAllGenreApi()
+      .then((res) => setGenres(res.data?.data || res.data || []))
+      .catch((err) => console.error("Genre fetch error", err));
   }, []);
 
-  // ─────────────────────────────────
-  // LOAD USER PROFILE
-  // ─────────────────────────────────
   useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const res = await UserProfileApi();
-        setUser(res.data?.data || res.data);
-      } catch (err) {
-        console.error("User fetch error", err);
-      }
-    };
-
-    loadUser();
+    UserProfileApi()
+      .then((res) => setUser(res.data?.data || res.data))
+      .catch((err) => console.error("User fetch error", err));
   }, []);
 
-  // ─────────────────────────────────
-  // GET INITIALS
-  // ─────────────────────────────────
-  const getInitials = (name) => {
-  
-
-    const parts = name.trim().split(" ");
-
-    if (parts.length === 1) {
-      return parts[0][0].toUpperCase();
-    }
-
-    return (
-      parts[0][0].toUpperCase() +
-      parts[parts.length - 1][0].toUpperCase()
-    );
-  };
-
-  // ─────────────────────────────────
-  // IMAGE HANDLING
-  // ─────────────────────────────────
   const handleImageChange = (e) => {
     const file = e.target.files?.[0] ?? null;
-
     if (!file) return;
-
     setImage(file);
     setPreview(URL.createObjectURL(file));
   };
 
   const removeImage = () => {
     setImage(null);
-
     if (preview) URL.revokeObjectURL(preview);
-
     setPreview(null);
-
     if (fileRef.current) fileRef.current.value = "";
   };
 
-  // ─────────────────────────────────
-  // RESET FORM
-  // ─────────────────────────────────
   const resetForm = () => {
     setTitle("");
     setText("");
     setGenreId("");
-
     removeImage();
     setExpanded(false);
     setError("");
   };
 
-  // ─────────────────────────────────
-  // SUBMIT
-  // ─────────────────────────────────
   const handleSubmit = async () => {
     if (!isReady) return;
 
@@ -122,23 +65,17 @@ console.log(user,"user")
 
     try {
       const formData = new FormData();
-
       formData.append("title", title.trim());
       formData.append("content", text.trim());
       formData.append("genre_id", genreId);
-
-      if (image) {
-        formData.append("images", image);
-      }
+      if (image) formData.append("images", image);
 
       const data = await CreateFeedApi(formData);
 
       setSuccess(true);
       resetForm();
       await reloadFeeds();
-
       onPostCreated?.(data);
-
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       setError(err.message ?? "Something went wrong.");
@@ -150,17 +87,15 @@ console.log(user,"user")
   return (
     <div className={`compose-box${expanded ? " compose-box--expanded" : ""}`}>
       <div className="compose-box__inner">
-        
-        {/* ✅ AVATAR */}
         <div className="compose-box__avatar">
-  {user ? (
-    user?.user_profile?.name?.[0]?.toUpperCase() || "U"
-  ) : (
-    <span className="avatar-loader" />
-  )}
-</div>
+          {user ? (
+            user?.user_profile?.name?.[0]?.toUpperCase() || "U"
+          ) : (
+            <span className="avatar-loader" />
+          )}
+        </div>
 
-        <div className="compose-box__body pt-10">
+        <div className="compose-box__body">
           {expanded && (
             <input
               className="compose-box__title"
@@ -182,20 +117,16 @@ console.log(user,"user")
 
           {expanded && (
             <div className="compose-box__meta">
-              
-              {/* GENRE */}
               <div className="compose-box__field">
                 <label className="compose-box__label">
                   Genre <span className="compose-box__required">*</span>
                 </label>
-
                 <select
                   className="compose-box__select"
                   value={genreId}
                   onChange={(e) => setGenreId(e.target.value)}
                 >
                   <option value="">Select genre...</option>
-
                   {genres.map((g) => (
                     <option key={g.id} value={g.id}>
                       {g.title}
@@ -204,12 +135,10 @@ console.log(user,"user")
                 </select>
               </div>
 
-              {/* IMAGE */}
               <div className="compose-box__field">
                 <label className="compose-box__label">
                   Image <span className="compose-box__optional">(optional)</span>
                 </label>
-
                 {preview ? (
                   <div className="compose-box__img-preview">
                     <img
@@ -217,7 +146,6 @@ console.log(user,"user")
                       alt="preview"
                       className="compose-box__img-thumb"
                     />
-
                     <button
                       type="button"
                       className="compose-box__img-remove"
@@ -235,7 +163,6 @@ console.log(user,"user")
                     📷 Choose image…
                   </button>
                 )}
-
                 <input
                   ref={fileRef}
                   type="file"
@@ -261,12 +188,9 @@ console.log(user,"user")
                   Cancel
                 </button>
               )}
-
               <button
                 type="button"
-                className={`compose-box__submit ${
-                  !isReady ? "compose-box__submit--disabled" : ""
-                }`}
+                className={`compose-box__submit${!isReady ? " compose-box__submit--disabled" : ""}`}
                 disabled={!isReady}
                 onClick={handleSubmit}
               >

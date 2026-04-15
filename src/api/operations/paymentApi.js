@@ -14,6 +14,8 @@ export const GetPaymentSpendingListApi = () =>
 export const CreateSubscriptionApi = (payload) =>
   client.post(PAYMENT_ENDPOINTS.SUBSCRIPTION, payload);
 
+export const CancelSubscriptionApi = () =>
+  client.post(PAYMENT_ENDPOINTS.CANCLE);
 export const GetUserSubscriptionsApi = () =>
   client.get(PAYMENT_ENDPOINTS.GET_USER_SUBSCRIPTIONS);
 

@@ -2,53 +2,17 @@
 @use 'mixins' as m;
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,300&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-/* ───────────────────────────────────────────────────────── */
-/* FEED PAGE (LAYOUT) */
-/* ───────────────────────────────────────────────────────── */
-
 .feed-page {
   min-height: 100vh;
-  background: #f0f0ec;
-  font-family: 'DM Sans', sans-serif;
+  // Light gray page background matching your app chrome
+   ;
 
-  background-image:
-    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(201,106,46,0.06) 0%, transparent 60%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-
-  &__header {
-    background: #fafaf8;
-    border-bottom: 1px solid #e8e8e3;
-    padding: 18px 24px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    backdrop-filter: blur(12px);
-
-    .header-inner {
-      max-width: 720px;
-      margin: auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .header-wordmark {
-      font-family: 'Fraunces', serif;
-      font-size: 20px;
-      font-weight: 500;
-      color: #0d0d14;
-      letter-spacing: -0.03em;
-
-      span {
-        color: #c96a2e;
-      }
-    }
-  }
-
+  // Subtle noise texture (matches your app's bg treatment)
+  
   &__body {
     max-width: 720px;
     margin: auto;
-    // padding: 24px 16px 60px;
+    padding: 0 16px 48px;
   }
 
   &__main {
@@ -62,179 +26,24 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.12em;
-    color: #a0a0b8;
+    color: #9a9ab0;
     margin-bottom: -4px;
   }
 
   &__empty {
     text-align: center;
     padding: 60px 20px;
-    color: #a0a0b8;
+    color: #9a9ab0;
 
     .empty-icon {
       font-size: 36px;
       margin-bottom: 12px;
       opacity: 0.4;
     }
-  }
-}
 
-/* ───────────────────────────────────────────────────────── */
-/* FEED CARD (MERGED + FIXED) */
-/* ───────────────────────────────────────────────────────── */
-
-.feed-card {
-  background: v.$bg-card;
-  border: 1px solid v.$border;
-  border-radius: v.$radius-xl;
-  box-shadow: v.$shadow-card;
-  padding: 20px;
-  margin-bottom: 16px;
-  font-family: 'DM Sans', sans-serif;
-
-  @include m.lift;
-
-  /* Announcement variant */
-  &--announcement {
-    background: #fffbeb;
-    border-color: #fde68a;
-  }
-
-  /* HEADER */
-  &__header {
-    @include m.flex-row(0, flex-start, space-between);
-    margin-bottom: 12px;
-  }
-
-  &__author-row {
-    @include m.flex-row(12px, center);
-  }
-
-  &__avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8rem;
-    font-weight: 700;
-    flex-shrink: 0;
-  }
-
-  &__author-name {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: v.$text-heading;
-  }
-
-  &__role-pill {
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 999px;
-    margin-left: 6px;
-  }
-
-  &__time {
-    font-size: 0.7rem;
-    color: v.$text-muted;
-    margin-top: 2px;
-  }
-
-  /* BODY */
-  &__body {
-    font-size: 0.875rem;
-    line-height: 1.65;
-    color: v.$text-body;
-  }
-
-  /* TAGS */
-  &__tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 12px;
-  }
-
-  &__tag {
-    font-size: 0.7rem;
-    color: v.$text-secondary;
-    padding: 2px 8px;
-    border-radius: v.$radius-sm;
-    background: v.$bg-muted;
-    border: 1px solid v.$border;
-  }
-
-  /* ACTIONS */
-  &__actions {
-    @include m.flex-row(4px, center);
-    margin-top: 16px;
-    padding-top: 12px;
-    border-top: 1px solid v.$border-light;
-  }
-
-  &__like-btn {
-    @include m.btn-ghost;
-
-    &--liked {
-      background: #fef2f2;
-      color: #ef4444;
-
-      &:hover {
-        background: #fee2e2;
-      }
-    }
-  }
-
-  &__comment-btn {
-    @include m.btn-ghost;
-  }
-
-  &__share-btn {
-    @include m.btn-ghost(v.$text-faint);
-    margin-left: auto;
-  }
-
-  &__action-count {
-    font-weight: 500;
-  }
-
-  /* COMMENT BOX */
-  &__comment-box {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-  }
-
-  &__comment-avatar {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.7rem;
-    font-weight: 700;
-    flex-shrink: 0;
-    background: v.$primary-light;
-    color: v.$primary;
-    border: 1px solid #c4b5fd;
-  }
-
-  &__comment-input {
-    flex: 1;
-    font-size: 0.8rem;
-    border-radius: v.$radius-md;
-    padding: 7px 12px;
-    outline: none;
-    background: v.$bg-input;
-    border: 1px solid v.$border;
-    color: v.$text-body;
-    font-family: 'DM Sans', sans-serif;
-
-    &::placeholder {
-      color: v.$text-faint;
+    p {
+      font-size: 14px;
+      line-height: 1.6;
     }
   }
 }

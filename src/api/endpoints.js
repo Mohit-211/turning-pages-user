@@ -11,6 +11,9 @@ export const AUTH_ENDPOINTS = {
 export const USER_ENDPOINTS = {
   PROFILE: "user/profile",
 };
+export const CREDIT_ENDPOINTS = {
+  GET: "user/getUserCreditStats",
+};
 export const Genre_ENDPOINTS = {
   GET_ALL: "genres",
 };
@@ -30,7 +33,7 @@ export const Chapter_ENDPOINTS = {
   CREATE: "chapters",
   GET_ALL: (id) => `chapters/${id}`,
   UPDATE: "chapters",
-  DELETE: "chapters/remove",
+  DELETE:`chapters/remove`,
   GENERATE_CHAPTER_CONTENT: "chapters/generate/chapter/content",
   PLAGIARISM_CHECK: "books/plagiarism/check",
   CONSISTENCY_CHECK: "books/consistency/check",
@@ -42,6 +45,7 @@ export const PAYMENT_ENDPOINTS = {
   GET_ALL: "payments/all",
   SPENDING_LISt: "payments/credit/list",
   SUBSCRIPTION: "payments/subscription/create",
+  CANCLE:"payments/subscription/cancel",
   GET_ALL_PAYMENTS: "payments/all",
   GET_USER_SUBSCRIPTIONS: "payments/getUserSubscriptions"
 

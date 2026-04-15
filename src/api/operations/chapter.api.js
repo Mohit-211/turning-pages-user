@@ -15,7 +15,7 @@ export const UpdateChapterApi = (payload) =>
 
 // Delete Chapter
 export const DeleteChapterApi = (payload) =>
-  client.delete(Chapter_ENDPOINTS.DELETE, { data: payload });
+  client.post(Chapter_ENDPOINTS.DELETE,payload);
 
 // Generate Chapter Content
 export const GenerateChapterContentAPI = (payload) =>

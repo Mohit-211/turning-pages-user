@@ -76,8 +76,7 @@ export default function GrammarAssistant({ text, setText, token }) {
     const selected = selection.toString().trim();
     if (selected) {
       setSelectedText(selected);
-      // Optional: console.log("Selected text:", selected);
-      // You can later send this to TAV rewrite endpoint
+    
     } else {
       setSelectedText("");
     }

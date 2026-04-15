@@ -10,7 +10,7 @@ import "./BookCoverPanel.scss";
 
 const { Option } = Select;
 
-export default function BookCoverPanel({ bookdetails, onClose,onUpdateBook  }) {
+export default function BookCoverPanel({ bookdetails, onClose,onUpdateBook ,mode  }) {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -27,6 +27,13 @@ export default function BookCoverPanel({ bookdetails, onClose,onUpdateBook  }) {
     author: "",
     description: "",
   });
+  useEffect(() => {
+  if (mode === "edit") {
+    // 👉 load existing cover
+  } else if (mode === "create") {
+    // 👉 reset form / empty state
+  }
+}, [mode]);
 
   /* ── Load initial book data ── */
   useEffect(() => {
@@ -38,7 +45,6 @@ export default function BookCoverPanel({ bookdetails, onClose,onUpdateBook  }) {
       author: bookdetails?.author || "",
       description: bookdetails?.description || "",
     });
-console.log(bookdetails,"bookdetails")
     if (bookdetails?.cover_img_name) {
       setCoverFileName(bookdetails.cover_img_name);
       setCoverImage(
@@ -52,7 +58,9 @@ console.log(bookdetails,"bookdetails")
   useEffect(() => {
     GetAllGenreApi()
       .then((res) => setGenres(res?.data?.data || []))
-      .catch(() => message.error("Failed to load genres"));
+      .catch(() => {
+
+      });
   }, []);
 
   /* ── Generate cover ── */
@@ -83,7 +91,7 @@ console.log(bookdetails,"bookdetails")
 
       message.success(hasGenerated ? "Cover regenerated" : "Cover generated");
     } catch {
-      message.error("Cover generation failed");
+      
     } finally {
       setLoading(false);
     }
@@ -114,7 +122,7 @@ const saveCover = async () => {
     message.success("Cover saved successfully");
   } catch (error) {
     console.error(error);
-    message.error("Failed to save cover");
+   
   } finally {
     setSaving(false);
   }

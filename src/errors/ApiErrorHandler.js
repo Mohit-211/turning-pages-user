@@ -9,7 +9,7 @@ export const handleApiError = (error) => {
 
   const { status, data } = error.response;
   const serverMessage = data?.message || data?.error || null;
-
+console.log(serverMessage,"serverMessage")
 
   // ✅ Handle JWT expiration globally
   if (serverMessage && serverMessage.toLowerCase().includes("jwt expired")) {

@@ -21,7 +21,7 @@ $radius-xl: 12px;
 
 $shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05);
 
-$font: "'Segoe UI', Tahoma, sans-serif";
+// $font: "'Segoe UI', Tahoma, sans-serif";
 
 // ─── Category colors ──────────────────────────────────────────────────────────
 $categories: (
@@ -35,7 +35,7 @@ $categories: (
 .credit-system {
   display: flex;
   height: 100vh;
-  font-family: #{$font};
+  
   background: $bg-page;
   overflow: hidden;
 }
@@ -151,7 +151,7 @@ $categories: (
   font-size: 13px;
   cursor: pointer;
   white-space: nowrap;
-  font-family: inherit;
+   
   margin-bottom: -1px;
   transition: all 0.15s;
 

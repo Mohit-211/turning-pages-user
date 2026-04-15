@@ -18,12 +18,12 @@ import {
 } from "../../api/operations/book.api";
 import {
   CreateChapterApi,
-  DeleteChapterApi,
   PlagiarismCheck,
   FactChecking,
   ConsistencyCheck,
   GenerateSummary,
   UpdateChapterApi,
+  DeleteChapterApi,
 } from "../../api/operations/chapter.api";
 
 import { message, Modal } from "antd";
@@ -33,6 +33,7 @@ import PdfViewer from "./PdfViewer/PdfViewer";
 import StripePayment from "../../component/StripePayment/StripePayment";
 import AIToolsGuide from "./chapterComponent/AIToolsGuide";
 import BookCoverPanel from "../Book/BookHeader/BookCoverPanel";
+import { toast } from "react-toastify";
 
 export default function ChapterManager() {
   const navigate = useNavigate();
@@ -41,6 +42,8 @@ export default function ChapterManager() {
 
   // ── UI state ──────────────────────────────────────────────
   const [showAIGuide, setShowAIGuide] = useState(false);
+  const [showCoverChoice, setShowCoverChoice] = useState(false);
+const [coverMode, setCoverMode] = useState(null); // "create" | "edit"
   const [showCoverPanel, setShowCoverPanel] = useState(false);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [paymentOpen, setPaymentOpen] = useState(false);
@@ -100,7 +103,6 @@ export default function ChapterManager() {
       setSelectedId(data?.book_chapters?.[0]?.id ?? null);
     } catch (error) {
       console.error(error);
-      message.error("Failed to load book");
     } finally {
       setLoading(false);
     }
@@ -114,81 +116,69 @@ export default function ChapterManager() {
   }, [selectedId, chapters]);
 
   // ── Submission helpers ────────────────────────────────────
-  const createBookSubmission = async (event_name) => {
-    try {
-      const res = await GetBooksBySubmittion({
-        book_id: bookId,
-        event_name,
-      });
+  // ── Submission helpers ────────────────────────────────────
+const createBookSubmission = async (event_name) => {
+  try {
+    const res = await GetBooksBySubmittion({
+      book_id: bookId,
+      event_name,
+    });
 
-      const submissionId = res?.data?.data?.id;
-      const messageText = res?.data?.message;
+    const submissionId = res?.data?.data?.id;
+    const messageText = res?.data?.message;
 
-      if (!submissionId) {
-        throw new Error("Submission failed");
-      }
-
-      if (res?.data?.status === 200) {
-        message.success(messageText || "Action successful");
-
-        // ✅ Redirect only for submit
-        if (event_name === "submit") {
-          setTimeout(() => {
-            navigate("/dashboard/submissions");
-          }, 1000); // small delay so user can see message
-        }
-      }
-
-      return submissionId;
-    } catch (error) {
-      console.error("Submission error:", error);
-      message.error("Something went wrong");
-      throw error;
+    if (!submissionId) {
+      throw new Error("Submission failed");
     }
-  };
-  const handleSubmitForEditing = async (event_name) => {
-    try {
-      setSubmitLoading(true);
-      const submissionId = await createBookSubmission(event_name);
-      if (!submissionId) return;
-      setBookSubmitton(submissionId);
-      setEventName(event_name);
-    } catch (error) {
-      const errMsg = error?.response?.data?.message;
-      if (errMsg === "Please purchase a package to submit a book") {
-        setShowPurchaseModal(true);
-      } else {
-        message.error(errMsg || "Something went wrong");
-      }
-    } finally {
-      setSubmitLoading(false);
-    }
-  };
 
-  // ── Mark as complete ──────────────────────────────────────
-  const handleMarkAsComplete = async () => {
-    if (isCompleted) {
-      message.info("This book is already marked as complete.");
-      return;
-    }
-    try {
-      setCompleteLoading(true);
-      const res = await GetBooksByStatusApi({ book_id: bookId, status: "completed" });
-      if (res?.data?.success) {
-        message.success("Book marked as complete");
-        setIsCompleted(true);
-        fetchBookAndChapters();
-      } else {
-        message.error("Failed to mark as complete");
-      }
-    } catch (err) {
-      console.error(err);
-      message.error("Something went wrong");
-    } finally {
-      setCompleteLoading(false);
-    }
-  };
+    if (res?.data?.status === 200) {
+      message.success(messageText || "Action successful");
 
+      // Redirect only for submit
+      if (event_name === "submit") {
+        setTimeout(() => {
+          navigate("/dashboard/submissions");
+        }, 1000);
+      }
+    }
+
+    return submissionId;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+ const handleSubmitForEditing = async (event_name) => {
+  try {
+    if (event_name !== "submit") return;
+
+    setSubmitLoading(true);
+
+    await createBookSubmission("submit");
+
+    toast.success("Book submitted for editing");
+  } catch (error) {
+    console.error(error);
+    toast.error("Submit failed");
+  } finally {
+    setSubmitLoading(false);
+  }
+};
+const handleMarkAsComplete = async (type) => {
+  try {
+    if (type !== "completed") return;
+
+    setCompleteLoading(true);
+
+    createBookSubmission("completed")
+    toast.success("Book marked as complete");
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to mark complete");
+  } finally {
+    setCompleteLoading(false);
+  }
+};
   // ── AI tools ──────────────────────────────────────────────
   const handleRunAITool = async (tool) => {
     if (!selectedId) {
@@ -225,7 +215,6 @@ export default function ChapterManager() {
         [selectedId]: { ...prev[selectedId], [tool]: resultData },
       }));
     } catch {
-      message.error("AI tool failed");
     } finally {
       setAiLoading(false);
     }
@@ -244,7 +233,6 @@ export default function ChapterManager() {
         [selectedId]: { ...prev[selectedId], plagiarism: resultData },
       }));
     } catch {
-      message.error("Plagiarism check failed");
     } finally {
       setAiLoading(false);
     }
@@ -263,7 +251,6 @@ export default function ChapterManager() {
         [selectedId]: { ...prev[selectedId], fact: resultData },
       }));
     } catch {
-      message.error("Fact check failed");
     } finally {
       setAiLoading(false);
     }
@@ -284,7 +271,6 @@ export default function ChapterManager() {
       message.success("Chapter saved");
       fetchBookAndChapters();
     } catch {
-      message.error("Failed to save chapter");
     } finally {
       setSaving(false);
     }
@@ -298,13 +284,27 @@ export default function ChapterManager() {
       setAddModalVisible(false);
       fetchBookAndChapters();
     } catch (error) {
-      message.error(error?.response?.data?.message || "Failed to create chapter");
     }
   };
 
   const currentAIData = aiResults[selectedId] || {};
   const onlyView = location.pathname.endsWith("/view");
+const handleDelete = async (chapterId) => {
+  try {
+    const payload = { chapter_id: chapterId };
 
+    console.log(payload, "payload");
+
+    await DeleteChapterApi(payload);
+
+    console.log("Chapter deleted successfully");
+
+    // refresh list after delete
+    fetchBookAndChapters();
+  } catch (error) {
+    console.error("Delete failed:", error);
+  }
+};
   // ── Render ────────────────────────────────────────────────
   return (
     <div className="chapter-manager">
@@ -328,13 +328,13 @@ export default function ChapterManager() {
               ))}
             </div>
           ) : (
-            <ChapterList
-              chapters={chapters}
-              selectedId={selectedId}
-              onSelect={setSelectedId}
-              onAdd={() => setAddModalVisible(true)}
-              onDelete={DeleteChapterApi}
-            />
+           <ChapterList
+  chapters={chapters}
+  selectedId={selectedId}
+  onSelect={setSelectedId}
+  onAdd={() => setAddModalVisible(true)}
+  onDelete={handleDelete}
+/>
           )}
         </div>
 
@@ -355,7 +355,15 @@ export default function ChapterManager() {
           bookIdDetails={bookDetails}
           title={bookDetails?.title || "Untitled Book"}
           bookId={bookId}
-          onEditCover={() => setShowCoverPanel(true)}
+          // onEditCover={() => setShowCoverPanel(true)}
+          onEditCover={() => {
+  if (bookDetails?.cover_img_name) {
+    setShowCoverChoice(true);
+  } else {
+    setCoverMode("create");
+    setShowCoverPanel(true);
+  }
+}}
           onSubmit={handleSubmitForEditing}
           onMarkComplete={handleMarkAsComplete}
           isCompleted={isCompleted}
@@ -516,21 +524,71 @@ export default function ChapterManager() {
         </div>
       </Modal>
 
-      {/* Book cover panel */}
-      {showCoverPanel && (
-        <div
-          className="cover-modal-overlay"
-          onClick={() => setShowCoverPanel(false)}
+    {/* Cover Choice Modal */}
+{showCoverChoice && (
+  <div
+    className="cover-modal-overlay"
+    onClick={() => setShowCoverChoice(false)}
+  >
+    <div
+      className="cover-choice-modal"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <h3>Select Cover Option</h3>
+
+      <div className="cover-choice-actions">
+        <button
+          className="bh-btn bh-btn--primary"
+          onClick={() => {
+            setCoverMode("create");
+            setShowCoverChoice(false);
+            setShowCoverPanel(true);
+          }}
         >
-          <div className="cover-modal" onClick={(e) => e.stopPropagation()}>
-            <BookCoverPanel
-              bookdetails={bookDetails}
-              onClose={() => setShowCoverPanel(false)}
-              onUpdateBook={fetchBookAndChapters}
-            />
-          </div>
-        </div>
-      )}
+          Create New Cover
+        </button>
+
+        <button
+          className="bh-btn bh-btn--ghost-blue"
+          onClick={() => {
+            setCoverMode("edit");
+            setShowCoverChoice(false);
+            setShowCoverPanel(true);
+          }}
+        >
+          Edit Existing Cover
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
+{/* Book cover panel */}
+{showCoverPanel && (
+  <div
+    className="cover-modal-overlay"
+    onClick={() => {
+      setShowCoverPanel(false);
+      setCoverMode(null); // ✅ reset when closing
+    }}
+  >
+    <div
+      className="cover-modal"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <BookCoverPanel
+        mode={coverMode} // ✅ important
+        bookdetails={bookDetails}
+        onClose={() => {
+          setShowCoverPanel(false);
+          setCoverMode(null); // ✅ reset here also
+        }}
+        onUpdateBook={fetchBookAndChapters}
+      />
+    </div>
+  </div>
+)}
 
     </div>
   );

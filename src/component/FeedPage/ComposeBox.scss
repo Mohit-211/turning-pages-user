@@ -1,402 +1,329 @@
-// ─── Inline tokens (no @use dependency) ───────────────────────────────────────
-// Drop _variables.scss and _mixins.scss in src/styles/ for other components,
-// but ComposeBox.scss is self-contained to avoid path resolution issues.
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,300&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-$c-primary:      #7c3aed;
-$c-primary-dark: #4f46e5;
-$c-primary-light:#ede9fe;
-$c-primary-mid:  #6d28d9;
-$c-border:       #e5e7eb;
-$c-border-light: #f3f4f6;
-$c-surface:      #ffffff;
-$c-text-primary: #111827;
-$c-text-body:    #374151;
-$c-text-muted:   #6b7280;
-$c-text-faint:   #9ca3af;
-$c-text-ghost:   #d1d5db;
-$c-danger:       #e11d48;
-$c-success:      #059669;
+:root {
+  --tp-navy: #174f78;
+  --tp-red: #ed1c24;
+  --tp-gradient: linear-gradient(90deg, #174f78 0%, #ed1c24 100%);
 
-$sp-xs:  4px;
-$sp-sm:  8px;
-$sp-md:  12px;
-$sp-lg:  16px;
-$sp-xl:  20px;
+  --ink: #1a1a2e;
+  --ink-muted: #4a4a62;
+  --ink-faint: #9a9ab0;
+  --paper: #ffffff;
+  --paper-2: #f5f5f3;
+  --paper-3: #e8e8e3;
+  --paper-4: #d8d8d2;
 
-$r-sm:   8px;
-$r-md:   12px;
-$r-full: 9999px;
-
-$shadow-card: 0 1px 8px rgba(0, 0, 0, 0.06);
-
-// ─── Component ────────────────────────────────────────────────────────────────
+  --radius-card: 12px;     /* Slightly softer */
+  --radius-pill: 9999px;
+  --radius-sm: 6px;
+  --shadow-card: 0 4px 20px rgba(23,79,120,0.08), 0 1px 6px rgba(23,79,120,0.06);
+  --shadow-hover: 0 12px 40px rgba(23,79,120,0.14), 0 4px 15px rgba(23,79,120,0.08);
+  --transition: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
 .compose-box {
-  background: $c-surface;
-  border: 1px solid $c-border;
-  border-radius: 20px;
-  box-shadow: $shadow-card;
-  padding: $sp-lg;
-  margin-bottom: $sp-xl;
-  transition: box-shadow 0.2s ease;
+  background: var(--paper);
+  border: 1px solid var(--paper-3);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 24px 26px;
+  margin-bottom: 28px;
+  transition: var(--transition);
+   
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    box-shadow: var(--shadow-hover);
+  }
 
   &--expanded {
-    box-shadow: 0 4px 24px rgba($c-primary, 0.08);
-    border-color: rgba($c-primary, 0.2);
+    box-shadow: var(--shadow-hover);
+    border-color: rgba(23, 79, 120, 0.22);
+
+    /* Subtle glass-like lift */
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.4);
+      pointer-events: none;
+      opacity: 0.6;
+      border-radius: var(--radius-card);
+      z-index: -1;
+    }
   }
 
   &__inner {
     display: flex;
     align-items: flex-start;
-    gap: $sp-md;
+    gap: 16px;
   }
 
   &__avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: $r-full;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--tp-gradient);
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
-    font-weight: 700;
     flex-shrink: 0;
-    color: white;
-    background: linear-gradient(135deg, $c-primary, $c-primary-dark);
+    box-shadow: 0 0 0 3px rgba(23,79,120,0.18);
+    transition: transform 0.2s ease;
   }
 
-  &__body { flex: 1; min-width: 0; }
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
 
-  // ── Title ──────────────────────────────────────────────────
   &__title {
     width: 100%;
-    font-size: 14px;
-    font-weight: 600;
-    color: $c-text-primary;
+     
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.3;
+    color: var(--ink);
     border: none;
-    border-bottom: 1px solid $c-border;
+    border-bottom: 2px solid var(--paper-3);
     outline: none;
     background: transparent;
-    padding: 0 0 $sp-sm 0;
-    margin-bottom: $sp-sm;
-    font-family: inherit;
+    padding: 4px 0 10px;
+    margin-bottom: 14px;
+    letter-spacing: -0.015em;
+    transition: border-color 0.2s ease;
 
-    &::placeholder { color: $c-text-ghost; font-weight: 400; }
-    &:focus { border-bottom-color: $c-primary; }
+    &::placeholder {
+      color: var(--ink-faint);
+      font-weight: 400;
+    }
+    &:focus {
+      border-bottom-color: var(--tp-navy);
+    }
   }
 
-  // ── Textarea ───────────────────────────────────────────────
   &__textarea {
     width: 100%;
-    font-size: 13px;
-    outline: none;
-    resize: none;
+    font-size: 15.5px;
+    line-height: 1.7;
+    color: var(--ink-muted);
     background: transparent;
     border: none;
-    color: $c-text-body;
-    font-family: inherit;
-    line-height: 1.65;
+    outline: none;
+    resize: none;
+     
+    min-height: 68px;
+    transition: all 0.2s ease;
 
-    &::placeholder { color: $c-text-ghost; }
+    &::placeholder {
+      color: var(--ink-faint);
+      font-style: italic;
+    }
+
+    &:focus {
+      color: var(--ink);
+    }
   }
 
-  // ── Meta fields ────────────────────────────────────────────
+  &__char-count {
+    text-align: right;
+    font-size: 11px;
+    color: var(--ink-faint);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
   &__meta {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--paper-3);
     display: flex;
     flex-direction: column;
-    gap: $sp-md;
-    margin-top: $sp-md;
-    padding-top: $sp-md;
-    border-top: 1px solid $c-border-light;
+    gap: 18px;
   }
 
   &__field {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 7px;
   }
 
   &__label {
-    font-size: 11px;
+    font-size: 11.5px;
     font-weight: 600;
-    color: $c-text-faint;
+    color: var(--ink-faint);
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
   }
 
-  &__required {
-    color: $c-danger;
-    margin-left: 2px;
-  }
+  &__required { color: var(--tp-red); margin-left: 3px; }
 
   &__optional {
-    color: $c-text-ghost;
+    color: var(--ink-faint);
     font-weight: 400;
-    text-transform: none;
-    letter-spacing: 0;
     font-size: 11px;
   }
 
-  // ── Genre select ───────────────────────────────────────────
   &__select {
-    font-size: 13px;
-    color: $c-text-body;
-    background: #f9fafb;
-    border: 1px solid $c-border;
-    border-radius: $r-sm;
-    padding: $sp-sm $sp-md;
-    outline: none;
-    font-family: inherit;
-    cursor: pointer;
-    width: 100%;
-    max-width: 240px;
-
-    &:focus { border-color: rgba($c-primary, 0.5); }
-  }
-
-  // ── Visibility toggle ──────────────────────────────────────
-  &__visibility {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-
-  &__vis-btn {
-    font-size: 11px;
-    font-weight: 500;
-    padding: 5px $sp-md;
-    border-radius: $r-full;
-    border: 1px solid $c-border;
-    background: white;
-    color: $c-text-muted;
-    cursor: pointer;
-    text-transform: capitalize;
-    font-family: inherit;
-    transition: all 0.15s ease;
-
-    &:hover { border-color: $c-primary; color: $c-primary; }
-
-    &--active {
-      background: $c-primary-light;
-      border-color: rgba($c-primary, 0.4);
-      color: $c-primary-mid;
-      font-weight: 600;
-    }
-  }
-
-  // ── Tags ───────────────────────────────────────────────────
-  &__tags-wrap {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 6px;
-    padding: $sp-sm $sp-md;
-    border: 1px solid $c-border;
-    border-radius: $r-sm;
-    background: #f9fafb;
-    min-height: 38px;
-
-    &:focus-within {
-      border-color: rgba($c-primary, 0.5);
-      background: white;
-    }
-  }
-
-  &__tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 11px;
-    font-weight: 600;
-    color: $c-primary-mid;
-    background: $c-primary-light;
-    padding: 2px $sp-sm;
-    border-radius: $r-full;
-    white-space: nowrap;
-  }
-
-  &__tag-remove {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: $c-primary-mid;
     font-size: 14px;
-    line-height: 1;
-    padding: 0;
-    opacity: 0.6;
-    transition: opacity 0.1s;
-
-    &:hover { opacity: 1; }
-  }
-
-  &__tag-input {
-    border: none;
+    color: var(--ink);
+    background: var(--paper-2);
+    border: 1px solid var(--paper-4);
+    border-radius: var(--radius-sm);
+    padding: 11px 16px;
     outline: none;
-    background: transparent;
-    font-size: 11px;
-    color: $c-text-body;
-    font-family: inherit;
-    flex: 1;
-    min-width: 80px;
-
-    &::placeholder { color: $c-text-ghost; }
-    &:disabled { cursor: not-allowed; }
-  }
-
-  &__tag-hint {
-    font-size: 11px;
-    color: $c-text-ghost;
-    margin-top: 2px;
-  }
-
-  // ── Image upload ───────────────────────────────────────────
-  &__img-btn {
-    font-size: 11px;
-    color: $c-text-muted;
-    padding: $sp-sm $sp-md;
-    border-radius: $r-sm;
-    border: 1px dashed $c-border;
-    background: #f9fafb;
     cursor: pointer;
-    font-family: inherit;
-    transition: border-color 0.15s ease, color 0.15s ease;
+    transition: all var(--transition);
+
+    &:focus {
+      border-color: var(--tp-navy);
+      box-shadow: 0 0 0 4px rgba(23,79,120,0.12);
+    }
+  }
+
+  &__img-btn {
+    font-size: 13px;
+    color: var(--ink-muted);
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    border: 1.5px dashed var(--paper-4);
+    background: var(--paper-2);
+    cursor: pointer;
+     
+    transition: all var(--transition);
+    width: fit-content;
 
     &:hover {
-      border-color: $c-primary;
-      color: $c-primary;
+      border-color: var(--tp-navy);
+      color: var(--tp-navy);
+      background: var(--paper);
+      transform: translateY(-1px);
     }
   }
 
   &__img-preview {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: $sp-md;
-    padding: $sp-sm;
-    border: 1px solid $c-border;
-    border-radius: $r-sm;
-    background: #f9fafb;
+    gap: 14px;
+    padding: 12px;
+    border: 1px solid var(--paper-3);
+    border-radius: var(--radius-sm);
+    background: var(--paper-2);
     width: fit-content;
+    overflow: hidden;
   }
 
   &__img-thumb {
-    width: 64px;
-    height: 64px;
+    width: 72px;
+    height: 72px;
     object-fit: cover;
-    border-radius: $r-sm;
+    border-radius: var(--radius-sm);
     flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   }
 
   &__img-remove {
-    font-size: 11px;
-    color: $c-danger;
-    background: none;
+    font-size: 13px;
+    color: var(--tp-red);
+    background: rgba(255,255,255,0.9);
     border: none;
     cursor: pointer;
-    font-family: inherit;
-    padding: 2px $sp-sm;
-    border-radius: $r-sm;
-    transition: background 0.15s ease;
+    padding: 6px 14px;
+    border-radius: var(--radius-pill);
+    font-weight: 500;
+    transition: all 0.2s;
 
-    &:hover { background: #fef2f2; }
+    &:hover {
+      background: #fee2e2;
+      transform: scale(1.05);
+    }
   }
 
-  // ── Footer ─────────────────────────────────────────────────
   &__footer {
+    margin-top: 24px;
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    margin-top: $sp-md;
-    padding-top: $sp-sm;
-    border-top: 1px solid $c-border-light;
-  }
-
-  &__tools {
-    display: flex;
     align-items: center;
-    gap: $sp-sm;
-  }
-
-  &__tool-btn {
-    font-size: 11px;
-    color: $c-text-faint;
-    padding: 4px $sp-sm;
-    border-radius: $r-sm;
-    background: #f9fafb;
-    border: 1px solid $c-border;
-    cursor: pointer;
-    font-family: inherit;
-    transition: color 0.15s ease;
-
-    &:hover { color: $c-text-body; }
   }
 
   &__actions {
     display: flex;
     align-items: center;
-    gap: $sp-sm;
+    gap: 12px;
   }
 
   &__cancel {
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 500;
-    padding: 6px $sp-md;
-    border-radius: $r-sm;
-    border: 1px solid $c-border;
-    background: white;
-    color: $c-text-muted;
+    padding: 9px 20px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--paper-4);
+    background: var(--paper);
+    color: var(--ink-muted);
     cursor: pointer;
-    font-family: inherit;
-    transition: all 0.15s ease;
+    transition: all var(--transition);
 
     &:hover {
-      border-color: $c-text-faint;
-      color: $c-text-body;
+      border-color: var(--ink-faint);
+      color: var(--ink);
+      background: var(--paper-2);
     }
   }
 
   &__submit {
-    font-size: 11px;
+    font-size: 13.5px;
     font-weight: 600;
-    padding: 6px $sp-lg;
-    border-radius: $r-sm;
+    padding: 10px 28px;
+    border-radius: var(--radius-pill);
     border: none;
-    cursor: pointer;
-    font-family: inherit;
-    background: linear-gradient(135deg, $c-primary, $c-primary-dark);
+    background: var(--tp-gradient);
     color: white;
-    transition: opacity 0.2s ease, transform 0.15s ease;
+    cursor: pointer;
+     
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    box-shadow: 0 4px 15px rgba(23,79,120,0.25);
+    transition: all var(--transition);
 
-    &:hover { opacity: 0.9; transform: translateY(-1px); }
-    &:active { transform: translateY(0); }
+    &:hover:not(:disabled) {
+      opacity: 0.95;
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 8px 25px rgba(23,79,120,0.35);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
 
     &--disabled {
-      background: $c-border !important;
-      color: $c-text-faint !important;
+      background: var(--paper-3) !important;
+      color: var(--ink-faint) !important;
+      box-shadow: none !important;
       cursor: not-allowed;
-      transform: none !important;
-      opacity: 1 !important;
     }
   }
 
-  // ── Feedback ───────────────────────────────────────────────
+  &__error, &__success {
+    font-size: 12.5px;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    margin-top: 14px;
+  }
+
   &__error {
-    font-size: 11px;
-    color: $c-danger;
+    color: var(--tp-red);
     background: #fef2f2;
     border: 1px solid #fecaca;
-    border-radius: $r-sm;
-    padding: $sp-sm $sp-md;
-    margin-top: $sp-sm;
   }
 
   &__success {
-    font-size: 11px;
-    color: $c-success;
+    color: #059669;
     background: #f0fdf4;
     border: 1px solid #bbf7d0;
-    border-radius: $r-sm;
-    padding: $sp-sm $sp-md;
-    margin-top: $sp-sm;
   }
 }

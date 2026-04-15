@@ -42,7 +42,6 @@ const DashboardHeader = ({
       navigate("/login");
     } catch (err) {
       console.error("Logout failed:", err);
-      alert("Logout failed. Please try again.");
     }
   };
 

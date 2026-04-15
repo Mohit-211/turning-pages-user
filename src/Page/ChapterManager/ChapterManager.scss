@@ -21,7 +21,23 @@ $t:       .18s $ease;
   background: $surface;
   overflow: hidden;
 }
+.cover-choice-modal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  width: 320px;
+  text-align: center;
+}
 
+.cover-choice-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  button {
+    width: 100%;
+  }
+}
 // ════════════════════════════════════════════════════════════
 // SIDEBAR
 // ════════════════════════════════════════════════════════════

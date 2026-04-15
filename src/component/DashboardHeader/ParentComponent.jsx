@@ -12,7 +12,6 @@ const ParentComponent = () => {
       const res = await UserProfileApi();
       setUser(res?.data?.data || null);
     } catch (error) {
-      console.log("Profile fetch failed");
     }
   };
 

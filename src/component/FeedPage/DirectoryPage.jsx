@@ -7,13 +7,11 @@ import { GetAllDirectoryApi } from "../../api/operations/directory.api";
 
 export default function DirectoryPage() {
   const [feeds, setFeeds] = useState([]);
-  const [genres, setGenres] = useState({});
   const [joinedGroups, setJoinedGroups] = useState([]);
-  const [activeGroup, setActiveGroup] = useState(null); // null = "All"
+  const [activeGroup, setActiveGroup] = useState(null);
   const [loading, setLoading] = useState(true);
   const [feedsLoading, setFeedsLoading] = useState(false);
 
-  // Load all feeds (no genre filter)
   const loadFeeds = async () => {
     try {
       const res = await GetAllFeedApi();
@@ -23,7 +21,6 @@ export default function DirectoryPage() {
     }
   };
 
-  // Load feeds filtered by genre_id  →  feeds?page=1&limit=10&genre_id=<id>
   const loadFeedsByGenre = async (genreId) => {
     try {
       setFeedsLoading(true);
@@ -36,26 +33,15 @@ export default function DirectoryPage() {
     }
   };
 
-  // Load sidebar groups via GetAllDirectoryApi
-  // Response: { data: [ { genre_id, book_genre: { id, title } } ] }
   const loadJoinedGroups = async () => {
     try {
       const res = await GetAllDirectoryApi();
-      const groups = res?.data?.data || [];
-      setJoinedGroups(groups);
-
-      // Build genres map from the same response — no separate genre API needed
-      const map = {};
-      groups.forEach((g) => {
-        if (g.book_genre) map[g.book_genre.id] = g.book_genre.title;
-      });
-      setGenres(map);
+      setJoinedGroups(res?.data?.data || []);
     } catch (err) {
       console.error("Directory fetch error", err);
     }
   };
 
-  // Initial load
   useEffect(() => {
     const load = async () => {
       setLoading(true);
@@ -65,7 +51,6 @@ export default function DirectoryPage() {
     load();
   }, []);
 
-  // Re-fetch feeds whenever active group changes (skip on first mount)
   const handleGroupSelect = async (genreId) => {
     setActiveGroup(genreId);
     if (genreId === null) {
@@ -75,32 +60,25 @@ export default function DirectoryPage() {
     }
   };
 
-  const handleFeedCreated = (newFeed) => {
-    setFeeds((prev) => [newFeed, ...prev]);
-  };
-
-  // reloadFeeds respects the current active group
   const reloadFeeds = () => {
     if (activeGroup === null) return loadFeeds();
     return loadFeedsByGenre(activeGroup);
   };
 
-  const activeGroupTitle =
-    activeGroup === null
-      ? "All Feeds"
-      : joinedGroups.find((g) => g.genre_id === activeGroup)?.book_genre
-        ?.title ?? "Feeds";
+  const activeGroupTitle = activeGroup === null 
+    ? "All Feeds" 
+    : joinedGroups.find((g) => g.genre_id === activeGroup)?.book_genre?.title ?? "Feeds";
 
   const isLoading = loading || feedsLoading;
 
   return (
     <div className="directory-page">
-      {/* SIDEBAR */}
+      {/* Sidebar */}
       <aside className="directory-page__sidebar">
         <div className="sidebar__heading">My Groups</div>
 
         <button
-          className={`sidebar__item ${activeGroup === null ? "sidebar__item--active" : ""}`}
+          className={`sidebar__item${activeGroup === null ? " sidebar__item--active" : ""}`}
           onClick={() => handleGroupSelect(null)}
         >
           <span className="sidebar__item-icon">🏠</span>
@@ -110,51 +88,38 @@ export default function DirectoryPage() {
         {joinedGroups.map((group) => (
           <button
             key={group.genre_id}
-            className={`sidebar__item ${activeGroup === group.genre_id ? "sidebar__item--active" : ""}`}
+            className={`sidebar__item${activeGroup === group.genre_id ? " sidebar__item--active" : ""}`}
             onClick={() => handleGroupSelect(group.genre_id)}
           >
-            {/* {group.genre_id} */}
             <span className="sidebar__item-icon">📚</span>
-            <span className="sidebar__item-label">
-              {group.book_genre?.title}
-            </span>
+            <span className="sidebar__item-label">{group.book_genre?.title}</span>
           </button>
         ))}
       </aside>
 
-      {/* MAIN CONTENT */}
+      {/* Main Content */}
       <div className="feed-page__body">
-        <ComposeBox onfeedCreated={handleFeedCreated}
-          reloadFeeds={loadFeeds}
-
-        />
+        <ComposeBox reloadFeeds={reloadFeeds} />
 
         <main className="feed-page__main">
-          {/* Section title */}
           <div className="feed-page__section-title">
             <h2>{activeGroupTitle}</h2>
-            {activeGroup !== null && (
+            {activeGroup !== null && feeds.length > 0 && (
               <span className="feed-page__feed-count">
-                {feeds.length}{" "}
-                {feeds.length === 1 ? "post" : "posts"}
+                {feeds.length} {feeds.length === 1 ? "post" : "posts"}
               </span>
             )}
           </div>
 
-          {/* <ComposeBox
-            onfeedCreated={handleFeedCreated}
-            reloadFeeds={reloadFeeds}
-          /> */}
-
-          {isLoading && <p>Loading feeds…</p>}
+          {isLoading && <p className="loading-text">Loading feeds…</p>}
 
           {!isLoading && feeds.length === 0 && (
             <div className="feed-page__empty">
-              <div className="empty-icon">📭</div>
+              <div className="empty-icon">📖</div>
               <p>
                 {activeGroup === null
-                  ? "No feeds yet. Be the first to share something."
-                  : "No posts in this group yet."}
+                  ? "No feeds yet. Be the first to share your writing journey."
+                  : "No posts in this group yet. Start the conversation!"}
               </p>
             </div>
           )}
@@ -164,7 +129,7 @@ export default function DirectoryPage() {
               <FeedCard
                 key={feed.id}
                 feed={feed}
-                genreName={genres[feed.genre_id]}
+                genreName={joinedGroups.find(g => g.genre_id === feed.genre_id)?.book_genre?.title}
                 reloadFeeds={reloadFeeds}
               />
             ))}

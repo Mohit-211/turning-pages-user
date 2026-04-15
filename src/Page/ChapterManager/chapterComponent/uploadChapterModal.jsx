@@ -43,7 +43,6 @@ export default function UploadChapterModal({ visible, onCancel, onUploadSuccess 
       return await file.text();
     }
     else {
-      message.error("Unsupported file type. Please upload PDF, DOCX, or TXT.");
       return "";
     }
   };
@@ -59,7 +58,6 @@ export default function UploadChapterModal({ visible, onCancel, onUploadSuccess 
         onCancel();
       }
     } catch (error) {
-      message.error("Failed to extract text from the uploaded file.");
     }
 
     setUploading(false);

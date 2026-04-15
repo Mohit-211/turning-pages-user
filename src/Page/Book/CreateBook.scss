@@ -18,7 +18,6 @@ $transition: 0.18s ease;
 .create-book {
   background: #f1f5f9;
   min-height: 100vh;
-  font-family: system-ui, -apple-system, sans-serif;
 }
 
 // ── Header ──────────────────────────────────
@@ -224,7 +223,7 @@ $transition: 0.18s ease;
     border-radius: $radius-sm;
     color: #0f172a;
     background: #fff;
-    font-family: inherit;
+     
     transition: border-color $transition, box-shadow $transition;
     outline: none;
 
@@ -356,7 +355,7 @@ $transition: 0.18s ease;
   cursor: pointer;
   transition: all $transition;
   border: 1.5px solid transparent;
-  font-family: inherit;
+   
   letter-spacing: -0.01em;
 
   &:disabled {
@@ -502,7 +501,7 @@ $transition: 0.18s ease;
   background: transparent;
   border: none;
   cursor: pointer;
-  font-family: inherit;
+   
   transition: color $transition;
 
   &:hover { color: #64748b; }
