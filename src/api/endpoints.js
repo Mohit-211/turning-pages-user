@@ -26,6 +26,7 @@ export const Book_ENDPOINTS = {
   DELETE: "books/remove",
   UPDATE: "books",
   GENERATE_COVER: "chapters/generate/cover",
+  DELETE_COVER:(id) => `chapters/cover/remove/${id}`,
   SUBMITTION: "books/submission/update",
   GET_SUBMITTION_HISTORY: "books/all/book/submission/history",
 };

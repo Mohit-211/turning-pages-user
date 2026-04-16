@@ -43,6 +43,10 @@ export const UpdateBookCoverApi = (formData) =>
 export const GenerateBookCoverApi = (payload) =>
   client.post(Book_ENDPOINTS.GENERATE_COVER, payload);
 
+export const DeleteBookCoverApi = (bookId) =>
+  client.post(Book_ENDPOINTS.DELETE_COVER(bookId));
+
+
 // book submit 
 export const GetBooksBySubmittion = (payload) =>
   client.post(Book_ENDPOINTS.SUBMITTION, payload);

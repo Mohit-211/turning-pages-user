@@ -244,11 +244,13 @@ const handleMarkAsComplete = async (type) => {
     try {
       const response = await FactChecking(text);
       const resultData = response?.data?.data || null;
+      console.log(resultData,"resultData")
       setAiResults((prev) => ({
         ...prev,
         [selectedId]: { ...prev[selectedId], fact: resultData },
       }));
     } catch {
+      console.log("first")
     } finally {
       setAiLoading(false);
     }
