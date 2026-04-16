@@ -413,6 +413,7 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
 export default function BookHeader({
   bookId,
   title,
+  bookcover,
   onEditCover,
   bookIdDetails,
   onMarkComplete,
@@ -447,6 +448,7 @@ const handleMarkAsComplete = (type) => {
     CompleteApiCall();
   }
 };
+console.log(bookcover,"bookcover")
   return (
     <>
       <header className="book-header">
@@ -468,7 +470,7 @@ const handleMarkAsComplete = (type) => {
           {/* Edit cover */}
           <button className="bh-btn bh-btn--ghost-blue" onClick={onEditCover}>
             <ImageIcon size={14} />
-            Cover
+            {bookcover ? "Edit" : "Add"} Cover Image
           </button>
 
           <div className="bh-divider" />
