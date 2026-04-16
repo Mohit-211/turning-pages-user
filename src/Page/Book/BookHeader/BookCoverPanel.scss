@@ -16,7 +16,7 @@ $font: 'DM Sans', system-ui, sans-serif;
 
 /* ══════════════ ROOT ══════════════ */
 .bcp-root {
-  font-family: $font;
+  
   display: flex;
   width: $panel-w;
   max-width: 100%;
@@ -129,7 +129,7 @@ $font: 'DM Sans', system-ui, sans-serif;
     height: 36px !important;
     border-radius: $radius-sm !important;
     border-color: #e0e0e0 !important;
-    font-family: $font !important;
+    
     font-size: 13.5px !important;
     background: #fff !important;
     box-shadow: none !important;
@@ -160,7 +160,7 @@ $font: 'DM Sans', system-ui, sans-serif;
   gap: 7px;
   height: 38px;
   border-radius: $radius-sm;
-  font-family: $font;
+  
   font-size: 13.5px;
   font-weight: 500;
   cursor: pointer;
@@ -355,7 +355,7 @@ $font: 'DM Sans', system-ui, sans-serif;
   width: 150px;
   height: 36px;
   border-radius: $radius-sm;
-  font-family: $font;
+  
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -470,7 +470,7 @@ $font: 'DM Sans', system-ui, sans-serif;
   }
 
   &__title {
-    font-family: $font;
+    
     font-size: 16px;
     font-weight: 500;
     color: #111;
