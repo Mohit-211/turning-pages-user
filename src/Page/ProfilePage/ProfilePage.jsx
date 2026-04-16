@@ -142,7 +142,7 @@ const SpendingTable = ({ spendingList, loading }) => {
       .filter((s) => !q || JSON.stringify(s).toLowerCase().includes(q));
   }, [spendingList, search]);
 
-  if (loading) return <p>Loading spending history…</p>;
+  if (loading) return <p>Loading Credit Usage History…</p>;
   if (!spendingList.length) return <p>No spending records found.</p>;
 
   return (
@@ -606,7 +606,7 @@ const ProfilePage = () => {
     activeTab === "payments"          ? "Transactions"           :
     activeTab === "spending"          ? "Credit usage"           :
     activeTab === "subscriptions"     ? "Subscription history"   :
-    "My subscriptions";
+    "My Subscriptions";
 
   const recordCount =
     activeTab === "payments"          ? payments.length          :
@@ -703,19 +703,19 @@ const ProfilePage = () => {
           className={activeTab === "spending" ? "active" : ""}
           onClick={() => setActiveTab("spending")}
         >
-          Spending history
+          Credit Usage History
         </button>
         <button
           className={activeTab === "subscriptions" ? "active" : ""}
           onClick={() => setActiveTab("subscriptions")}
         >
-         Plans Purchase
+         Payment History
         </button>
         <button
           className={activeTab === "my-subscriptions" ? "active" : ""}
           onClick={() => setActiveTab("my-subscriptions")}
         >
-          My subscriptions
+          My Subscriptions
         </button>
       </div>
 
