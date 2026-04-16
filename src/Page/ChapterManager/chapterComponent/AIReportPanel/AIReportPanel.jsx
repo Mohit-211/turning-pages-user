@@ -247,7 +247,7 @@ const [hasRunPlagiarism, setHasRunPlagiarism] = useState(false);
   if (loading) {
     return (
       <div className="ai-report-panel">
-        <div className="loader">Running Tav Analysis...</div>
+        <div className="loader">Running TAV Analysis...</div>
       </div>
     );
   }

@@ -42,7 +42,6 @@ export default function ChapterManager() {
 
   // ── UI state ──────────────────────────────────────────────
   const [showAIGuide, setShowAIGuide] = useState(false);
-  const [showCoverChoice, setShowCoverChoice] = useState(false);
 const [coverMode, setCoverMode] = useState(null); // "create" | "edit"
   const [showCoverPanel, setShowCoverPanel] = useState(false);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
@@ -75,7 +74,6 @@ const [coverMode, setCoverMode] = useState(null); // "create" | "edit"
 
   // ── Submission ────────────────────────────────────────────
   const [booksubmiition, setBookSubmitton] = useState();
-  const [eventName, setEventName] = useState("");
 
   // ── AI results (persisted) ────────────────────────────────
   const [aiResults, setAiResults] = useState(() => {
@@ -305,6 +303,7 @@ const handleDelete = async (chapterId) => {
     console.error("Delete failed:", error);
   }
 };
+console.log(bookDetails,"bookDetails")
   // ── Render ────────────────────────────────────────────────
   return (
     <div className="chapter-manager">
@@ -355,15 +354,8 @@ const handleDelete = async (chapterId) => {
           bookIdDetails={bookDetails}
           title={bookDetails?.title || "Untitled Book"}
           bookId={bookId}
-          // onEditCover={() => setShowCoverPanel(true)}
-          onEditCover={() => {
-  if (bookDetails?.cover_img_name) {
-    setShowCoverChoice(true);
-  } else {
-    setCoverMode("create");
-    setShowCoverPanel(true);
-  }
-}}
+          onEditCover={() => setShowCoverPanel(true)}
+     bookcover={bookDetails?.cover_img_name || null}
           onSubmit={handleSubmitForEditing}
           onMarkComplete={handleMarkAsComplete}
           isCompleted={isCompleted}
@@ -524,44 +516,7 @@ const handleDelete = async (chapterId) => {
         </div>
       </Modal>
 
-    {/* Cover Choice Modal */}
-{showCoverChoice && (
-  <div
-    className="cover-modal-overlay"
-    onClick={() => setShowCoverChoice(false)}
-  >
-    <div
-      className="cover-choice-modal"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <h3>Select Cover Option</h3>
-
-      <div className="cover-choice-actions">
-        <button
-          className="bh-btn bh-btn--primary"
-          onClick={() => {
-            setCoverMode("create");
-            setShowCoverChoice(false);
-            setShowCoverPanel(true);
-          }}
-        >
-          Create New Cover
-        </button>
-
-        <button
-          className="bh-btn bh-btn--ghost-blue"
-          onClick={() => {
-            setCoverMode("edit");
-            setShowCoverChoice(false);
-            setShowCoverPanel(true);
-          }}
-        >
-          Edit Existing Cover
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+ 
 
 
 {/* Book cover panel */}
