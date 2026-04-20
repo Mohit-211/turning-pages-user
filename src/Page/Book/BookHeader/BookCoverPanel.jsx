@@ -35,7 +35,7 @@ export default function BookCoverPanel({ bookdetails, onClose, onUpdateBook, mod
       title: bookdetails?.title || "",
       genre: bookdetails?.genre_id || "",
       author: bookdetails?.author || "",
-      description: bookdetails?.description || "",
+       description: bookdetails?.description || "",
     });
     if (bookdetails?.cover_img_name) {
       setCoverFileName(bookdetails.cover_img_name);
@@ -183,6 +183,19 @@ export default function BookCoverPanel({ bookdetails, onClose, onUpdateBook, mod
               value={form.author}
               onChange={(e) => setForm({ ...form, author: e.target.value })}
             />
+          </div>
+          <div className="bcp-field">
+              <label>
+            Description{" "}
+                          <span className="bcp-required">*</span>
+
+          </label>
+          <Input.TextArea
+            placeholder="Brief synopsis or mood…"
+            rows={3}
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+          />
           </div>
         </div>
 

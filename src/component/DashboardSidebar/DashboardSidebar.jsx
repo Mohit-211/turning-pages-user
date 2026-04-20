@@ -11,27 +11,30 @@ import {
   MessageSquare,
   CreditCard,
   Users,
+  Info,
 } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
+import { Tooltip } from "antd";
 import "./DashboardSidebar.scss";
 import { UserProfileApi } from "../../api/users/users.api";
 
 const menuItems = [
-  { title: "Dashboard", url: "/dashboard", icon: Home },
-  { title: "My Books", url: "/dashboard/books", icon: BookOpen },
-  { title: "Submissions", url: "/dashboard/submissions", icon: Send },
-  { title: "Profile", url: "/dashboard/profile", icon: User },
-  { title: "My Feed", url: "/dashboard/my-feed", icon: LayoutList },
-  { title: "Social Feed", url: "/dashboard/social-feed", icon: Users },
+  { title: "Dashboard", url: "/dashboard", icon: Home, tooltip: "Go to dashboard overview" },
+  { title: "My Books", url: "/dashboard/books", icon: BookOpen, tooltip: "Manage your books" },
+  { title: "Submissions", url: "/dashboard/submissions", icon: Send, tooltip: "Track submissions" },
+  { title: "Profile", url: "/dashboard/profile", icon: User, tooltip: "Update your profile" },
+  { title: "My Feed", url: "/dashboard/my-feed", icon: LayoutList, tooltip: "Your personal feed" },
+  { title: "Social Feed", url: "/dashboard/social-feed", icon: Users, tooltip: "Community posts" },
   {
     title: "Credits",
     url: "/dashboard/credits",
     icon: CreditCard,
     showScore: true,
+    tooltip: "Available credits for tools & submissions",
   },
-  { title: "Quotes", url: "/dashboard/quotes", icon: Quote },
-  { title: "Support", url: "/dashboard/support", icon: Headset },
-  { title: "Chat", url: "/dashboard/chat", icon: MessageSquare },
+  { title: "Quotes", url: "/dashboard/quotes", icon: Quote, tooltip: "View quotes by category and easily copy your favorites." },
+  { title: "Support", url: "/dashboard/support", icon: Headset, tooltip: "Get help & support" },
+  { title: "Chat", url: "/dashboard/chat", icon: MessageSquare, tooltip: "Chat with your book editor. Discuss edits, feedback, and updates in real time." },
 ];
 
 const DashboardSidebar = () => {
@@ -39,8 +42,7 @@ const DashboardSidebar = () => {
   const currentPath = location.pathname;
 
   const [collapsed, setCollapsed] = useState(() => {
-    const stored = localStorage.getItem("sidebarCollapsed");
-    return stored === "true";
+    return localStorage.getItem("sidebarCollapsed") === "true";
   });
 
   const [creditScore, setCreditScore] = useState(0);
@@ -49,21 +51,18 @@ const DashboardSidebar = () => {
     const fetchProfile = async () => {
       try {
         const res = await UserProfileApi();
-        const score = Number(res?.data?.data?.total_credit);
-        setCreditScore(score);
-      } catch (error) {
-        console.error("Error fetching profile:", error);
+        setCreditScore(Number(res?.data?.data?.total_credit) || 0);
+      } catch {
         setCreditScore(0);
       }
     };
-
     fetchProfile();
   }, []);
 
   const toggleSidebar = () => {
-    const newValue = !collapsed;
-    setCollapsed(newValue);
-    localStorage.setItem("sidebarCollapsed", String(newValue));
+    const val = !collapsed;
+    setCollapsed(val);
+    localStorage.setItem("sidebarCollapsed", String(val));
   };
 
   const isActive = (path) =>
@@ -77,7 +76,6 @@ const DashboardSidebar = () => {
         <Menu className="toggle-icon" />
       </div>
 
-      {/* Navigation */}
       <div className="sidebar-group">
         {!collapsed && <div className="sidebar-label">Navigation</div>}
 
@@ -87,27 +85,48 @@ const DashboardSidebar = () => {
 
             return (
               <li key={item.title} className="sidebar-menu-item">
-                <Link
-                  to={item.url}
-                  className={`sidebar-menu-button ${isActive(item.url) ? "active" : ""
+                {/* ✅ Tooltip on EVERY item */}
+              
+                  <Link
+                    to={item.url}
+                    className={`sidebar-menu-button ${
+                      isActive(item.url) ? "active" : ""
                     }`}
-                  data-tooltip={item.title}
-                >
-                  <Icon className="icon" />
+                  >
+                    <Icon className="icon" />
 
-                  {!collapsed && (
-                    <>
-                      <span className="title">{item.title}</span>
+                    {!collapsed && (
+                      <>
+                        <div className="menu-content">
+                          <span className="title">{item.title}</span>
 
-                      {/* Credit Badge */}
-                      {item.showScore && (
-                        <span className="credit-badge">
-                          {creditScore}
-                        </span>
-                      )}
-                    </>
-                  )}
-                </Link>
+                          {/* ℹ️ Info icon (extra detail) */}
+                          {item.tooltip && (
+                            <Tooltip title={item.tooltip}>
+                              <Info
+                                className="info-icon"
+                                onClick={(e) => e.preventDefault()}
+                              />
+                            </Tooltip>
+                          )}
+                        </div>
+
+                        {item.showScore && (
+                          <span className="credit-badge">
+                            {creditScore}
+                          </span>
+                        )}
+                      </>
+                    )}
+
+                    {/* collapsed badge */}
+                    {collapsed && item.showScore && (
+                      <span className="credit-badge collapsed-badge">
+                        {creditScore}
+                      </span>
+                    )}
+                  </Link>
+                
               </li>
             );
           })}

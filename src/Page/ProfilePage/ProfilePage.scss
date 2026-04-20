@@ -327,11 +327,24 @@
   border-bottom: 0.5px solid var(--border);
   background: var(--surface-2);
 }
+.tab-info-icon {
+  width: 14px;
+  height: 14px;
+  margin-left: 6px;
+  padding: 1px;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: 0.2s;
+}
 
+.tab-info-icon:hover {
+  color: #1890ff;
+}
 .search-wrap {
   position: relative;
   flex: 1;
   max-width: 260px;
+
 
   input {
     width: 100%;
