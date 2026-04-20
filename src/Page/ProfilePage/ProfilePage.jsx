@@ -11,7 +11,8 @@ import {
   CancelSubscriptionApi,
 } from "../../api/operations/paymentApi";
 import "./ProfilePage.scss";
-import { Button, message, Popconfirm } from "antd";
+import { Button, message, Popconfirm, Tooltip } from "antd";
+import { Info } from "lucide-react";
 
 /* ── helpers ─────────────────────────────────────── */
 const fmtDate = (iso) =>
@@ -606,7 +607,7 @@ const ProfilePage = () => {
     activeTab === "payments"          ? "Transactions"           :
     activeTab === "spending"          ? "Credit usage"           :
     activeTab === "subscriptions"     ? "Subscription history"   :
-    "My Subscriptions";
+    "My Subscription";
 
   const recordCount =
     activeTab === "payments"          ? payments.length          :
@@ -692,32 +693,52 @@ const ProfilePage = () => {
       </div>
 
       {/* TABS */}
-      <div className="profile-tabs">
-        {/* <button
-          className={activeTab === "payments" ? "active" : ""}
-          onClick={() => setActiveTab("payments")}
-        >
-          Payment history
-        </button> */}
-        <button
-          className={activeTab === "spending" ? "active" : ""}
-          onClick={() => setActiveTab("spending")}
-        >
-          Credit Usage History
-        </button>
-        <button
-          className={activeTab === "subscriptions" ? "active" : ""}
-          onClick={() => setActiveTab("subscriptions")}
-        >
-         Payment History
-        </button>
-        <button
-          className={activeTab === "my-subscriptions" ? "active" : ""}
-          onClick={() => setActiveTab("my-subscriptions")}
-        >
-          My Subscriptions
-        </button>
-      </div>
+    <div className="profile-tabs">
+  {/* Credit Usage */}
+  <button
+    className={activeTab === "spending" ? "active" : ""}
+    onClick={() => setActiveTab("spending")}
+  >
+    Credit Usage History
+
+    <Tooltip title="View how your credits are used across different actions">
+      <Info
+        className="tab-info-icon"
+        onClick={(e) => e.stopPropagation()}
+      />
+    </Tooltip>
+  </button>
+
+  {/* Payment History */}
+  <button
+    className={activeTab === "subscriptions" ? "active" : ""}
+    onClick={() => setActiveTab("subscriptions")}
+  >
+    Payment History
+
+    <Tooltip title="View all your payment transactions and history">
+      <Info
+        className="tab-info-icon"
+        onClick={(e) => e.stopPropagation()}
+      />
+    </Tooltip>
+  </button>
+
+  {/* My Subscription */}
+  <button
+    className={activeTab === "my-subscriptions" ? "active" : ""}
+    onClick={() => setActiveTab("my-subscriptions")}
+  >
+    My Subscription
+
+    <Tooltip title="Manage and view your active subscription plans">
+      <Info
+        className="tab-info-icon"
+        onClick={(e) => e.stopPropagation()}
+      />
+    </Tooltip>
+  </button>
+</div>
 
       {/* PANEL */}
       <div className="payment-section">

@@ -40,7 +40,7 @@ const sampleWorkflow = [
   { task: "Fact check 2 chapters", credits: 4 },
 ];
 
-const tabs = ["Overview", "Use Credits", "Included", "Workflow", "Separate Services"];
+const tabs = ["Overview", "Credit Usage", "Sample Usage",  "Free Access","Additional Services"];
 
 export default function CreditSystem() {
   const navigate = useNavigate();
@@ -110,7 +110,7 @@ console.log(data,"data")
             {[
               { label: "YOUR CREDITS", value: stats.total, color: "#1E3A5F" },
               { label: "CREDITS USED", value: stats.used, color: "#C0392B" },
-              { label: "AVG PER BOOK", value: `~${stats.avg}`, color: "#1E3A5F" },
+              { label: "AVERAGE PER BOOK (approx)", value: `${stats.avg}`, color: "#1E3A5F" },
               { label: "ACTIVITIES", value: stats.activities, color: "#1E3A5F" },
             ].map((s) => (
               <div key={s.label} className="cs-stat-card">
@@ -185,11 +185,11 @@ console.log(data,"data")
                 </div>
               )}
 
-              {/* USE CREDITS */}
-              {activeTab === "Use Credits" && (
+              {/* Credit Usage */}
+              {activeTab === "Credit Usage" && (
                 <div className="cs-credits">
                   <div className="cs-credits__header">
-                    <p className="cs-credits__hint">Click activities to build a credit estimate</p>
+                    <p className="cs-credits__hint">Credits are used whenever you access certain features or perform specific actions. Different tasks may use different amounts. Your balance updates instantly, so you always know where you stand.</p>
                     {selected.length > 0 && (
                       <div className="cs-credits__summary">
                         <span className="cs-credits__summary-count">{selected.length} selected</span>
@@ -243,12 +243,11 @@ console.log(data,"data")
                 </div>
               )}
 
-              {/* INCLUDED */}
-              {activeTab === "Included" && (
+              {/* Free Access */}
+              {activeTab === "Free Access" && (
                 <div className="cs-included">
                   <p className="cs-included__intro">
-                    The following features are included as part of your subscription and do
-                    not use Book Credits.
+                    These features are available to you at no cost, no credits required. You can explore, try things out, and get value right away without worrying about usage. It’s our way of letting you experience the platform freely.
                   </p>
                   <div className="cs-included__grid">
                     {includedFeatures.map((f, i) => (
@@ -261,11 +260,11 @@ console.log(data,"data")
                 </div>
               )}
 
-              {/* WORKFLOW */}
-              {activeTab === "Workflow" && (
+              {/* Sample Usage */}
+              {activeTab === "Sample Usage" && (
                 <div className="cs-workflow">
                   <p className="cs-workflow__intro">
-                    A sample credit usage for a full 6-chapter book.
+                   Want a clearer picture? Here’s a sample walkthrough showing how credits are used in a real scenario. Follow along to understand what actions cost, how much they use, and how quickly credits are deducted.
                   </p>
                   <div className="cs-workflow__table">
                     <div className="cs-workflow__thead">
@@ -305,12 +304,11 @@ console.log(data,"data")
                 </div>
               )}
 
-              {/* SEPARATE SERVICES */}
-              {activeTab === "Separate Services" && (
+              {/* Additional SERVICES */}
+              {activeTab === "Additional Services" && (
                 <div className="cs-services">
                   <p className="cs-services__intro">
-                    Some services are separate from Book Credits because they are
-                    professional publishing or premium editorial services.
+                  Some services are separate from Book Credits because they are professional publishing or premium editorial services.
                   </p>
                   <div className="cs-services__list">
                     {separateServices.map((s, i) => (

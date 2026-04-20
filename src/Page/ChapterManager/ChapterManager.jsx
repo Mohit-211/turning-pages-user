@@ -95,7 +95,7 @@ const [coverMode, setCoverMode] = useState(null); // "create" | "edit"
     try {
       const res = await GetBookByIdApi(bookId);
       const data = res?.data?.data ?? {};
-
+console.log(data,"data desc")
       setBookDetails(data);
       setChapters(data?.book_chapters ?? []);
       setSelectedId(data?.book_chapters?.[0]?.id ?? null);
