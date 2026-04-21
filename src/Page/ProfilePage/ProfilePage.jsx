@@ -167,7 +167,7 @@ const SpendingTable = ({ spendingList, loading }) => {
             <tr>
               <th>Date</th>
               <th>Event</th>
-              <th>Description</th>
+              {/* <th>Description</th> */}
               <th>Credits spent</th>
               <th>Remaining</th>
             </tr>
@@ -179,9 +179,9 @@ const SpendingTable = ({ spendingList, loading }) => {
                 <td className="capitalize">
                   {s.event_name?.replaceAll("_", " ") || "—"}
                 </td>
-                <td style={{ color: "var(--text-2)" }}>
+                {/* <td style={{ color: "var(--text-2)" }}>
                   {s.description || "—"}
-                </td>
+                </td> */}
                 <td className="amount">{s.credit_spent}</td>
                 <td>{s.remaining_credit?.toLocaleString()}</td>
               </tr>
