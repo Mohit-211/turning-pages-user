@@ -62,7 +62,7 @@ export default function BookCoverPanel({ bookdetails, onClose, onUpdateBook, mod
         genre: form.genre,
         author: form.author,
         size: "1024x1536",
-        direction: "vertical",
+        description: form.description,
       });
       const fileName = res?.data?.fileName;
       if (fileName) {
@@ -86,6 +86,8 @@ export default function BookCoverPanel({ bookdetails, onClose, onUpdateBook, mod
       formData.append("book_id", bookdetails.id);
       formData.append("cover_img_name", coverFileName);
       formData.append("author", form.author);
+      formData.append("description", form.description);
+
       await UpdateBookCoverApi(formData);
       const res = await GetBookByIdApi(bookdetails.id);
       if (res?.data) onUpdateBook && onUpdateBook(res.data);

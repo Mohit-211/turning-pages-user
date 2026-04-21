@@ -178,46 +178,97 @@ const handleMarkAsComplete = async (type) => {
   }
 };
   // ── AI tools ──────────────────────────────────────────────
-  const handleRunAITool = async (tool) => {
-    if (!selectedId) {
-      message.warning("Select a chapter first");
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const handleRunAITool = async (tool) => {
+  // 🚫 prevent multiple clicks
+  if (aiLoading) {
+    message.info("AI is already running, please wait...");
+    return;
+  }
+
+  if (!selectedId) {
+    message.warning("Select a chapter first");
+    return;
+  }
+
+  try {
+    let response;
+
+    // 🔹 common UI setup
+    const openPanel = () => {
+      setIsAIPanelOpen(true);
+      setAiActiveTab(tool);
+      setAiLoading(true);
+    };
+
+    switch (tool) {
+      case "plagiarism":
+        setPlagiarismModalOpen(true);
+        return;
+
+      case "fact":
+        setFactModalOpen(true);
+        return;
+
+      case "consistency":
+        openPanel();
+
+        // small UX delay so loader renders properly
+        await delay(400);
+
+        response = await ConsistencyCheck(Number(bookId), {
+          timeout: 300000, // ✅ 5 min
+        });
+        break;
+
+      case "summary":
+        openPanel();
+        await delay(400);
+
+        response = await GenerateSummary(Number(bookId), selectedId, {
+          timeout: 300000, // ✅ 5 min
+        });
+        break;
+
+      default:
+        return;
+    }
+
+    const resultData = response?.data?.data || null;
+
+    if (!resultData) {
+      message.warning("No data received from AI");
       return;
     }
-    try {
-      let response;
-      switch (tool) {
-        case "plagiarism":
-          setPlagiarismModalOpen(true);
-          return;
-        case "fact":
-          setFactModalOpen(true);
-          return;
-        case "consistency":
-          setIsAIPanelOpen(true);
-          setAiActiveTab(tool);
-          setAiLoading(true);
-          response = await ConsistencyCheck(Number(bookId));
-          break;
-        case "summary":
-          setIsAIPanelOpen(true);
-          setAiActiveTab(tool);
-          setAiLoading(true);
-          response = await GenerateSummary(Number(bookId), selectedId);
-          break;
-        default:
-          return;
-      }
-      const resultData = response?.data?.data || null;
-      setAiResults((prev) => ({
-        ...prev,
-        [selectedId]: { ...prev[selectedId], [tool]: resultData },
-      }));
-    } catch {
-    } finally {
-      setAiLoading(false);
-    }
-  };
 
+    // ✅ safe state update
+    setAiResults((prev) => ({
+      ...prev,
+      [selectedId]: {
+        ...(prev[selectedId] || {}),
+        [tool]: resultData,
+      },
+    }));
+
+    message.success("AI analysis completed ✅");
+
+  } catch (error) {
+    console.error("AI Tool Error:", error);
+
+    // 🔥 smart error handling
+    if (error.code === "ECONNABORTED") {
+      message.error("⏱ Request taking too long. Please try again.");
+    } else if (error.response) {
+      message.error(error.response?.data?.message || "Server error");
+    } else {
+      message.error("🌐 Network issue. Check your connection.");
+    }
+
+  } finally {
+    setAiLoading(false);
+  }
+};
   const handlePlagiarismCheck = async (text) => {
     setPlagiarismModalOpen(false);
     setIsAIPanelOpen(true);
