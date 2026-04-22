@@ -1,11 +1,42 @@
 .chat-panel {
   display: flex;
-  height: 650px;
+  height: 600px;
   background: #f3f6fb;
   border-radius: 12px;
   overflow: hidden;
   
+.info-tooltip {
+  position: relative;
+  margin-left: auto;
+  cursor: pointer;
+  font-size: 18px;
+}
 
+.tooltip-text {
+  visibility: hidden;
+  width: 260px;
+  background-color: #333;
+  color: #fff;
+  text-align: left;
+  border-radius: 6px;
+  padding: 8px;
+  position: absolute;
+  z-index: 1;
+  top: 30px;
+  right: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.chat-header-fix{
+  display: flex;
+  justify-content: space-between;
+}
+.info-tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
 /* ================= SIDEBAR ================= */
 
 .chat-sidebar {

@@ -443,12 +443,17 @@ const MySubscriptionsTab = ({ userSubscriptions, loading }) => {
     >
       Cancel Subscription
     </Button> */}
+    {sub?.is_cancelled===true?
+  <Button  disabled>Canceled Subscription</Button>
+    :
     <Popconfirm
   title="Are you sure you want to cancel?"
   onConfirm={() => handleCancel()}
 >
+  
   <Button danger>Cancel Subscription</Button>
 </Popconfirm>
+      }
   </div>
 )}
 

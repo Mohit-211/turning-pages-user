@@ -40,7 +40,15 @@ const sampleWorkflow = [
   { task: "Fact check 2 chapters", credits: 4 },
 ];
 
-const tabs = ["Overview", "Credit Usage", "Sample Usage",  "Free Access","Additional Services"];
+// const tabs = ["Overview", "Credit Usage", "Sample Usage",  "Free Access","Additional Services"];
+const tabs = [
+  "Overview",
+  "Credit Usage",
+  "Sample Usage",
+  "Free Access",
+  "Additional Services",
+  "Plans & Pricing", // ✅ NEW
+];
 
 export default function CreditSystem() {
   const navigate = useNavigate();
@@ -77,7 +85,12 @@ console.log(data,"data")
       console.log("Credit API Error:", err);
     }
   };
-
+const PLANS = [
+  { id: "starter", value: "starter", name: "Starter", price: 29, credits: 5 },
+  { id: "author", value: "author", name: "Author", price: 59, credits: 12 },
+  { id: "pro", value: "pro_author", name: "Pro Author", price: 99, credits: 25, popular: true },
+  { id: "studio", value: "studio", name: "Studio", price: 179, credits: 50 },
+];
   const totalSelected = selected.reduce((s, i) => s + creditActivities[i].credits, 0);
   const workflowTotal = sampleWorkflow.reduce((s, r) => s + r.credits, 0);
 
@@ -330,6 +343,36 @@ console.log(data,"data")
                   </div>
                 </div>
               )}
+              {activeTab === "Plans & Pricing" && (
+  <div className="cs-plans">
+    <p className="cs-plans__intro">
+      Choose a subscription plan that fits your writing needs. Each plan gives you a set number of credits every month.
+    </p>
+
+    <div className="cs-plans__grid">
+      {PLANS.map((plan) => (
+        <div
+          key={plan.id}
+          className="cs-plan-card"
+        >
+          
+
+          <div className="cs-plan-card__name">{plan.name}</div>
+
+          <div className="cs-plan-card__price">
+            ${plan.price} <span>/month</span>
+          </div>
+
+          <div className="cs-plan-card__credits">
+            {plan.credits} Credits / month
+          </div>
+
+         
+        </div>
+      ))}
+    </div>
+  </div>
+)}
 
             </div>
           </div>

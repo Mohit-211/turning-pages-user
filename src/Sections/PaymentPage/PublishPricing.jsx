@@ -12,8 +12,7 @@ const PUBLISH_PACKAGES = [
     credits: 5,
     features: [
       "Interior formatting (ebook or paperback)",
-      "Upload & submission to Amazon KDP",
-      "Metadata setup and final quality check",
+      "Upload & submission to Amazon KDP"
     ],
   },
   {
@@ -25,7 +24,7 @@ const PUBLISH_PACKAGES = [
       "Custom cover design (front & back)",
       "Interior formatting (ebook + paperback)",
       "Upload to Amazon KDP & Barnes & Noble Press",
-      "Metadata optimization",
+
       "3 social media launch graphics",
     ],
   },
@@ -47,7 +46,7 @@ const PUBLISH_PACKAGES = [
 function PublishCard({ pkg, onBuy, disablePayment, isActive }) {
   return (
     <div className={`publish-card ${isActive ? "publish-card--active" : ""}`}>
-      
+
       {isActive && <div className="publish-card__badge">Purchased</div>}
 
       <div className="publish-card__name">{pkg.name}</div>
@@ -72,22 +71,22 @@ function PublishCard({ pkg, onBuy, disablePayment, isActive }) {
 
 export default function PublishPricing({ disablePayment }) {
   const [selectedPackage, setSelectedPackage] = useState(null);
-const [hasPublishing, setHasPublishing] = useState(false);
-const [currentPackage, setCurrentPackage] = useState(null);
+  const [hasPublishing, setHasPublishing] = useState(false);
+  const [currentPackage, setCurrentPackage] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
-useEffect(() => {
-  const fetchUser = async () => {
-    const res = await UserProfileApi();
+  useEffect(() => {
+    const fetchUser = async () => {
+      const res = await UserProfileApi();
 
-    if (res?.data?.success) {
-      setHasPublishing(res.data.data.publishing_package);
-      setCurrentPackage(res.data.data.publishing_package_name); // ✅ important
-    }
-  };
+      if (res?.data?.success) {
+        setHasPublishing(res.data.data.publishing_package);
+        setCurrentPackage(res.data.data.publishing_package_name); // ✅ important
+      }
+    };
 
-  fetchUser();
-}, []);
+    fetchUser();
+  }, []);
   const handlePaymentSuccess = () => {
     message.success("Package purchased 🎉");
 
@@ -106,16 +105,16 @@ useEffect(() => {
       </div>
 
       <div className="publish-grid">
-  {PUBLISH_PACKAGES.map((pkg, i) => (
-    <PublishCard
-      key={i}
-      pkg={pkg}
-      onBuy={setSelectedPackage}
-      disablePayment={disablePayment || hasPublishing}
-      isActive={currentPackage === pkg.value} // ✅ match
-    />
-  ))}
-</div>
+        {PUBLISH_PACKAGES.map((pkg, i) => (
+          <PublishCard
+            key={i}
+            pkg={pkg}
+            onBuy={setSelectedPackage}
+            disablePayment={disablePayment || hasPublishing}
+            isActive={currentPackage === pkg.value} // ✅ match
+          />
+        ))}
+      </div>
 
       {selectedPackage && (
         <StripePayment
