@@ -55,6 +55,7 @@ export const SUPPORT_ENDPOINTS = {
   CREATE_TICKET: "support",
   GET_ALL_TICKETS: "support",
   GET_TICKET_BY_ID: (id) => `support/${id}`,
+  REPLY_TICKET: (id) => `support/${id}/message`, // ✅ ADD THIS
 };
 export const FEED_ENDPOINTS = {
   CREATE: "feeds",

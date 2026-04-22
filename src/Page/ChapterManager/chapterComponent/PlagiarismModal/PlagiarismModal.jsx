@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, message } from "antd";
 
+/* ✅ LIMIT CONSTANTS */
+const MIN_CHAR = 200;
+const MAX_CHAR = 10000;
+
 export default function PlagiarismModal({
   open,
   onClose,
@@ -36,13 +40,23 @@ export default function PlagiarismModal({
 
     const alphabetCount = countAlphabetCharacters(selectedText);
 
-    if (alphabetCount < 200) {
+    // ❌ MIN validation
+    if (alphabetCount < MIN_CHAR) {
       message.error(
-        `Minimum 200 alphabet characters required. Currently provided: ${alphabetCount}`
+        `Minimum ${MIN_CHAR} alphabet characters required. Currently provided: ${alphabetCount}`
       );
       return;
     }
 
+    // ❌ MAX validation (NEW)
+    if (alphabetCount > MAX_CHAR) {
+      message.error(
+        `Maximum ${MAX_CHAR} alphabet characters allowed. Currently provided: ${alphabetCount}`
+      );
+      return;
+    }
+
+    // ✅ PASS
     onCheckPlagiarism(selectedText);
   };
 
@@ -86,9 +100,18 @@ export default function PlagiarismModal({
             {selectedText}
           </div>
 
-          <div style={{ marginTop: "8px", fontSize: "12px", color: "#666" }}>
-            Characters Count:{" "}
-            {countAlphabetCharacters(selectedText)}
+          {/* ✅ CHARACTER COUNT + LIMIT INFO */}
+          <div
+            style={{
+              marginTop: "8px",
+              fontSize: "12px",
+              color:
+                countAlphabetCharacters(selectedText) > MAX_CHAR
+                  ? "red"
+                  : "#666",
+            }}
+          >
+            Characters Count: {countAlphabetCharacters(selectedText)} / {MAX_CHAR}
           </div>
         </div>
       )}
