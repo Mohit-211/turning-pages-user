@@ -17,7 +17,6 @@ import { useLocation, Link } from "react-router-dom";
 import { Tooltip } from "antd";
 import "./DashboardSidebar.scss";
 import { UserProfileApi } from "../../api/users/users.api";
-
 const menuItems = [
   { title: "Dashboard", url: "/dashboard", icon: Home, tooltip: "Go to dashboard overview" },
   { title: "My Books", url: "/dashboard/books", icon: BookOpen, tooltip: "Manage your books" },
@@ -36,53 +35,55 @@ const menuItems = [
   { title: "Support", url: "/dashboard/support", icon: Headset, tooltip: "Get help & support" },
   { title: "Chat", url: "/dashboard/chat", icon: MessageSquare, tooltip: "Chat with your book editor. Discuss edits, feedback, and updates in real time." },
 ];
-
 const DashboardSidebar = () => {
   const location = useLocation();
   const currentPath = location.pathname;
-
   const [collapsed, setCollapsed] = useState(() => {
     return localStorage.getItem("sidebarCollapsed") === "true";
   });
-
   const [creditScore, setCreditScore] = useState(0);
-
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await UserProfileApi();
-        setCreditScore(Number(res?.data?.data?.total_credit) || 0);
-      } catch {
-        setCreditScore(0);
-      }
-    };
-    fetchProfile();
-  }, []);
+  const fetchProfile = async () => {
+    try {
+      const res = await UserProfileApi();
+      setCreditScore(Number(res?.data?.data?.total_credit) || 0);
+    } catch {
+      setCreditScore(0);
+    }
+  };
 
+  fetchProfile();
+
+  // ✅ listen for updates
+  const handleProfileUpdate = () => {
+    fetchProfile();
+  };
+
+  window.addEventListener("profileUpdated", handleProfileUpdate);
+
+  return () => {
+    window.removeEventListener("profileUpdated", handleProfileUpdate);
+  };
+}, []);
   const toggleSidebar = () => {
     const val = !collapsed;
     setCollapsed(val);
     localStorage.setItem("sidebarCollapsed", String(val));
   };
-
   const isActive = (path) =>
     currentPath === path ||
     (path === "/dashboard" && currentPath === "/dashboard/");
-
   return (
     <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
       {/* Toggle */}
       <div className="sidebar-toggle" onClick={toggleSidebar}>
         <Menu className="toggle-icon" />
       </div>
-
       <div className="sidebar-group">
         {!collapsed && <div className="sidebar-label">Navigation</div>}
-
         <ul className="sidebar-menu">
           {menuItems.map((item) => {
             const Icon = item.icon;
-
             return (
               <li key={item.title} className="sidebar-menu-item">
                 {/* ✅ Tooltip on EVERY item */}
@@ -94,12 +95,10 @@ const DashboardSidebar = () => {
                     }`}
                   >
                     <Icon className="icon" />
-
                     {!collapsed && (
                       <>
                         <div className="menu-content">
                           <span className="title">{item.title}</span>
-
                           {/* ℹ️ Info icon (extra detail) */}
                           {item.tooltip && (
                             <Tooltip title={item.tooltip}>
@@ -110,7 +109,6 @@ const DashboardSidebar = () => {
                             </Tooltip>
                           )}
                         </div>
-
                         {item.showScore && (
                           <span className="credit-badge">
                             {creditScore}
@@ -118,7 +116,6 @@ const DashboardSidebar = () => {
                         )}
                       </>
                     )}
-
                     {/* collapsed badge */}
                     {collapsed && item.showScore && (
                       <span className="credit-badge collapsed-badge">
@@ -135,5 +132,4 @@ const DashboardSidebar = () => {
     </aside>
   );
 };
-
 export default DashboardSidebar;

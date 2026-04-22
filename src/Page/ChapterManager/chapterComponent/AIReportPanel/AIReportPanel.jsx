@@ -266,8 +266,8 @@ export default function AIReportPanel({
           <p>Similarity Score</p>
           <span
             className={`badge ${p.status === "HIGH_RISK" ? "danger"
-                : p.status === "MEDIUM_RISK" ? "warning"
-                  : "success"
+              : p.status === "MEDIUM_RISK" ? "warning"
+                : "success"
               }`}
           >
             {p.status?.replace("_", " ") || "UNKNOWN"}
@@ -446,12 +446,12 @@ export default function AIReportPanel({
         {f.map((item, i) => (
           <div key={i} className="fact-card">
             <div className="fact-header">
-              <strong>{item.claim}</strong>
+              <strong>{item?.claim}</strong>
             </div>
-            <div className={`fact-verdict ${item.verdict?.toLowerCase() === "false" ? "false" : "verified"}`}>
-              {item.verdict}
+            <div className={`fact-verdict ${item?.verdict === false ? "false" : "verified"}`}>
+              {item?.verdict === false ? "false" : "verified"}
             </div>
-            <p className="fact-explanation">{item.explanation}</p>
+            <p className="fact-explanation">{item?.explanation}</p>
           </div>
         ))}
       </div>

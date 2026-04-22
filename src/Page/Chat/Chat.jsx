@@ -14,6 +14,8 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { db } from "../../config/firebaseConfig";
+import { Info } from "lucide-react";
+import { Tooltip } from "antd";
 
 const Chat = () => {
   const { book_room_id } = useParams();
@@ -101,9 +103,9 @@ const Chat = () => {
 
           time: data.created_at?.toDate
             ? data.created_at.toDate().toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })
+              hour: "2-digit",
+              minute: "2-digit",
+            })
             : "",
         };
       });
@@ -181,7 +183,18 @@ const Chat = () => {
       {/* ✅ Sidebar */}
       {!isDirectChat && (
         <div className="chat-sidebar">
-          <h2>Chats</h2>
+          <div className="chat-header-fix">
+
+            <h2>Chats</h2>
+            <Tooltip
+              title="Chat is initiated when you create a book. After submission, an editor is assigned for editing. You can then chat live with your editor here."
+              placement="left"
+            >
+              <Info
+                style={{ marginLeft: "auto", fontSize: "18px", cursor: "pointer" }}
+              />
+            </Tooltip>
+          </div>
 
           <input
             type="text"
@@ -195,9 +208,8 @@ const Chat = () => {
             {filteredUsers.map((user) => (
               <div
                 key={user.id}
-                className={`chat-user ${
-                  selectedUser?.id === user.id ? "active" : ""
-                }`}
+                className={`chat-user ${selectedUser?.id === user.id ? "active" : ""
+                  }`}
                 onClick={() => setSelectedUser(user)}
               >
                 <div className="avatar">{user.avatar}</div>
@@ -223,11 +235,14 @@ const Chat = () => {
           <>
             <div className="chat-header">
               <div className="avatar">{selectedUser.avatar}</div>
+
               <div className="user-name">
                 {selectedUser?.chat_room?.type === "BOOK_GROUP"
                   ? selectedUser?.chat_room?.book_details?.title
                   : selectedUser?.chat_room?.chat_participant_ad?.name}
               </div>
+
+
             </div>
 
             <div className="chat-messages">
@@ -240,9 +255,8 @@ const Chat = () => {
               {currentMessages.map((msg) => (
                 <div
                   key={msg.id}
-                  className={`chat-message ${
-                    msg.user === "self" ? "other" : "self"
-                  }`}
+                  className={`chat-message ${msg.user === "self" ? "other" : "self"
+                    }`}
                 >
                   <span>{msg.text}</span>
                   <div className="msg-time">{msg.time}</div>
