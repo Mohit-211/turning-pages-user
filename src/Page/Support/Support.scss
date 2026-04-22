@@ -84,7 +84,6 @@ $status-resolved: #059669;
 ::-webkit-scrollbar-thumb:hover {
   background: #b0b8c4;
 }
-
 textarea {
   font-family: $font;
   resize: none;
@@ -99,7 +98,7 @@ textarea {
   font-family: $font;
   color: $text-body;
 
-}
+
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 .support-sidebar {
@@ -980,4 +979,5 @@ textarea {
       color: $priority-urgent;
     }
   }
+}
 }
