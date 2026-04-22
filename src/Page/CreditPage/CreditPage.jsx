@@ -343,31 +343,24 @@ const PLANS = [
                   </div>
                 </div>
               )}
-              {activeTab === "Plans & Pricing" && (
+            {activeTab === "Plans & Pricing" && (
   <div className="cs-plans">
-    <p className="cs-plans__intro">
-      Choose a subscription plan that fits your writing needs. Each plan gives you a set number of credits every month.
+   <p className="cs-services__intro">
+      Choose a subscription plan that fits your writing needs. Each plan provides monthly credits.
     </p>
 
     <div className="cs-plans__grid">
       {PLANS.map((plan) => (
-        <div
-          key={plan.id}
-          className="cs-plan-card"
-        >
-          
-
-          <div className="cs-plan-card__name">{plan.name}</div>
+        <div key={plan.id} className="cs-plan-card">
+          <div className="cs-credits__summary-count">{plan.name}</div>
 
           <div className="cs-plan-card__price">
-            ${plan.price} <span>/month</span>
+            ${plan.price} <span>/mo</span>
           </div>
 
           <div className="cs-plan-card__credits">
-            {plan.credits} Credits / month
+            {plan.credits} credits
           </div>
-
-         
         </div>
       ))}
     </div>
