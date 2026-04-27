@@ -7,6 +7,7 @@ import {
   GetQuotesByTagApi
 } from "../../api/operations/quote.api";
 import { Skeleton } from "antd";
+import EmptyState from "../EmptyState";
 
 /* ==================== Icons ==================== */
 const IconCopy = () => (
@@ -93,7 +94,7 @@ export default function QuotesPage() {
       const res = await GetTagsApi();
       const tagList = res?.data?.data?.data || [];
       setTags(["All", ...tagList.map(t => t.title.trim())]);
-    } catch {}
+    } catch { }
   };
 
   const fetchAllForSearch = async () => {
@@ -200,7 +201,7 @@ export default function QuotesPage() {
         </div>
       </header>
 
-        <main className="quotes-main">
+      <main className="quotes-main">
         {/* Tags Row */}
         <div className={`quotes-tags-row ${isSearchActive ? "quotes-tags-row--search-active" : ""}`}>
           <button className="all-cats-btn" onClick={() => setShowCatModal(true)}>
@@ -258,43 +259,49 @@ export default function QuotesPage() {
           </div>
         )}
 
-        {/* Quotes Grid */}
-        {!isLoading && !searchLoading && (
-          <div className="quotes-grid">
-            {quotes.map((quote, i) => (
-              <article
-                key={quote.id}
-                className={`quote-card ${i % 4 === 0 ? "quote-card--tall" : ""}`}
-                style={{ "--accent": tagAccents[getItemTag(quote)] || "#1e2d40" }}
-              >
-                <p className="quote-text">"{quote.quote}"</p>
-                <footer className="quote-footer">
-                  <div className="quote-meta">
-                    <span className="quote-author">— {quote.author}</span>
-                    <span className="quote-tag">{getItemTag(quote)}</span>
-                  </div>
-                  <button
-                    className={`copy-btn ${copied === quote.id ? "copy-btn--copied" : ""}`}
-                    onClick={() => {
-                      navigator.clipboard.writeText(`"${quote.quote}" — ${quote.author}`);
-                      setCopied(quote.id);
-                      setTimeout(() => setCopied(null), 1500);
-                    }}
-                  >
-                    {copied === quote.id ? <><IconCheck /> Copied</> : <><IconCopy /> Copy</>}
-                  </button>
-                </footer>
-              </article>
-            ))}
+     {/* Quotes / Empty State */}
+{!isLoading && !searchLoading && (
+  quotes.length === 0 ? (
+    <div className="quotes-empty-wrapper">
+      <EmptyState
+        title="No results found"
+        description="Try different keywords"
+       
+      
+      />
+    </div>
+  ) : (
+    <div className="quotes-grid">
+      {quotes.map((quote, i) => (
+        <article
+          key={quote.id}
+          className={`quote-card ${i % 4 === 0 ? "quote-card--tall" : ""}`}
+          style={{ "--accent": tagAccents[getItemTag(quote)] || "#1e2d40" }}
+        >
+          <p className="quote-text">"{quote.quote}"</p>
 
-            {quotes.length === 0 && (
-              <div className="quotes-empty">
-                <p className="quotes-empty__title">No results found</p>
-                <p className="quotes-empty__sub">Try different keywords</p>
-              </div>
-            )}
-          </div>
-        )}
+          <footer className="quote-footer">
+            <div className="quote-meta">
+              <span className="quote-author">— {quote.author}</span>
+              <span className="quote-tag">{getItemTag(quote)}</span>
+            </div>
+
+            <button
+              className={`copy-btn ${copied === quote.id ? "copy-btn--copied" : ""}`}
+              onClick={() => {
+                navigator.clipboard.writeText(`"${quote.quote}" — ${quote.author}`);
+                setCopied(quote.id);
+                setTimeout(() => setCopied(null), 1500);
+              }}
+            >
+              {copied === quote.id ? <><IconCheck /> Copied</> : <><IconCopy /> Copy</>}
+            </button>
+          </footer>
+        </article>
+      ))}
+    </div>
+  )
+)}
       </main>
 
       {/* All Categories Modal */}

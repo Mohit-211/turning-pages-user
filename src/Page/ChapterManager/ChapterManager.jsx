@@ -36,6 +36,8 @@ import BookCoverPanel from "../Book/BookHeader/BookCoverPanel";
 import { toast } from "react-toastify";
 
 export default function ChapterManager() {
+  const [hasPackage, setHasPackage] = useState(false); // from API/user data
+const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { bookId } = useParams();
@@ -44,7 +46,6 @@ export default function ChapterManager() {
   const [showAIGuide, setShowAIGuide] = useState(false);
 const [coverMode, setCoverMode] = useState(null); // "create" | "edit"
   const [showCoverPanel, setShowCoverPanel] = useState(false);
-  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [paymentOpen, setPaymentOpen] = useState(false);
 
   // ── Book / chapter state ──────────────────────────────────
@@ -146,7 +147,7 @@ const createBookSubmission = async (event_name) => {
     throw error;
   }
 };
- const handleSubmitForEditing = async (event_name) => {
+const handleSubmitForEditing = async (event_name) => {
   try {
     if (event_name !== "submit") return;
 
@@ -157,7 +158,16 @@ const createBookSubmission = async (event_name) => {
     toast.success("Book submitted for editing");
   } catch (error) {
     console.error(error);
-    toast.error("Submit failed");
+
+    const errorMessage =
+      error?.response?.data?.message || error?.message || "";
+
+    // 🎯 Exact match condition
+    if (errorMessage === "Please purchase a package to submit a book") {
+      setShowPurchaseModal(true);
+    } else {
+      toast.error(errorMessage || "Submit failed");
+    }
   } finally {
     setSubmitLoading(false);
   }
