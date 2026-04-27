@@ -6,6 +6,7 @@ import FeedCard from "./FeedCard";
 
 import { GetAllMyFeedApi } from "../../api/operations/feed.api";
 import { GetAllGenreApi } from "../../api/operations/genre.api";
+import EmptyState from "../EmptyState";
 
 export default function FeedPage() {
   const [feeds, setFeeds] = useState([]);
@@ -51,12 +52,15 @@ export default function FeedPage() {
 
           {loading && <p>Loading feeds…</p>}
 
-          {!loading && feeds.length === 0 && (
-            <div className="feed-page__empty">
-              <div className="empty-icon">📭</div>
-              <p>No feeds yet. Be the first to share something.</p>
-            </div>
-          )}
+         {!loading && feeds.length === 0 && (
+  <EmptyState
+    icon={<div style={{ fontSize: "40px" }}>📭</div>}
+    title="No feeds yet"
+    description="Be the first to share something"
+    // buttonText="Create post"
+    onButtonClick={() => navigate("/create-post")} // update route if needed
+  />
+)}
 
           {!loading &&
             feeds.map((feed) => (

@@ -16,6 +16,7 @@ import {
 import { db } from "../../config/firebaseConfig";
 import { Info } from "lucide-react";
 import { Tooltip } from "antd";
+import EmptyState from "../../component/EmptyState";
 
 const Chat = () => {
   const { book_room_id } = useParams();
@@ -277,9 +278,13 @@ const Chat = () => {
             </form>
           </>
         ) : (
-          <div className="no-chat-selected">
-            <p>No chat selected</p>
-          </div>
+          <EmptyState
+  icon={<span style={{ fontSize: "40px" }}>💬</span>}
+  title="No chat selected"
+  description="Select a user from the list to begin"
+  // buttonText="Go to chats"
+  onButtonClick={() => navigate("/chats")} // update route
+/>
         )}
       </div>
     </div>

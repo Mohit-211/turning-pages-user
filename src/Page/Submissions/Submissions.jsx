@@ -8,6 +8,7 @@ import {
   GetBookSubmittionHistoryApi,
   GetBooksBySubmittion,
 } from "../../api/operations/book.api";
+import EmptyState from "../../component/EmptyState";
 
 const STATUS = {
   PENDING: "pending",
@@ -333,13 +334,13 @@ export default function Submissions() {
           ))}
         </div>
       ) : submissions.length === 0 ? (
-        <div className="empty-state">
-          <Upload size={40} />
-          <p>No submissions yet</p>
-          <Link to="/dashboard/books" className="start-btn">
-            Submit your first book
-          </Link>
-        </div>
+        <EmptyState
+  icon={<Upload size={40} />}
+  title="No submissions yet"
+  description="Start by submitting your first book"
+  buttonText="Submit book"
+  onButtonClick={() => navigate("/dashboard/books")}
+/>
       ) : (
         <div className="submissions-grid">
           {submissions.map((item) => {
