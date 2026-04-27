@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 
 export default function PricingPage() {
   const location = useLocation();
+  
 
   const isPublishOnly = location.pathname === "/dashboard/publish-payment";
   const isPaymentPage = location.pathname === "/dashboard/payment";

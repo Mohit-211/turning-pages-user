@@ -45,7 +45,7 @@ const EmptyIcon = () => (
 const statusClass = (status = "") =>
   "status-pill status-" + status.toLowerCase().replace(/\s+/g, "-");
 
-/* ── Skeleton card ── */
+/* ── Skeleton ── */
 const SkeletonCard = () => (
   <div className="book-card skeleton">
     <div className="card-accent" />
@@ -62,13 +62,12 @@ const SkeletonCard = () => (
   </div>
 );
 
-/* ── Main component ── */
-const BooksSection = ({ books = [], onDeleteBook }) => {
+/* ── Main Component ── */
+const BooksSection = ({ books = [], loading = false, onDeleteBook }) => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-const isLoading = books === null;
 
-  /* Search filter */
+  /* Filter */
   const filteredBooks = useMemo(() => {
     const q = searchQuery.toLowerCase().trim();
     if (!q) return books;
@@ -85,19 +84,14 @@ const isLoading = books === null;
   };
 
   const handleDelete = async (bookId) => {
-    if (!onDeleteBook) {
-      alert("Delete handler not provided!");
-      return;
-    }
+    if (!onDeleteBook) return;
     try {
       await onDeleteBook(bookId);
     } catch (err) {
-      console.error("Error deleting book:", err);
-      alert("Failed to delete book!");
+      console.error(err);
     }
   };
-console.log(filteredBooks,"filteredBooks")
-  /* Render */
+
   return (
     <section className="books-section-wrapper">
       {/* Header */}
@@ -105,7 +99,6 @@ console.log(filteredBooks,"filteredBooks")
         <h3>My books</h3>
 
         <div className="books-header-right">
-          {/* Search */}
           <div className="search-wrap">
             <SearchIcon />
             <input
@@ -117,7 +110,6 @@ console.log(filteredBooks,"filteredBooks")
             />
           </div>
 
-          {/* Add */}
           <button className="add-book-btn" onClick={() => navigate("/create-book")}>
             <PlusIcon />
             Add book
@@ -125,37 +117,34 @@ console.log(filteredBooks,"filteredBooks")
         </div>
       </div>
 
-    {/* Grid / Empty */}
-{isLoading ? (
-  <div className="books-grid">
-    {Array.from({ length: 6 }).map((_, i) => (
-      <SkeletonCard key={i} />
-    ))}
-  </div>
-) : books.length === 0 ? (
-  <EmptyState
-    icon={<EmptyIcon />}
-    title="No books available right now"
-    description="Create a new book to get started with your writing"
-    // buttonText="Add book"
-    onButtonClick={() => navigate("/create-book")}
-  />
-) : filteredBooks.length === 0 ? (
-  <EmptyState
-    icon={<EmptyIcon />}
-    title="No results found"
-    description={`No books match "${searchQuery}"`}
-  />
-) : (
-  <div className="books-grid">
-    {filteredBooks.map((book) => (
-      <div key={book.id} className="book-card">
-        <div key={book.id} className="book-card">
-              {/* Accent stripe */}
+      {/* Content */}
+      {loading ? (
+        <div className="books-grid">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
+      ) : books.length === 0 ? (
+        <EmptyState
+          icon={<EmptyIcon />}
+          title="No books available right now"
+          description="Create a new book to get started with your writing"
+          onButtonClick={() => navigate("/create-book")}
+        />
+      ) : filteredBooks.length === 0 ? (
+        <EmptyState
+          icon={<EmptyIcon />}
+          title="No results found"
+          description={`No books match "${searchQuery}"`}
+        />
+      ) : (
+        <div className="books-grid">
+          {filteredBooks.map((book) => (
+            <div key={book.id} className="book-card">
               <div className="card-accent" />
 
               <div className="card-body">
-                {/* Top row */}
+                {/* Top */}
                 <div className="card-top">
                   <div>
                     <h4 className="book-title">{book.title || "Untitled book"}</h4>
@@ -168,10 +157,12 @@ console.log(filteredBooks,"filteredBooks")
                         {book.status === "in-editing" ? "in-submission" : book.status}
                       </span>
                     )}
+
                     <div className="dropdown-wrapper">
-                      <button className="menu-btn" aria-label="Options">
+                      <button className="menu-btn">
                         <BsThreeDotsVertical />
                       </button>
+
                       <div className="dropdown-menu">
                         <button
                           className="dropdown-item danger"
@@ -186,7 +177,7 @@ console.log(filteredBooks,"filteredBooks")
 
                 <div className="card-divider" />
 
-                {/* Meta: chapters */}
+                {/* Chapters */}
                 {book.chapters_count != null && (
                   <div className="meta-row">
                     <div className="meta-icon">
@@ -199,7 +190,7 @@ console.log(filteredBooks,"filteredBooks")
                   </div>
                 )}
 
-                {/* Meta: last updated */}
+                {/* Last updated */}
                 <div className="meta-row">
                   <div className="meta-icon">
                     <ClockIcon />
@@ -215,22 +206,22 @@ console.log(filteredBooks,"filteredBooks")
                 </div>
 
                 {/* CTA */}
-                <button className="open-button" onClick={() => handleOpenProject(book.id)}
+                <button
+                  className="open-button"
+                  onClick={() => handleOpenProject(book.id)}
                   disabled={book.status === "in-editing"}
-  style={{
-    opacity: book.status === "in-editing" ? 0.5 : 1,
-    cursor: book.status === "in-editing" ? "not-allowed" : "pointer",
-  }}
-                  >
+                  style={{
+                    opacity: book.status === "in-editing" ? 0.5 : 1,
+                    cursor: book.status === "in-editing" ? "not-allowed" : "pointer",
+                  }}
+                >
                   Open project
                 </button>
               </div>
             </div>
-      </div>
-    ))}
-  </div>
-)}
-
+          ))}
+        </div>
+      )}
     </section>
   );
 };

@@ -53,7 +53,7 @@ export default function Toolbar({
   };
 
   const tooltipText = "Please create/select a chapter first";
-
+console.log(viewMode,"viewMode")
   return (
     <div className="chapter-toolbar">
       <div className="chapter-title">
@@ -73,7 +73,7 @@ export default function Toolbar({
             <span>
               <select
                 value={selectedTool}
-                disabled={!isChapterSelected}
+                disabled={!isChapterSelected || !isEditMode}
                 onChange={(e) => setSelectedTool(e.target.value)}
               >
                 <option value="">Select TAV Tool</option>
@@ -89,7 +89,7 @@ export default function Toolbar({
             <span>
               <button
                 className="toolbar-btn run-ai-btn"
-                disabled={!isChapterSelected}
+                disabled={!isChapterSelected||!isEditMode}
                 onClick={handleRunTool}
               >
                 <PlayCircle size={18} />
@@ -98,12 +98,12 @@ export default function Toolbar({
           </Tooltip>
         </div>
 
-        {/* Upload */}
+      
         <Tooltip title={!isChapterSelected ? tooltipText : ""}>
           <span>
             <button
               className="toolbar-btn upload-btn"
-              disabled={!isChapterSelected}
+              disabled={!isChapterSelected||!isEditMode}
               onClick={onOpenUploadModal}
             >
               <Upload size={18} />

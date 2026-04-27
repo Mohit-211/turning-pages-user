@@ -498,8 +498,11 @@ const ProfilePage = () => {
     try {
       const res  = await UserProfileApi();
       const data = res?.data?.data;
+      console.log(data,"data")
       setUser(data);
-      localStorage.setItem("userId", data?.role_id);
+      localStorage.setItem("userId", data?.user_profile?.id);
+      localStorage.setItem("role_id", data?.role_id);
+
       setFormData({
         name:   data?.user_profile?.name   || "",
         mobile: data?.user_profile?.mobile || "",

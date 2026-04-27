@@ -4,16 +4,15 @@ import { useParams } from "react-router-dom";
 import "./Chat.scss";
 import { GetAllChatListApi, CreateChatApi } from "../../api/operations/chat.api";
 
-// 🔥 Firebase
+// 🔥 Firebase (ONLY LISTENER, no manual write)
 import {
   collection,
-  addDoc,
-  serverTimestamp,
   query,
   orderBy,
   onSnapshot,
 } from "firebase/firestore";
 import { db } from "../../config/firebaseConfig";
+
 import { Info } from "lucide-react";
 import { Tooltip } from "antd";
 import EmptyState from "../../component/EmptyState";
@@ -26,25 +25,25 @@ const Chat = () => {
   const [messagesByRoom, setMessagesByRoom] = useState({});
   const [text, setText] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [sending, setSending] = useState(false); // ✅ prevent double send
 
   const messagesEndRef = useRef(null);
 
   const senderId = localStorage.getItem("userId");
   const senderRoleId = localStorage.getItem("role_id");
 
-  // 👉 check if direct chat mode
   const isDirectChat = !!book_room_id;
 
-  // 👉 current messages
   const currentMessages = selectedUser
     ? messagesByRoom[selectedUser.id] || []
     : [];
 
-  // 🚀 FETCH CHAT LIST + AUTO SELECT
+  // 🚀 FETCH CHAT LIST
   useEffect(() => {
     const fetchChatList = async () => {
       try {
         const res = await GetAllChatListApi();
+
         const chatData = res?.data?.data || [];
 
         const mappedUsers = chatData.map((item) => ({
@@ -97,16 +96,13 @@ const Chat = () => {
         return {
           id: doc.id,
           text: data.text,
-
-          // ✅ ROLE BASED ALIGNMENT
           user:
-            String(data.sender_role) === senderId ? "self" : "other",
-
+            String(data.sender_role) === senderRoleId ? "self" : "other",
           time: data.created_at?.toDate
             ? data.created_at.toDate().toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
+                hour: "2-digit",
+                minute: "2-digit",
+              })
             : "",
         };
       });
@@ -118,54 +114,27 @@ const Chat = () => {
     });
 
     return () => unsubscribe();
-  }, [selectedUser]);
+  }, [selectedUser, senderRoleId]);
 
-  // 📩 SEND MESSAGE
+  // 📩 SEND MESSAGE (FIXED ✅)
   const sendMessage = async (e) => {
     e.preventDefault();
 
-    if (!text.trim() || !selectedUser?.id) return;
+    if (!text.trim() || !selectedUser?.id || sending) return;
 
-    const chatRoomId = selectedUser.id;
-    const messageText = text;
+    setSending(true);
 
     try {
-      // ✅ API CALL
       await CreateChatApi({
-        chat_room_id: chatRoomId,
-        message: messageText,
+        chat_room_id: selectedUser.id,
+        message: text,
       });
-
-      // ✅ FIREBASE STORE
-      await addDoc(
-        collection(db, "messages", String(chatRoomId), "chat"),
-        {
-          sender_id: String(senderId),
-          sender_role_id: String(senderRoleId), // 🔥 IMPORTANT
-          text: messageText,
-          type: "TEXT",
-          created_at: serverTimestamp(),
-          updated_at: null,
-          read_by: [String(senderId)],
-          delivered_to: [],
-          is_edited: false,
-          is_deleted: false,
-          reply_to: null,
-          attachment: {
-            url: null,
-            type: null,
-            size: null,
-          },
-          meta: {
-            device: "web",
-            ip: null,
-          },
-        }
-      );
 
       setText("");
     } catch (err) {
       console.error("Send message error:", err);
+    } finally {
+      setSending(false);
     }
   };
 
@@ -185,15 +154,12 @@ const Chat = () => {
       {!isDirectChat && (
         <div className="chat-sidebar">
           <div className="chat-header-fix">
-
             <h2>Chats</h2>
             <Tooltip
               title="Chat is initiated when you create a book. After submission, an editor is assigned for editing. You can then chat live with your editor here."
               placement="left"
             >
-              <Info
-                style={{ marginLeft: "auto", fontSize: "18px", cursor: "pointer" }}
-              />
+              <Info style={{ marginLeft: "auto", cursor: "pointer" }} />
             </Tooltip>
           </div>
 
@@ -209,19 +175,18 @@ const Chat = () => {
             {filteredUsers.map((user) => (
               <div
                 key={user.id}
-                className={`chat-user ${selectedUser?.id === user.id ? "active" : ""
-                  }`}
+                className={`chat-user ${
+                  selectedUser?.id === user.id ? "active" : ""
+                }`}
                 onClick={() => setSelectedUser(user)}
               >
                 <div className="avatar">{user.avatar}</div>
-
                 <div>
                   <div className="user-name">
                     {user?.chat_room?.type === "BOOK_GROUP"
                       ? user?.chat_room?.book_details?.title
                       : user?.chat_room?.chat_participant_ad?.name}
                   </div>
-
                   <div className="last-msg">{user.last_message}</div>
                 </div>
               </div>
@@ -236,14 +201,11 @@ const Chat = () => {
           <>
             <div className="chat-header">
               <div className="avatar">{selectedUser.avatar}</div>
-
               <div className="user-name">
                 {selectedUser?.chat_room?.type === "BOOK_GROUP"
                   ? selectedUser?.chat_room?.book_details?.title
                   : selectedUser?.chat_room?.chat_participant_ad?.name}
               </div>
-
-
             </div>
 
             <div className="chat-messages">
@@ -256,8 +218,9 @@ const Chat = () => {
               {currentMessages.map((msg) => (
                 <div
                   key={msg.id}
-                  className={`chat-message ${msg.user === "self" ? "other" : "self"
-                    }`}
+                  className={`chat-message ${
+                    msg.user !== "self" ? "self" : "other"
+                  }`}
                 >
                   <span>{msg.text}</span>
                   <div className="msg-time">{msg.time}</div>
@@ -274,17 +237,17 @@ const Chat = () => {
                 value={text}
                 onChange={(e) => setText(e.target.value)}
               />
-              <button type="submit">➤</button>
+              <button type="submit" disabled={sending}>
+                ➤
+              </button>
             </form>
           </>
         ) : (
           <EmptyState
-  icon={<span style={{ fontSize: "40px" }}>💬</span>}
-  title="No chat selected"
-  description="Select a user from the list to begin"
-  // buttonText="Go to chats"
-  onButtonClick={() => navigate("/chats")} // update route
-/>
+            icon={<span style={{ fontSize: "40px" }}>💬</span>}
+            title="No chat selected"
+            description="Select a user from the list to begin"
+          />
         )}
       </div>
     </div>

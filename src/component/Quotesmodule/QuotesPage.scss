@@ -502,24 +502,7 @@ $accents: (
 // Empty State
 // ============================================================
 
-.quotes-empty {
-  padding: 60px 20px;
-  text-align: center;
-  grid-column: 1 / -1;
 
-  &__title {
-     
-    font-size: 20px;
-    font-weight: 700;
-    color: $ink;
-    margin-bottom: 8px;
-  }
-
-  &__sub {
-    @include font-label(12px, 0.08em);
-    color: $ink-muted;
-  }
-}
 
 // ============================================================
 // All Categories Modal
