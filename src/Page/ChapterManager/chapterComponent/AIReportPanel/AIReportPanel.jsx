@@ -280,6 +280,7 @@ export default function AIReportPanel({
           <Stat label="Similar" value={p.stats?.similarWords} />
           <Stat label="Sources" value={p.stats?.sourcesMatched} />
         </div>
+        {p?.others?.sources?.length > 0 && 
         <div className="source-list">
           <h4>Detected Sources</h4>
           {p?.others?.sources?.map((src, index) => (
@@ -303,6 +304,7 @@ export default function AIReportPanel({
             </div>
           ))}
         </div>
+  }
       </>
     );
   };

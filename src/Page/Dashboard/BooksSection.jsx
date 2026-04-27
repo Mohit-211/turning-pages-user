@@ -3,6 +3,7 @@ import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import "./BooksSection.scss";
+import EmptyState from "../../component/EmptyState";
 
 /* ── Icons ── */
 const SearchIcon = () => (
@@ -65,8 +66,7 @@ const SkeletonCard = () => (
 const BooksSection = ({ books = [], onDeleteBook }) => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-
-  const isLoading = books.length === 0;
+const isLoading = books === null;
 
   /* Search filter */
   const filteredBooks = useMemo(() => {
@@ -96,7 +96,7 @@ const BooksSection = ({ books = [], onDeleteBook }) => {
       alert("Failed to delete book!");
     }
   };
-
+console.log(filteredBooks,"filteredBooks")
   /* Render */
   return (
     <section className="books-section-wrapper">
@@ -125,13 +125,32 @@ const BooksSection = ({ books = [], onDeleteBook }) => {
         </div>
       </div>
 
-      {/* Grid */}
-      <div className="books-grid">
-        {isLoading ? (
-          Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
-        ) : filteredBooks.length > 0 ? (
-          filteredBooks.map((book) => (
-            <div key={book.id} className="book-card">
+    {/* Grid / Empty */}
+{isLoading ? (
+  <div className="books-grid">
+    {Array.from({ length: 6 }).map((_, i) => (
+      <SkeletonCard key={i} />
+    ))}
+  </div>
+) : books.length === 0 ? (
+  <EmptyState
+    icon={<EmptyIcon />}
+    title="No books available right now"
+    description="Create a new book to get started with your writing"
+    // buttonText="Add book"
+    onButtonClick={() => navigate("/create-book")}
+  />
+) : filteredBooks.length === 0 ? (
+  <EmptyState
+    icon={<EmptyIcon />}
+    title="No results found"
+    description={`No books match "${searchQuery}"`}
+  />
+) : (
+  <div className="books-grid">
+    {filteredBooks.map((book) => (
+      <div key={book.id} className="book-card">
+        <div key={book.id} className="book-card">
               {/* Accent stripe */}
               <div className="card-accent" />
 
@@ -207,16 +226,11 @@ const BooksSection = ({ books = [], onDeleteBook }) => {
                 </button>
               </div>
             </div>
-          ))
-        ) : (
-          /* Empty state */
-          <div className="no-books">
-            <EmptyIcon />
-            <p>No books found</p>
-            <span>Try a different search term</span>
-          </div>
-        )}
       </div>
+    ))}
+  </div>
+)}
+
     </section>
   );
 };
