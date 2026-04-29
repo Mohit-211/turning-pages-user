@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Form, Input, Button, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { loginApi } from "../../../api/auth/auth.api";
@@ -7,37 +7,56 @@ import "./LoginForm.scss";
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const [captchaToken, setCaptchaToken] = useState("");
   const [loading, setLoading] = useState(false);
+  const turnstileRef = useRef(null);
+
+  useEffect(() => {
+    if (window.turnstile && turnstileRef.current) {
+      window.turnstile.render(turnstileRef.current, {
+        sitekey: "0x4AAAAAADFcZ6m1dRakT4n3",
+        callback: (token) => setCaptchaToken(token),
+      });
+    }
+  }, []);
+
+  // ✅ global callback (required)
+  useEffect(() => {
+    window.handleTurnstileCallback = (token) => {
+      setCaptchaToken(token);
+    };
+
+    return () => {
+      delete window.handleTurnstileCallback;
+    };
+  }, []);
 
   const onFinish = async ({ email, password }) => {
+    if (!captchaToken) {
+      message.error("Please verify captcha");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const response = await loginApi({ email, password });
+      const response = await loginApi({
+        email,
+        password,
+        captchaToken,
+      });
+
       const token = response?.data?.data?.tokens?.access?.token;
 
       localStorage.setItem("book_publish_token", token);
+
       message.success("Login successful! Welcome back.");
       navigate("/dashboard");
     } catch (error) {
-      const errorMessage = error?.response?.data?.message || "Login failed";
+      const errorMessage =
+        error?.response?.data?.message || "Login failed";
 
-      if (
-        errorMessage.includes("not verified") ||
-        errorMessage.includes("verify Your Otp")
-      ) {
-        message.info(`${errorMessage} Redirecting to OTP verification…`);
-
-        const encodedEmail = btoa(email);
-        const encodedType = btoa("email_varification");
-
-        setTimeout(() => {
-          navigate(`/otp-verify?email=${encodedEmail}&type=${encodedType}`);
-        }, 10000);
-
-        return;
-      }
-
+      message.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -45,12 +64,7 @@ const LoginForm = () => {
 
   return (
     <div className="auth-form login-form">
-      <Form
-        name="login"
-        layout="vertical"
-        onFinish={onFinish}
-        autoComplete="off"
-      >
+      <Form layout="vertical" onFinish={onFinish} autoComplete="off">
         <Form.Item
           label="Email"
           name="email"
@@ -65,11 +79,19 @@ const LoginForm = () => {
         <Form.Item
           label="Password"
           name="password"
-          rules={[{ required: true, message: "Please enter your password" }]}
+          rules={[
+            { required: true, message: "Please enter your password" },
+          ]}
         >
           <Input.Password placeholder="Enter your password" />
         </Form.Item>
 
+        {/* ✅ Turnstile with proper spacing */}
+        <div className="cf-turnstile-wrapper">
+           <div ref={turnstileRef}></div>
+        </div>
+
+        {/* ✅ RESTORED */}
         <div className="form-meta">
           <Link to="/auth/forgot-password-sendotp" className="forgot-link">
             Forgot password?
@@ -81,6 +103,7 @@ const LoginForm = () => {
           htmlType="submit"
           block
           loading={loading}
+          disabled={!captchaToken}
           className="login-btn"
         >
           Login
