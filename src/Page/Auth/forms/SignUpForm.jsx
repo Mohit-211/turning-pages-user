@@ -137,15 +137,15 @@ const SignUpForm = ({ signUpData = {}, setSignUpData = () => {} }) => {
         </Form.Item>
 
         <Form.Item
-          label="Mobile"
+          label="Phone Number"
           name="mobile"
           rules={[
-            { required: true, message: "Please enter your mobile number" },
-            { pattern: /^\d{10}$/, message: "Mobile must be 10 digits" },
+            { required: true, message: "Please enter your phone number" },
+            { pattern: /^\d{10}$/, message: "Phone number must be 10 digits" },
           ]}
         >
           <Input
-            placeholder="10-digit mobile number"
+            placeholder="10-digit phone number"
             maxLength={10}
             onChange={(e) => {
               const value = e.target.value.replace(/\D/g, "");
