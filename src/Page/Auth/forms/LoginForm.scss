@@ -7,6 +7,12 @@
     margin-bottom: 1rem;
   }
 
+  .cf-turnstile-wrapper {
+  margin: 10px 0;
+  display: flex;
+  justify-content: center; // optional
+}
+
   .ant-form-item-label > label {
     font-weight: 500;
     color: #111827;

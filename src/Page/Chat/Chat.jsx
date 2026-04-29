@@ -43,7 +43,7 @@ const Chat = () => {
     const fetchChatList = async () => {
       try {
         const res = await GetAllChatListApi();
-
+console.log(res,"res")
         const chatData = res?.data?.data || [];
 
         const mappedUsers = chatData.map((item) => ({
@@ -100,9 +100,9 @@ const Chat = () => {
             String(data.sender_role) === senderRoleId ? "self" : "other",
           time: data.created_at?.toDate
             ? data.created_at.toDate().toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })
+              hour: "2-digit",
+              minute: "2-digit",
+            })
             : "",
         };
       });
@@ -175,9 +175,8 @@ const Chat = () => {
             {filteredUsers.map((user) => (
               <div
                 key={user.id}
-                className={`chat-user ${
-                  selectedUser?.id === user.id ? "active" : ""
-                }`}
+                className={`chat-user ${selectedUser?.id === user.id ? "active" : ""
+                  }`}
                 onClick={() => setSelectedUser(user)}
               >
                 <div className="avatar">{user.avatar}</div>
@@ -215,12 +214,11 @@ const Chat = () => {
                 </div>
               )}
 
-              {currentMessages.map((msg) => (
+              {currentMessages && currentMessages.map((msg) => (
                 <div
                   key={msg.id}
-                  className={`chat-message ${
-                    msg.user !== "self" ? "self" : "other"
-                  }`}
+                  className={`chat-message ${msg.user !== "self" ? "self" : "other"
+                    }`}
                 >
                   <span>{msg.text}</span>
                   <div className="msg-time">{msg.time}</div>

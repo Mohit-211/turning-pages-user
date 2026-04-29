@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Typography, message } from "antd";
+import { Form, Input, Button, Typography, message, Row, Col } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -30,10 +30,15 @@ const SignUpForm = ({ signUpData = {}, setSignUpData = () => {} }) => {
   }, [signUpData?.password, signUpData?.confirmPassword]);
 
   const onFinish = async (values) => {
-    const { name, email, mobile, password, confirmPassword } = values;
+    const { name, last_name, email, mobile, password, confirmPassword } = values;
 
     if (password !== confirmPassword) {
       setPasswordError("Passwords do not match");
+      return;
+    }
+
+    if (!captchaValue) {
+      setPasswordError("Please verify captcha");
       return;
     }
 
@@ -42,6 +47,7 @@ const SignUpForm = ({ signUpData = {}, setSignUpData = () => {} }) => {
     try {
       const payload = {
         name,
+        last_name, // ✅ added
         email,
         mobile,
         password,
@@ -80,19 +86,40 @@ const SignUpForm = ({ signUpData = {}, setSignUpData = () => {} }) => {
   return (
     <div className="auth-form signup-form">
       <Form layout="vertical" onFinish={onFinish} initialValues={signUpData}>
-        <Form.Item
-          label="Full Name"
-          name="name"
-          rules={[{ required: true, message: "Please enter your full name" }]}
-        >
-          <Input
-            placeholder="Your full name"
-            onChange={(e) =>
-              setSignUpData({ ...signUpData, name: e.target.value })
-            }
-          />
-        </Form.Item>
+        
+       <Row gutter={16}>
+  {/* First Name */}
+  <Col xs={24} md={12}>
+    <Form.Item
+      label="First Name"
+      name="name"
+      rules={[{ required: true, message: "Enter first name" }]}
+    >
+      <Input
+        placeholder="First name"
+        onChange={(e) =>
+          setSignUpData({ ...signUpData, name: e.target.value })
+        }
+      />
+    </Form.Item>
+  </Col>
 
+  {/* Last Name */}
+  <Col xs={24} md={12}>
+    <Form.Item
+      label="Last Name"
+      name="last_name"
+      rules={[{ required: true, message: "Enter last name" }]}
+    >
+      <Input
+        placeholder="Last name"
+        onChange={(e) =>
+          setSignUpData({ ...signUpData, last_name: e.target.value })
+        }
+      />
+    </Form.Item>
+  </Col>
+</Row>
         <Form.Item
           label="Email"
           name="email"
