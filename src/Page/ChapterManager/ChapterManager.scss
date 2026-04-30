@@ -1,516 +1,412 @@
-// ════════════════════════════════════════════════════════════
-// ChapterManager.scss — Enhanced UI
-// ════════════════════════════════════════════════════════════
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
 
-$blue:    #174f78;
-$blue-dk: #1e6091;
-$red:     #ed1c24;
-$ink:     #0f172a;
-$mid:     #64748b;
-$dim:     #94a3b8;
-$border:  #e5e7eb;
-$surface: #f8fafc;
-$purple:  #534ab7;
-$ease:    cubic-bezier(.4, 0, .2, 1);
-$t:       .18s $ease;
+// ── Design tokens ─────────────────────────────────────────────────────────────
+:root {
+  --cm-font: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 
-// ── Root ─────────────────────────────────────────────────────
+  --cm-bg:           #f7f6f2;
+  --cm-sider-bg:     #ffffff;
+  --cm-sider-width:  232px;
+  --cm-border:       #e8e5de;
+  --cm-border-soft:  #f0ede6;
+
+  --cm-text-primary:   #1a1916;
+  --cm-text-secondary: #6b6860;
+  --cm-text-muted:     #a09d97;
+
+  --cm-green:        #3b6d11;
+  --cm-green-light:  #eaf3de;
+  --cm-green-mid:    #97c459;
+
+  --cm-blue:         #185fa5;
+  --cm-blue-light:   #e6f1fb;
+
+  --cm-amber:        #ba7517;
+  --cm-amber-light:  #faeeda;
+
+  --cm-radius-sm:  6px;
+  --cm-radius-md:  10px;
+  --cm-radius-lg:  14px;
+  --cm-radius-xl:  18px;
+
+  --cm-shadow-soft: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --cm-shadow-card: 0 2px 8px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.05);
+}
+
+// ── Root layout ───────────────────────────────────────────────────────────────
 .chapter-manager {
   display: flex;
   height: 100vh;
-  background: $surface;
   overflow: hidden;
-}
-.cover-choice-modal {
-  background: #fff;
-  border-radius: 12px;
-  padding: 24px;
-  width: 320px;
-  text-align: center;
+  background: var(--cm-bg);
+  font-family: var(--cm-font);
+  color: var(--cm-text-primary);
 }
 
-.cover-choice-actions {
+// ── Sidebar ───────────────────────────────────────────────────────────────────
+.chapter-sider {
+  width: var(--cm-sider-width);
+  min-width: var(--cm-sider-width);
+  height: 100%;
+  background: var(--cm-sider-bg);
+  border-right: 0.5px solid var(--cm-border);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  overflow: hidden;
+}
 
-  button {
-    width: 100%;
+// Back button
+.sider-header {
+  padding: 16px 14px 12px;
+  border-bottom: 0.5px solid var(--cm-border-soft);
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--cm-text-secondary);
+    text-decoration: none;
+    padding: 5px 8px;
+    border-radius: var(--cm-radius-sm);
+    transition: background 0.12s, color 0.12s;
+
+    &:hover {
+      background: var(--cm-bg);
+      color: var(--cm-text-primary);
+    }
   }
 }
-// ════════════════════════════════════════════════════════════
-// SIDEBAR
-// ════════════════════════════════════════════════════════════
 
-.chapter-sider {
-  width: 264px;
-  flex-shrink: 0;
-  background: #fff;
-  border-right: 0.5px solid $border;
+// Book meta block
+.sider-book-meta {
   display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  transition: width $t;
-}
-
-.sider-header {
-  padding: 14px 16px;
-  border-bottom: 0.5px solid #f1f5f9;
-  flex-shrink: 0;
-}
-
-.back-btn {
-  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  color: $mid;
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 500;
-  transition: color $t;
-  padding: 4px 0;
-
-  svg { width: 15px; height: 15px; flex-shrink: 0; }
-
-  &:hover { color: $blue; }
+  gap: 10px;
+  padding: 14px 14px 12px;
+  border-bottom: 0.5px solid var(--cm-border-soft);
 }
 
-// Chapter list section label
-.sider-section-label {
-  padding: 12px 16px 6px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: $dim;
+.sider-book-cover {
+  width: 40px;
+  height: 52px;
+  border-radius: var(--cm-radius-sm);
+  overflow: hidden;
   flex-shrink: 0;
+  border: 0.5px solid var(--cm-border);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &__placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--cm-green-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--cm-green);
+  }
 }
 
-// Scrollable chapter list
+.sider-book-info {
+  min-width: 0;
+}
+
+.sider-book-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cm-text-primary);
+  margin: 0 0 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 148px;
+}
+
+.sider-book-count {
+  font-size: 11.5px;
+  color: var(--cm-text-muted);
+  margin: 0;
+}
+
+// Section row
+.sider-section-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 14px 8px;
+}
+
+.sider-section-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--cm-text-muted);
+}
+
+.sider-add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--cm-radius-sm);
+  border: 0.5px solid var(--cm-border);
+  background: transparent;
+  color: var(--cm-text-secondary);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+
+  &:hover {
+    background: var(--cm-green-light);
+    border-color: var(--cm-green-mid);
+    color: var(--cm-green);
+  }
+}
+
+// Chapter list scroll area
 .sider-list {
   flex: 1;
   overflow-y: auto;
+  padding: 0 8px 16px;
 
   &::-webkit-scrollbar { width: 3px; }
+  &::-webkit-scrollbar-track { background: transparent; }
   &::-webkit-scrollbar-thumb {
-    background: #e2e8f0;
+    background: var(--cm-border);
     border-radius: 99px;
   }
 }
 
-// Individual chapter row
-.chapter-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 16px;
-  cursor: pointer;
-  transition: background $t, border-color $t;
-  border-left: 2px solid transparent;
-  position: relative;
-
-  &:hover {
-    background: $surface;
-  }
-
-  &.active {
-    background: rgba($blue, 0.06);
-    border-left-color: $blue;
-
-    .ch-num {
-      background: $blue;
-      color: #fff;
-    }
-
-    .ch-title { color: $blue; }
-  }
-}
-
-.ch-num {
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  background: #f1f5f9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  font-weight: 700;
-  color: $mid;
-  flex-shrink: 0;
-  transition: background $t, color $t;
-}
-
-.ch-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.ch-title {
-  font-size: 13px;
-  font-weight: 500;
-  color: $ink;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: color $t;
-}
-
-.ch-meta {
-  font-size: 11px;
-  color: $dim;
-  margin-top: 1px;
-}
-
-.ch-delete-btn {
-  opacity: 0;
-  background: none;
-  border: none;
-  color: $dim;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 5px;
-  line-height: 0;
-  transition: opacity $t, color $t, background $t;
-
-  svg { width: 13px; height: 13px; }
-
-  &:hover {
-    color: $red;
-    background: rgba($red, 0.08);
-  }
-}
-
-.chapter-item:hover .ch-delete-btn { opacity: 1; }
-
-// Add chapter footer button
-.sider-footer {
-  padding: 12px 16px;
-  border-top: 0.5px solid #f1f5f9;
-  flex-shrink: 0;
-}
-
-.add-chapter-btn {
-  width: 100%;
-  display: flex;
-  // width: fit-content;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 9px;
-  background: $blue;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 12.5px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background $t, transform $t;
-
-  svg { width: 14px; height: 14px; }
-
-  &:hover {
-    background: $blue-dk;
-    transform: translateY(-1px);
-  }
-}
-
-// ════════════════════════════════════════════════════════════
-// MAIN CONTENT AREA
-// ════════════════════════════════════════════════════════════
-
-.chapter-content-area {
-  flex: 1;
+// Skeleton loading
+.sider-loading {
   display: flex;
   flex-direction: column;
-  background: #fff;
-  overflow: hidden;
-  min-width: 0;
+  gap: 6px;
+  padding: 4px 0;
 }
 
-// ── Content split layout ─────────────────────────────────────
+.skel-item {
+  height: 38px;
+  border-radius: var(--cm-radius-md);
+  background: linear-gradient(90deg, #f0ede6 25%, #e8e5de 50%, #f0ede6 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ── Main content area ─────────────────────────────────────────────────────────
+.chapter-content-area {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+// Top stack: BookHeader + Toolbar
+.content-top {
+  flex-shrink: 0;
+  border-bottom: 0.5px solid var(--cm-border);
+  background: #ffffff;
+
+  // Give toolbar a bit of padding/context
+  .chapter-toolbar {
+    margin: 16px 12px;
+    border-radius: var(--cm-radius-lg);
+    box-shadow: var(--cm-shadow-soft);
+  }
+}
+
+// Editor + panel side by side
 .content-layout {
   flex: 1;
   display: flex;
   overflow: hidden;
+  gap: 0;
 }
 
-// ── Editor pane ───────────────────────────────────────────────
+// Editor zone
 .editor-container {
   flex: 1;
-  padding: 28px 36px;
-  overflow-y: auto;
-  background: #fafbfc;
   min-width: 0;
+  overflow-y: auto;
+  padding: 24px 28px;
+  background: #FFF;
 
   &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
   &::-webkit-scrollbar-thumb {
-    background: #e2e8f0;
+    background: var(--cm-border);
     border-radius: 99px;
   }
 }
 
-// Chapter meta row inside editor
-.editor-meta {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 12px;
-  color: $dim;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.editor-meta__dot {
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: #cbd5e1;
-  display: inline-block;
-}
-
-.editor-meta__status {
-  font-weight: 500;
-  color: $blue;
-}
-
-// ── AI report panel ───────────────────────────────────────────
+// AI panel
 .report-section {
   width: 360px;
-  flex-shrink: 0;
-  border-left: 0.5px solid $border;
-  background: #fff;
+  min-width: 360px;
+  border-left: 0.5px solid var(--cm-border);
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
+  background: #ffffff;
 
-  &::-webkit-scrollbar { width: 3px; }
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
   &::-webkit-scrollbar-thumb {
-    background: #e2e8f0;
+    background: var(--cm-border);
     border-radius: 99px;
   }
 }
 
-// ════════════════════════════════════════════════════════════
-// EMPTY STATE
-// ════════════════════════════════════════════════════════════
-
+// ── Empty state ───────────────────────────────────────────────────────────────
 .empty-state {
-  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  color: $mid;
+  height: 100%;
+  min-height: 400px;
+  text-align: center;
+  gap: 8px;
 
   &__icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    background: rgba($blue, 0.08);
+    width: 56px;
+    height: 56px;
+    border-radius: var(--cm-radius-xl);
+    background: var(--cm-green-light);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: $blue;
-
-    svg { width: 22px; height: 22px; }
+    color: var(--cm-green);
+    margin-bottom: 4px;
   }
 
   &__title {
     font-size: 15px;
-    font-weight: 500;
-    color: $ink;
+    font-weight: 600;
+    color: var(--cm-text-primary);
+    margin: 0;
   }
 
   &__desc {
-    font-size: 13px;
-    color: $dim;
-    text-align: center;
-    max-width: 240px;
+    font-size: 13.5px;
+    color: var(--cm-text-secondary);
+    margin: 0 0 12px;
+    max-width: 280px;
     line-height: 1.6;
   }
 
-  .add-chapter-btn {
-    width: auto;
-    padding: 10px 20px;
+  &__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    background: var(--cm-green);
+    color: #ffffff;
+    border: none;
+    border-radius: var(--cm-radius-md);
+    font-family: var(--cm-font);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.12s, transform 0.08s;
+
+    &:hover { background: darken(#3b6d11, 6%); }
+    &:active { transform: scale(0.97); }
   }
 }
 
-// ════════════════════════════════════════════════════════════
-// LOADING STATE
-// ════════════════════════════════════════════════════════════
-
-.sider-loading {
-  padding: 16px;
+// ── Upgrade modal ─────────────────────────────────────────────────────────────
+.upgrade-modal-body {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-}
-
-.skel-item {
-  height: 52px;
-  border-radius: 8px;
-  background: #f1f5f9;
-  animation: skel-pulse 1.5s ease-in-out infinite;
-
-  @keyframes skel-pulse {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0.55; }
-  }
-}
-
-// ════════════════════════════════════════════════════════════
-// COVER MODAL OVERLAY
-// ════════════════════════════════════════════════════════════
-
-.cover-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(4px);
-  display: flex;
   align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  animation: cm-fade .18s $ease;
-
-  @keyframes cm-fade {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-}
-
-.cover-modal {
-  max-width: 1000px;
-  // width: 90%;
-  background: #fff;
-  border-radius: 14px;
-  overflow: hidden;
-  display: flex;
-  animation: cm-scale .22s $ease;
-
-  @keyframes cm-scale {
-    from { transform: scale(.94); opacity: 0; }
-    to   { transform: none;       opacity: 1; }
-  }
-}
-
-// ════════════════════════════════════════════════════════════
-// PURCHASE / UPGRADE MODAL (inline Ant override)
-// ════════════════════════════════════════════════════════════
-
-.upgrade-modal-body {
   text-align: center;
-  padding: 8px 0 4px;
+  padding: 24px 16px 16px;
+  gap: 10px;
 
   &__icon {
     width: 52px;
     height: 52px;
-    border-radius: 14px;
-    background: rgba($blue, 0.08);
+    border-radius: var(--cm-radius-xl);
+    background: var(--cm-amber-light);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 16px;
-    color: $blue;
+    color: var(--cm-amber);
+    margin-bottom: 6px;
 
-    svg { width: 24px; height: 24px; }
+    svg { width: 22px; height: 22px; }
   }
 
   h2 {
     font-size: 17px;
     font-weight: 600;
-    color: $ink;
-    margin-bottom: 8px;
+    color: var(--cm-text-primary);
+    margin: 0;
   }
 
   p {
-    font-size: 13px;
-    color: $mid;
-    margin-bottom: 24px;
+    font-size: 13.5px;
+    color: var(--cm-text-secondary);
     line-height: 1.6;
+    margin: 0 0 8px;
   }
 }
 
 .upgrade-modal-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: $blue;
-  color: #fff;
+  padding: 10px 28px;
+  background: var(--cm-green);
+  color: #ffffff;
   border: none;
-  padding: 10px 22px;
-  border-radius: 8px;
-  font-size: 13px;
+  border-radius: var(--cm-radius-md);
+  font-family: var(--cm-font);
+  font-size: 13.5px;
   font-weight: 500;
   cursor: pointer;
-  transition: background $t, transform $t;
+  transition: background 0.12s, transform 0.08s;
 
-  &:hover {
-    background: $blue-dk;
-    transform: translateY(-1px);
-  }
+  &:hover { background: darken(#3b6d11, 6%); }
+  &:active { transform: scale(0.97); }
 }
 
-// ════════════════════════════════════════════════════════════
-// RESPONSIVE
-// ════════════════════════════════════════════════════════════
-
-@media (max-width: 1280px) {
-  .report-section { width: 320px; }
+// ── Cover panel overlay ───────────────────────────────────────────────────────
+.cover-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 25, 22, 0.48);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+  animation: fadeIn 0.15s ease;
 }
 
-@media (max-width: 1024px) {
-  .content-layout {
-    flex-direction: column;
-  }
-
-  .report-section {
-    width: 100%;
-    height: 360px;
-    border-left: none;
-    border-top: 0.5px solid $border;
-  }
+.cover-modal {
+  background: #ffffff;
+  border-radius: var(--cm-radius-xl);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+  animation: slideUp 0.18s ease;
 }
 
-@media (max-width: 768px) {
-  .chapter-sider {
-    width: 220px;
-  }
-
-  .editor-container {
-    padding: 20px;
-  }
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
-@media (max-width: 640px) {
-  .chapter-manager {
-    flex-direction: column;
-  }
-
-  .chapter-sider {
-    width: 100%;
-    height: 200px;
-    border-right: none;
-    border-bottom: 0.5px solid $border;
-
-    .sider-list {
-      display: flex;
-      flex-direction: row;
-      overflow-x: auto;
-      overflow-y: hidden;
-
-      .chapter-item {
-        flex-shrink: 0;
-        border-left: none;
-        border-bottom: 2px solid transparent;
-
-        &.active {
-          border-bottom-color: $blue;
-          border-left-color: transparent;
-        }
-      }
-    }
-  }
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
