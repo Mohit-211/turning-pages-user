@@ -1,14 +1,16 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import {
   ChevronRight,
   Upload as UploadIcon,
   Sparkles,
   Copy,
   CheckCheck,
-  Plus,
   RefreshCw,
   Square,
   Edit3,
+  Maximize2,
+  X,
+  FileText,
 } from "lucide-react";
 import { message } from "antd";
 import DOMPurify from "dompurify";
@@ -27,6 +29,77 @@ function renderMarkdown(raw = "") {
   return DOMPurify.sanitize(marked.parse(raw));
 }
 
+function wordCount(text = "") {
+  return text.trim().split(/\s+/).filter(Boolean).length;
+}
+
+// ─────────────────────────────────────────────────────────────
+//  Full-Size Reader Modal
+// ─────────────────────────────────────────────────────────────
+function ReaderModal({ html, rawText, onClose, onSetInEditor, onCopy, copied }) {
+  const wc = useMemo(() => wordCount(rawText), [rawText]);
+  const charCount = rawText?.length ?? 0;
+
+  // Close on Escape
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  return (
+    <div className="imp-reader-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="imp-reader-modal" role="dialog" aria-modal="true" aria-label="Generated Content Reader">
+        {/* Header */}
+        <div className="imp-reader-header">
+          <div className="imp-reader-header__left">
+            <div className="imp-reader-header__icon">
+              <FileText size={16} />
+            </div>
+            <div>
+              <p className="imp-reader-title">Generated Content</p>
+              <p className="imp-reader-subtitle">{wc} words · {charCount} characters</p>
+            </div>
+          </div>
+          <div className="imp-reader-header-actions">
+            <button className="imp-reader-action-btn" onClick={onCopy}>
+              {copied ? <CheckCheck size={14} /> : <Copy size={14} />}
+              {copied ? "Copied!" : "Copy"}
+            </button>
+            <button className="imp-reader-action-btn imp-reader-action-btn--primary" onClick={() => { onSetInEditor(); onClose(); }}>
+              <Edit3 size={14} /> Set in Editor
+            </button>
+            <button className="imp-reader-action-btn imp-reader-action-btn--close" onClick={onClose} title="Close (Esc)">
+              <X size={16} />
+            </button>
+          </div>
+        </div>
+
+        {/* Body */}
+        <div className="imp-reader-body" dangerouslySetInnerHTML={{ __html: html }} />
+
+        {/* Footer */}
+        <div className="imp-reader-footer">
+          <div className="imp-reader-footer__word-count">
+            <span>{wc}</span> words · <span>{charCount}</span> characters
+          </div>
+          <div className="imp-reader-footer__actions">
+            <button className="imp-reader-action-btn" onClick={onClose}>
+              Close
+            </button>
+            <button className="imp-reader-action-btn imp-reader-action-btn--primary" onClick={() => { onSetInEditor(); onClose(); }}>
+              <Edit3 size={14} /> Set in Editor
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+//  Main Component
+// ─────────────────────────────────────────────────────────────
 export default function InputModePanel({
   activeMode,
   onClose,
@@ -40,6 +113,7 @@ export default function InputModePanel({
   const [generatedText, setGeneratedText] = useState("");
   const [streaming, setStreaming] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [readerOpen, setReaderOpen] = useState(false);
 
   const instructionRef = useRef(null);
   const readerRef = useRef(null);
@@ -89,7 +163,6 @@ export default function InputModePanel({
     try {
       const text = await extractTextFromFile(droppedFile);
       if (!text?.trim()) return message.warning("No text found");
-
       const html = text.split(/\n\s*\n/).map(p => `<p>${p.replace(/\n/g, "<br>")}</p>`).join("");
       onReplaceContent?.(html);
       message.success("Uploaded to editor");
@@ -100,12 +173,10 @@ export default function InputModePanel({
     }
   };
 
-  // Drag Drop handlers
-  const handleDragOver = (e) => { e.preventDefault(); setDragging(true); };
+  const handleDragOver  = (e) => { e.preventDefault(); setDragging(true); };
   const handleDragLeave = () => setDragging(false);
   const handleDrop = (e) => {
-    e.preventDefault();
-    setDragging(false);
+    e.preventDefault(); setDragging(false);
     if (e.dataTransfer.files[0]) setDroppedFile(e.dataTransfer.files[0]);
   };
   const handleFileChange = (e) => {
@@ -123,6 +194,7 @@ export default function InputModePanel({
 
     setStreaming(true);
     setGeneratedText("");
+    setReaderOpen(false);
     readerRef.current?.cancel?.();
 
     const token = localStorage.getItem("book_publish_token");
@@ -170,20 +242,19 @@ export default function InputModePanel({
     setStreaming(false);
   };
 
-  const handleCopy = async () => {
+  const handleCopy = useCallback(async () => {
     await navigator.clipboard.writeText(generatedText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };
+  }, [generatedText]);
 
-  const handleSetInEditor = () => {
+  const handleSetInEditor = useCallback(() => {
     if (!generatedText.trim()) return;
     onReplaceContent?.(renderMarkdown(generatedText));
     message.success("✅ Content set in editor!");
-    // setTimeout(onSwitchToManual, 600);
-  };
+  }, [generatedText, onReplaceContent]);
 
-// Upload Mode
+  // ── Upload Mode ──────────────────────────────────────────────
   if (activeMode === "upload") {
     return (
       <div className="imp-upload-panel">
@@ -193,9 +264,7 @@ export default function InputModePanel({
           </h3>
 
           <div
-            className={`imp-dropzone ${dragging ? "imp-dropzone--active" : ""} ${
-              droppedFile ? "imp-dropzone--has-file" : ""
-            }`}
+            className={`imp-dropzone ${dragging ? "imp-dropzone--active" : ""} ${droppedFile ? "imp-dropzone--has-file" : ""}`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
@@ -220,31 +289,19 @@ export default function InputModePanel({
               </>
             ) : (
               <>
-                <p className="imp-dropzone__label">
-                  Drag & drop your file here<br />or click to browse
-                </p>
-                <p className="imp-dropzone__hint">
-                  Supports: <b>.docx, .pdf, .txt</b>
-                </p>
+                <p className="imp-dropzone__label">Drag & drop your file here<br />or click to browse</p>
+                <p className="imp-dropzone__hint">Supports: <b>.docx, .pdf, .txt</b></p>
               </>
             )}
           </div>
 
           {droppedFile && (
-            <button
-              className="imp-ai-generate-btn"
-              onClick={handleUploadToEditor}
-              style={{ marginTop: "16px", width: "100%" }}
-            >
+            <button className="imp-ai-generate-btn" onClick={handleUploadToEditor} style={{ marginTop: "16px", width: "100%" }}>
               Upload to Editor
             </button>
           )}
 
-          <button
-            className="imp-ai-close"
-            onClick={onSwitchToManual}
-            style={{ marginTop: "12px" }}
-          >
+          <button className="imp-ai-close" onClick={onSwitchToManual} style={{ marginTop: "12px" }}>
             Cancel
           </button>
         </div>
@@ -252,79 +309,120 @@ export default function InputModePanel({
     );
   }
 
-  // AI Mode - Main Focus
+  // ── AI Mode ──────────────────────────────────────────────────
   if (activeMode === "ai") {
+    const hasResult = generatedText?.trim().length > 0;
+
     return (
-      <aside className="imp-ai-sidebar">
-        <div className="imp-ai-header">
-          <div className="imp-ai-header__left">
-            <Sparkles size={15} />
-            <span className="imp-ai-title">AI Assistant</span>
-          </div>
-          <button className="imp-ai-close" onClick={onClose}>
-            <ChevronRight size={17} />
-          </button>
-        </div>
-
-        <div className="imp-ai-body">
-          <div className="imp-ai-field">
-            <label className="imp-ai-label">Instruction <span className="imp-ai-label__required">*</span></label>
-            <textarea
-              ref={instructionRef}
-              className="imp-ai-textarea"
-              value={instruction}
-              onChange={(e) => setInstruction(e.target.value)}
-              rows={5}
-              placeholder="Continue the story where Arin enters the forest..."
-              disabled={streaming}
-            />
+      <>
+        <aside className="imp-ai-sidebar">
+          {/* Header */}
+          <div className="imp-ai-header">
+            <div className="imp-ai-header__left">
+              <Sparkles size={15} color="#e5283c" />
+              <span className="imp-ai-title">AI Assistant</span>
+              <span className="imp-ai-badge">Beta</span>
+            </div>
+            <button className="imp-ai-close" onClick={onClose} title="Close panel">
+              <ChevronRight size={17} />
+            </button>
           </div>
 
-          {streaming ? (
-            <button className="imp-ai-generate-btn imp-ai-generate-btn--stop" onClick={handleStop}>
-              <Square size={13} /> Stop Generating
-            </button>
-          ) : (
-            <button className="imp-ai-generate-btn" onClick={handleGenerate} disabled={!instruction.trim()}>
-              <Sparkles size={14} /> Generate Content
-            </button>
-          )}
+          {/* Body */}
+          <div className="imp-ai-body">
+            {/* Instruction Field */}
+            <div className="imp-ai-field">
+              <label className="imp-ai-label">
+                Instruction <span className="imp-ai-label__required">*</span>
+              </label>
+              <textarea
+                ref={instructionRef}
+                className="imp-ai-textarea imp-ai-textarea--instruction"
+                value={instruction}
+                onChange={(e) => setInstruction(e.target.value)}
+                rows={5}
+                placeholder="Continue the story where Arin enters the forest..."
+                disabled={streaming}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && (e.ctrlKey || e.metaKey) && !streaming && instruction.trim()) {
+                    handleGenerate();
+                  }
+                }}
+              />
+            </div>
 
-          {(generatedText || streaming) && (
-            <>
-              {/* FORCE SHOW BUTTONS */}
-             {generatedText?.trim().length > 0 && !streaming && (
-                <div className="imp-ai-actions">
-                  {/* <button onClick={() => onInsertContent?.(renderMarkdown(generatedText))}>
-                    <Plus size={14} /> Smart Insert
-                  </button>
-                  <button onClick={() => onReplaceContent?.(renderMarkdown(generatedText))}>
-                    <RefreshCw size={14} /> Replace All
-                  </button> */}
-                  <button onClick={handleCopy}>
-                    {copied ? <CheckCheck size={14} /> : <Copy size={14} />}
-                    {copied ? "Copied" : "Copy"}
-                  </button>
-                  <button 
-                    className="imp-ai-set-editor-btn"
-                    onClick={handleSetInEditor}
-                  >
-                    <Edit3 size={14} /> Set in Editor
-                  </button>
-                </div>
-              )}
+            {/* Generate / Stop Button */}
+            {streaming ? (
+              <button className="imp-ai-generate-btn imp-ai-generate-btn--stop" onClick={handleStop}>
+                <Square size={13} /> Stop Generating
+              </button>
+            ) : (
+              <button
+                className="imp-ai-generate-btn"
+                onClick={handleGenerate}
+                disabled={!instruction.trim()}
+                title="Generate (Ctrl+Enter)"
+              >
+                <Sparkles size={14} /> Generate Content
+              </button>
+            )}
+
+            {/* Action Buttons — shown when result is ready */}
+            {hasResult && !streaming && (
+              <div className="imp-ai-actions">
+                <button onClick={handleCopy}>
+                  {copied ? <CheckCheck size={14} /> : <Copy size={14} />}
+                  {copied ? "Copied" : "Copy"}
+                </button>
+                {/* <button onClick={() => setReaderOpen(true)} title="Read full content">
+                  <Maximize2 size={14} /> Full View
+                </button> */}
+                <button className="imp-ai-set-editor-btn" onClick={handleSetInEditor}>
+                  <Edit3 size={14} /> Set in Editor
+                </button>
+              </div>
+            )}
+
+            {/* Result Preview */}
+            {(generatedText || streaming) && (
               <div className="imp-ai-result">
+                {/* Result Header */}
+                <div className="imp-ai-result__header">
+                  <span className="imp-ai-result__header-label">
+                    {streaming ? "Generating…" : "Generated"}
+                  </span>
+                  {hasResult && !streaming && (
+                    <button
+                      className="imp-ai-result__expand-btn"
+                      onClick={() => setReaderOpen(true)}
+                    >
+                      <Maximize2 size={11} /> Read Full
+                    </button>
+                  )}
+                </div>
+
+                {/* Text Preview */}
                 <div className="imp-ai-result__text">
                   <div dangerouslySetInnerHTML={{ __html: renderedHTML }} />
                   {streaming && <span className="imp-ai-cursor" />}
                 </div>
               </div>
-            </>
+            )}
+          </div>
+        </aside>
 
-
-          )}
-        </div>
-      </aside>
+        {/* Full-Size Reader Modal */}
+        {readerOpen && (
+          <ReaderModal
+            html={renderedHTML}
+            rawText={generatedText}
+            onClose={() => setReaderOpen(false)}
+            onSetInEditor={handleSetInEditor}
+            onCopy={handleCopy}
+            copied={copied}
+          />
+        )}
+      </>
     );
   }
 
