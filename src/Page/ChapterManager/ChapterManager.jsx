@@ -193,7 +193,7 @@ export default function ChapterManager() {
 
   const handleRunAITool = async (tool) => {
     if (aiLoading) {
-      message.info("AI is already running, please wait...");
+      message.info("TAV analysis is already running, please wait...");
       return;
     }
     if (!selectedId) {
@@ -242,9 +242,9 @@ export default function ChapterManager() {
         [selectedId]: { ...(prev[selectedId] || {}), [tool]: resultData },
       }));
 
-      message.success("AI analysis completed ✅");
+      message.success("TAV analysis completed ✅");
     } catch (error) {
-      console.error("AI Tool Error:", error);
+      console.error("TAV Tool Error:", error);
       if (error.code === "ECONNABORTED") {
         message.error("Request taking too long. Please try again.");
       } else if (error.response) {
