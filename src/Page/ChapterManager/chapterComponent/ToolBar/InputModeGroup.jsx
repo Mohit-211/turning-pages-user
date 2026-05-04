@@ -52,7 +52,7 @@ export default function InputModeGroup({
           onClick={() => handleClick("ai", onOpenAIAssistant)}
         >
           <Sparkles size={14} />
-          <span>AI Assistant</span>
+          <span>TAV Assistant</span>
         </button>
       </Tooltip>
     </div>

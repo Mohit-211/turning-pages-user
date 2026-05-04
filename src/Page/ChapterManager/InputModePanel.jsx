@@ -320,8 +320,7 @@ export default function InputModePanel({
           <div className="imp-ai-header">
             <div className="imp-ai-header__left">
               <Sparkles size={15} color="#e5283c" />
-              <span className="imp-ai-title">AI Assistant</span>
-              <span className="imp-ai-badge">Beta</span>
+              <span className="imp-ai-title">TAV Assistant</span>
             </div>
             <button className="imp-ai-close" onClick={onClose} title="Close panel">
               <ChevronRight size={17} />
@@ -341,7 +340,7 @@ export default function InputModePanel({
                 value={instruction}
                 onChange={(e) => setInstruction(e.target.value)}
                 rows={5}
-                placeholder="Continue the story where Arin enters the forest..."
+                placeholder="Write what happens next..."
                 disabled={streaming}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && (e.ctrlKey || e.metaKey) && !streaming && instruction.trim()) {
