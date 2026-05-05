@@ -346,7 +346,10 @@ export default function ChapterManager() {
 
   const currentAIData = aiResults[selectedId] || {};
   const onlyView = location.pathname.endsWith("/view");
-
+console.log(selectedId,"selectedId")
+console.log(chapters,"chapters")
+const matchedContent = chapters.find(c => c.id === selectedId)?.content;
+console.log(matchedContent);
   return (
     <div className="chapter-manager">
       {/* Sidebar */}
@@ -473,6 +476,7 @@ export default function ChapterManager() {
               onClose={() => setActiveModePanel(null)}
               onSwitchToManual={() => setActiveModePanel(null)}
               selectedId={selectedId}
+              matchedContent={matchedContent}
               onInsertContent={setEditorContent}
               onReplaceContent={setEditorContent}
               editorContent={editorContent}
