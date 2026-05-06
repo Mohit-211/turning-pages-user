@@ -11,8 +11,9 @@ import {
   Maximize2,
   X,
   FileText,
+  Info,
 } from "lucide-react";
-import { message } from "antd";
+import { message, Tooltip } from "antd";
 import DOMPurify from "dompurify";
 import { marked } from "marked";
 import * as pdfjsLib from "pdfjs-dist";
@@ -26,14 +27,27 @@ marked.setOptions({ breaks: true, gfm: true });
 
 function renderMarkdown(raw = "") {
   if (!raw) return "";
-  // Normalize literal \n\n sequences and ensure paragraph breaks
   const normalized = raw
-    .replace(/\\n\\n/g, "\n\n")   // literal \n\n from API → real newlines
-    .replace(/\\n/g, "\n");        // any remaining literal \n
+    .replace(/\\n\\n/g, "\n\n")
+    .replace(/\\n/g, "\n");
   return DOMPurify.sanitize(marked.parse(normalized));
 }
+
 function wordCount(text = "") {
   return text.trim().split(/\s+/).filter(Boolean).length;
+}
+
+// ─────────────────────────────────────────────────────────────
+//  InfoTip — must be outside main component
+// ─────────────────────────────────────────────────────────────
+function InfoTip({ text, position = "top" }) {
+  return (
+    <Tooltip title={text} placement={position}>
+      <span className="imp-info-tip" tabIndex={0} aria-label="More information">
+        <Info size={12} />
+      </span>
+    </Tooltip>
+  );
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -43,7 +57,6 @@ function ReaderModal({ html, rawText, onClose, onSetInEditor, onCopy, copied }) 
   const wc = useMemo(() => wordCount(rawText), [rawText]);
   const charCount = rawText?.length ?? 0;
 
-  // Close on Escape
   useEffect(() => {
     const handler = (e) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", handler);
@@ -65,16 +78,24 @@ function ReaderModal({ html, rawText, onClose, onSetInEditor, onCopy, copied }) 
             </div>
           </div>
           <div className="imp-reader-header-actions">
-            <button className="imp-reader-action-btn" onClick={onCopy}>
-              {copied ? <CheckCheck size={14} /> : <Copy size={14} />}
-              {copied ? "Copied!" : "Copy"}
-            </button>
-            <button className="imp-reader-action-btn imp-reader-action-btn--primary" onClick={() => { onSetInEditor(); onClose(); }}>
-              <Edit3 size={14} /> Set in Editor
-            </button>
-            <button className="imp-reader-action-btn imp-reader-action-btn--close" onClick={onClose} title="Close (Esc)">
-              <X size={16} />
-            </button>
+            <Tooltip title={copied ? "Copied to clipboard!" : "Copy generated text"} placement="top">
+              <button className="imp-reader-action-btn" onClick={onCopy}>
+                {copied ? <CheckCheck size={14} /> : <Copy size={14} />}
+                {copied ? "Copied!" : "Copy"}
+              </button>
+            </Tooltip>
+
+            <Tooltip title="Replace editor content with this" placement="top">
+              <button className="imp-reader-action-btn imp-reader-action-btn--primary" onClick={() => { onSetInEditor(); onClose(); }}>
+                <Edit3 size={14} /> Set in Editor
+              </button>
+            </Tooltip>
+
+            <Tooltip title="Close (Esc)" placement="left">
+              <button className="imp-reader-action-btn imp-reader-action-btn--close" onClick={onClose}>
+                <X size={16} />
+              </button>
+            </Tooltip>
           </div>
         </div>
 
@@ -87,12 +108,17 @@ function ReaderModal({ html, rawText, onClose, onSetInEditor, onCopy, copied }) 
             <span>{wc}</span> words · <span>{charCount}</span> characters
           </div>
           <div className="imp-reader-footer__actions">
-            <button className="imp-reader-action-btn" onClick={onClose}>
-              Close
-            </button>
-            <button className="imp-reader-action-btn imp-reader-action-btn--primary" onClick={() => { onSetInEditor(); onClose(); }}>
-              <Edit3 size={14} /> Set in Editor
-            </button>
+            <Tooltip title="Close reader" placement="top">
+              <button className="imp-reader-action-btn" onClick={onClose}>
+                Close
+              </button>
+            </Tooltip>
+
+            <Tooltip title="Replace editor content with this" placement="top">
+              <button className="imp-reader-action-btn imp-reader-action-btn--primary" onClick={() => { onSetInEditor(); onClose(); }}>
+                <Edit3 size={14} /> Set in Editor
+              </button>
+            </Tooltip>
           </div>
         </div>
       </div>
@@ -227,7 +253,6 @@ export default function InputModePanel({
             if (jsonStr === "[DONE]") break;
             try {
               const data = JSON.parse(jsonStr);
-              // if (data.token) setGeneratedText(prev => prev + data.token);
               if (data.token) setGeneratedText(prev => prev + data.token.replace(/\\n/g, "\n"));
             } catch { }
           }
@@ -300,14 +325,18 @@ export default function InputModePanel({
           </div>
 
           {droppedFile && (
-            <button className="imp-ai-generate-btn" onClick={handleUploadToEditor} style={{ marginTop: "16px", width: "100%" }}>
-              Upload to Editor
-            </button>
+            <Tooltip title="Upload file content into the editor" placement="top">
+              <button className="imp-ai-generate-btn" onClick={handleUploadToEditor} style={{ marginTop: "16px", width: "100%" }}>
+                Upload to Editor
+              </button>
+            </Tooltip>
           )}
 
-          <button className="imp-ai-close" onClick={onSwitchToManual} style={{ marginTop: "12px" }}>
-            Cancel
-          </button>
+          <Tooltip title="Go back to manual editing" placement="top">
+            <button className="imp-ai-close" onClick={onSwitchToManual} style={{ marginTop: "12px" }}>
+              Cancel
+            </button>
+          </Tooltip>
         </div>
       </div>
     );
@@ -326,9 +355,11 @@ export default function InputModePanel({
               <Sparkles size={15} color="#e5283c" />
               <span className="imp-ai-title">TAV Assistant</span>
             </div>
-            <button className="imp-ai-close" onClick={onClose} title="Close panel">
-              <ChevronRight size={17} />
-            </button>
+            <Tooltip title="Close AI panel" placement="left">
+              <button className="imp-ai-close" onClick={onClose}>
+                <ChevronRight size={17} />
+              </button>
+            </Tooltip>
           </div>
 
           {/* Body */}
@@ -336,7 +367,12 @@ export default function InputModePanel({
             {/* Instruction Field */}
             <div className="imp-ai-field">
               <label className="imp-ai-label">
-                Instruction <span className="imp-ai-label__required">*</span>
+                Tell the TAV what to generate
+                <span className="imp-ai-label__required"> *</span>
+                <InfoTip
+                  text="Describe what the AI should write — e.g. 'Continue the story' or 'Write dialogue scene'."
+                  position="right"
+                />
               </label>
               <textarea
                 ref={instructionRef}
@@ -356,33 +392,44 @@ export default function InputModePanel({
 
             {/* Generate / Stop Button */}
             {streaming ? (
-              <button className="imp-ai-generate-btn imp-ai-generate-btn--stop" onClick={handleStop}>
-                <Square size={13} /> Stop Generating
-              </button>
+              <Tooltip title="Stop the current generation" placement="top">
+                <button className="imp-ai-generate-btn imp-ai-generate-btn--stop" onClick={handleStop}>
+                  <Square size={13} /> Stop Generating
+                </button>
+              </Tooltip>
             ) : (
-              <button
-                className="imp-ai-generate-btn"
-                onClick={handleGenerate}
-                disabled={!instruction.trim()}
-                title="Generate (Ctrl+Enter)"
+              <Tooltip
+                title={!instruction.trim() ? "Enter an instruction first" : "Generate content (Ctrl+Enter)"}
+                placement="top"
               >
-                <Sparkles size={14} /> Generate Content
-              </button>
+                <span style={{ display: "block" }}>
+                  <button
+                    className="imp-ai-generate-btn"
+                    onClick={handleGenerate}
+                    disabled={!instruction.trim()}
+                    style={{ width: "100%" }}
+                  >
+                    <Sparkles size={14} /> Generate Content
+                  </button>
+                </span>
+              </Tooltip>
             )}
 
             {/* Action Buttons — shown when result is ready */}
             {hasResult && !streaming && (
               <div className="imp-ai-actions">
-                <button onClick={handleCopy}>
-                  {copied ? <CheckCheck size={14} /> : <Copy size={14} />}
-                  {copied ? "Copied" : "Copy"}
-                </button>
-                {/* <button onClick={() => setReaderOpen(true)} title="Read full content">
-                  <Maximize2 size={14} /> Full View
-                </button> */}
-                <button className="imp-ai-set-editor-btn" onClick={handleSetInEditor}>
-                  <Edit3 size={14} /> Set in Editor
-                </button>
+                <Tooltip title={copied ? "Copied to clipboard!" : "Copy generated text"} placement="top">
+                  <button onClick={handleCopy}>
+                    {copied ? <CheckCheck size={14} /> : <Copy size={14} />}
+                    {copied ? "Copied" : "Copy"}
+                  </button>
+                </Tooltip>
+
+                <Tooltip title="Replace editor content with generated text" placement="top">
+                  <button className="imp-ai-set-editor-btn" onClick={handleSetInEditor}>
+                    <Edit3 size={14} /> Set in Editor
+                  </button>
+                </Tooltip>
               </div>
             )}
 
@@ -395,12 +442,14 @@ export default function InputModePanel({
                     {streaming ? "Generating…" : "Generated"}
                   </span>
                   {hasResult && !streaming && (
-                    <button
-                      className="imp-ai-result__expand-btn"
-                      onClick={() => setReaderOpen(true)}
-                    >
-                      <Maximize2 size={11} /> Read Full
-                    </button>
+                    <Tooltip title="Open full-screen reader" placement="top">
+                      <button
+                        className="imp-ai-result__expand-btn"
+                        onClick={() => setReaderOpen(true)}
+                      >
+                        <Maximize2 size={11} /> Read Full
+                      </button>
+                    </Tooltip>
                   )}
                 </div>
 
