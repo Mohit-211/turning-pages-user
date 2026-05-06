@@ -353,7 +353,7 @@ export default function InputModePanel({
           <div className="imp-ai-header">
             <div className="imp-ai-header__left">
               <Sparkles size={15} color="#e5283c" />
-              <span className="imp-ai-title">TAV Assistant</span>
+              <span className="imp-ai-title">TAV Assist</span>
             </div>
             <Tooltip title="Close AI panel" placement="left">
               <button className="imp-ai-close" onClick={onClose}>
