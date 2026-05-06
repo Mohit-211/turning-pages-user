@@ -370,7 +370,7 @@ export default function InputModePanel({
                 Tell the TAV what to generate
                 <span className="imp-ai-label__required"> *</span>
                 <InfoTip
-                  text="Describe what the AI should write — e.g. 'Continue the story' or 'Write dialogue scene'."
+                  text="Describe what the TAV Assist should write — e.g. 'Continue the story' or 'Write dialogue scene'."
                   position="right"
                 />
               </label>

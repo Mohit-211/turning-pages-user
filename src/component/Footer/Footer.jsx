@@ -15,7 +15,7 @@ const Footer = () => {
               <span className="title">Turning Pages</span>
             </div>
             <p className="description">
-              Empowering authors with AI-powered writing and editing tools to
+              Empowering authors with TAV-powered writing and editing tools to
               create exceptional books.
             </p>
           </div>
