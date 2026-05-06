@@ -137,7 +137,7 @@ export default function BookCoverPanel({ bookdetails, onClose, onUpdateBook, mod
           </div>
           <div>
             <h2 className="bcp-form__title">Cover Studio</h2>
-            <p className="bcp-form__sub">AI-generated book cover</p>
+            <p className="bcp-form__sub">TAV-generated book cover</p>
           </div>
         </div>
 
