@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, BookOpen, Plus } from "lucide-react";
 import "./ChapterManager.scss";
@@ -35,7 +35,7 @@ import AIToolsGuide from "./chapterComponent/AIToolsGuide";
 import BookCoverPanel from "../Book/BookHeader/BookCoverPanel";
 
 import Toolbar from "./chapterComponent/ToolBar/toolbar";
-import InputModePanel from "./InputModePanel";
+import InputModePanel from "./chapterComponent/ToolBar/InputModePanel";
 
 export default function ChapterManager() {
   const [hasPackage, setHasPackage] = useState(false);
@@ -77,6 +77,36 @@ export default function ChapterManager() {
 
   // ── Input mode panel: "write" | "upload" | "ai" | null ───
   const [activeModePanel, setActiveModePanel] = useState(null);
+
+  // ── Resizable InputModePanel ──────────────────────────────
+  const [panelWidth, setPanelWidth] = useState(400);
+  const panelRef = useRef(null);
+
+  const startResize = useCallback(
+    (e) => {
+      const startX = e.clientX;
+      const startWidth = panelRef.current?.offsetWidth || panelWidth;
+      document.body.style.cursor = "col-resize";
+      document.body.style.userSelect = "none";
+
+      const onMove = (e) => {
+        const dx = startX - e.clientX;
+        setPanelWidth(Math.min(700, Math.max(300, startWidth + dx)));
+      };
+
+      const onUp = () => {
+        document.body.style.cursor = "";
+        document.body.style.userSelect = "";
+        document.removeEventListener("mousemove", onMove);
+        document.removeEventListener("mouseup", onUp);
+      };
+
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
+      e.preventDefault();
+    },
+    [panelWidth]
+  );
 
   // ── Submission ────────────────────────────────────────────
   const [booksubmiition, setBookSubmitton] = useState();
@@ -164,7 +194,8 @@ export default function ChapterManager() {
       toast.success("Book submitted for editing");
     } catch (error) {
       console.error(error);
-      const errorMessage = error?.response?.data?.message || error?.message || "";
+      const errorMessage =
+        error?.response?.data?.message || error?.message || "";
       if (errorMessage === "Please purchase a package to submit a book") {
         setShowPurchaseModal(true);
       } else {
@@ -220,12 +251,16 @@ export default function ChapterManager() {
         case "consistency":
           openPanel();
           await delay(400);
-          response = await ConsistencyCheck(Number(bookId), { timeout: 300000 });
+          response = await ConsistencyCheck(Number(bookId), {
+            timeout: 300000,
+          });
           break;
         case "summary":
           openPanel();
           await delay(400);
-          response = await GenerateSummary(Number(bookId), selectedId, { timeout: 300000 });
+          response = await GenerateSummary(Number(bookId), selectedId, {
+            timeout: 300000,
+          });
           break;
         default:
           return;
@@ -346,10 +381,8 @@ export default function ChapterManager() {
 
   const currentAIData = aiResults[selectedId] || {};
   const onlyView = location.pathname.endsWith("/view");
-console.log(selectedId,"selectedId")
-console.log(chapters,"chapters")
-const matchedContent = chapters.find(c => c.id === selectedId)?.content;
-console.log(matchedContent);
+  const matchedContent = chapters.find((c) => c.id === selectedId)?.content;
+
   return (
     <div className="chapter-manager">
       {/* Sidebar */}
@@ -367,7 +400,11 @@ console.log(matchedContent);
           {loading ? (
             <div className="sider-loading">
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="skel-item" style={{ animationDelay: `${i * 80}ms` }} />
+                <div
+                  key={i}
+                  className="skel-item"
+                  style={{ animationDelay: `${i * 80}ms` }}
+                />
               ))}
             </div>
           ) : (
@@ -456,7 +493,12 @@ console.log(matchedContent);
 
           {/* Upload Mode Panel */}
           {activeModePanel === "upload" && (
-            <div className="editor-container">
+            <div
+              ref={panelRef}
+              className="input-mode-wrapper"
+              style={{ width: panelWidth }}
+            >
+              <div className="resize-handle" onMouseDown={startResize} />
               <InputModePanel
                 activeMode="upload"
                 onClose={() => setActiveModePanel(null)}
@@ -471,16 +513,23 @@ console.log(matchedContent);
 
           {/* AI Assistant Mode Panel */}
           {activeModePanel === "ai" && (
-            <InputModePanel
-              activeMode="ai"
-              onClose={() => setActiveModePanel(null)}
-              onSwitchToManual={() => setActiveModePanel(null)}
-              selectedId={selectedId}
-              matchedContent={matchedContent}
-              onInsertContent={setEditorContent}
-              onReplaceContent={setEditorContent}
-              editorContent={editorContent}
-            />
+            <div
+              ref={panelRef}
+              className="input-mode-wrapper"
+              style={{ width: panelWidth }}
+            >
+              <div className="resize-handle" onMouseDown={startResize} />
+              <InputModePanel
+                activeMode="ai"
+                onClose={() => setActiveModePanel(null)}
+                onSwitchToManual={() => setActiveModePanel(null)}
+                selectedId={selectedId}
+                matchedContent={matchedContent}
+                onInsertContent={setEditorContent}
+                onReplaceContent={setEditorContent}
+                editorContent={editorContent}
+              />
+            </div>
           )}
 
           {/* TAV AI Report Panel */}
@@ -534,7 +583,12 @@ console.log(matchedContent);
       />
 
       {/* Payment & Upgrade Modals */}
-      <Modal open={paymentOpen} footer={null} onCancel={() => setPaymentOpen(false)} title="Complete payment">
+      <Modal
+        open={paymentOpen}
+        footer={null}
+        onCancel={() => setPaymentOpen(false)}
+        title="Complete payment"
+      >
         <StripePayment
           amount={40}
           payment_for="book_submission"
@@ -553,7 +607,12 @@ console.log(matchedContent);
       >
         <div className="upgrade-modal-body">
           <div className="upgrade-modal-body__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="M12 2L2 7l10 5 10-5-10-5z" />
               <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
             </svg>
@@ -576,8 +635,14 @@ console.log(matchedContent);
 
       {/* Book Cover Panel */}
       {showCoverPanel && (
-        <div className="cover-modal-overlay" onClick={() => setShowCoverPanel(false)}>
-          <div className="cover-modal" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="cover-modal-overlay"
+          onClick={() => setShowCoverPanel(false)}
+        >
+          <div
+            className="cover-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
             <BookCoverPanel
               mode={coverMode}
               bookdetails={bookDetails}

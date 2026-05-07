@@ -82,3 +82,9 @@ export const Chat_ENDPOINTS = {
   GET_ALL: "chats/my",
   CREATE: "chats/message/send"
 };
+
+export const CHATCONVERSATION_ENDPOINTS = {
+  SEND_MESSAGE: "chapters/assistant/chat",
+  CONVERSATION_LIST: "chapters/conversation/list",
+  CHAT_MESSAGES: "chapters/conversation/messages",
+};
