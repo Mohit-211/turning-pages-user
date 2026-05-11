@@ -142,18 +142,26 @@ export default function InputModePanel({
 
           {/* Tabs */}
           <div className="imp-ai-tabs">
-           <button
+    <button
   className={`imp-ai-tab ${activeTab === "chapter" ? "imp-ai-tab--active" : ""}`}
   onClick={() => setActiveTab("chapter")}
 >
-  📘 Chapter Assist
+  <span className="imp-ai-tab__content">
+    📘 Chapter Assist
+
+    <InfoTip text="Generate full chapter content using TAV instructions." />
+  </span>
 </button>
 
 <button
   className={`imp-ai-tab ${activeTab === "text" ? "imp-ai-tab--active" : ""}`}
   onClick={() => setActiveTab("text")}
 >
-  ✨ Text Assist
+  <span className="imp-ai-tab__content">
+    ✨ Text Assist
+
+    <InfoTip text="Rewrite, improve, expand, shorten, or refine selected text." />
+  </span>
 </button>
           </div>
 
