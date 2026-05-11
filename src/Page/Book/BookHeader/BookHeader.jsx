@@ -15,16 +15,16 @@ import { useNavigate } from "react-router-dom";
 
 // ─── Page sizes ───────────────────────────────────────────────────────────────
 export const PAGE_SIZES = {
-  A3:         { label: "A3",               w: 1123, h: 1587, desc: "11.7 × 16.5 in", icon: "tall" },
-  A4:         { label: "A4",               w: 794,  h: 1123, desc: "8.27 × 11.7 in", icon: "tall" },
-  A5:         { label: "A5",               w: 559,  h: 794,  desc: "5.83 × 8.27 in", icon: "tall" },
-  LETTER:     { label: "Letter / Journal", w: 816,  h: 1056, desc: "8.5 × 11 in",    icon: "tall" },
-  LEGAL:      { label: "Legal",            w: 816,  h: 1344, desc: "8.5 × 14 in",    icon: "tall" },
-  B5:         { label: "B5",               w: 665,  h: 945,  desc: "6.93 × 9.84 in", icon: "tall" },
-  HALFLETTER: { label: "Half Letter",      w: 528,  h: 816,  desc: "5.5 × 8.5 in",   icon: "tall" },
-  TRADE:      { label: "Traditional",      w: 576,  h: 864,  desc: "6 × 9 in",        icon: "tall" },
-  POCKET:     { label: "Pocket Book",      w: 432,  h: 648,  desc: "4.25 × 6.5 in",   icon: "tall" },
-  SQUARE:     { label: "Square",           w: 756,  h: 756,  desc: "7.87 × 7.87 in",  icon: "square" },
+  A3: { label: "A3", w: 1123, h: 1587, desc: "11.7 × 16.5 in", icon: "tall" },
+  A4: { label: "A4", w: 794, h: 1123, desc: "8.27 × 11.7 in", icon: "tall" },
+  A5: { label: "A5", w: 559, h: 794, desc: "5.83 × 8.27 in", icon: "tall" },
+  LETTER: { label: "Letter / Journal", w: 816, h: 1056, desc: "8.5 × 11 in", icon: "tall" },
+  LEGAL: { label: "Legal", w: 816, h: 1344, desc: "8.5 × 14 in", icon: "tall" },
+  B5: { label: "B5", w: 665, h: 945, desc: "6.93 × 9.84 in", icon: "tall" },
+  HALFLETTER: { label: "Half Letter", w: 528, h: 816, desc: "5.5 × 8.5 in", icon: "tall" },
+  TRADE: { label: "Traditional", w: 576, h: 864, desc: "6 × 9 in", icon: "tall" },
+  POCKET: { label: "Pocket Book", w: 432, h: 648, desc: "4.25 × 6.5 in", icon: "tall" },
+  SQUARE: { label: "Square", w: 756, h: 756, desc: "7.87 × 7.87 in", icon: "square" },
 };
 
 function getLayout(sizeKey) {
@@ -37,6 +37,21 @@ function getLayout(sizeKey) {
   };
 }
 
+// ─── Shared blockquote CSS string (used in both probe + print) ────────────────
+const BLOCKQUOTE_CSS = `
+  blockquote {
+    display: block;
+    margin: 1.2em 0 1.2em 1.2em;
+    padding: .6em 1em;
+    border-left: 3px solid #bbb;
+    background: transparent;
+    font-style: italic;
+    color: #444;
+    line-height: 1.7;
+  }
+  blockquote p { margin: 0; }
+`;
+
 function measureHeight(html, width, fontSize) {
   const probe = document.createElement("div");
   probe.style.cssText = `
@@ -46,7 +61,15 @@ function measureHeight(html, width, fontSize) {
     pointer-events:none;word-break:break-word;
     overflow-wrap:break-word;padding:0;margin:0;
   `;
-  probe.innerHTML = html;
+  // Inject blockquote styles into probe via a shadow-like wrapper
+  const wrapper = document.createElement("div");
+  const style = document.createElement("style");
+  style.textContent = BLOCKQUOTE_CSS;
+  wrapper.appendChild(style);
+  const content = document.createElement("div");
+  content.innerHTML = html;
+  wrapper.appendChild(content);
+  probe.appendChild(wrapper);
   document.body.appendChild(probe);
   const h = probe.getBoundingClientRect().height;
   document.body.removeChild(probe);
@@ -126,6 +149,57 @@ function hasValidContent(html) {
     .replace(/\s+/g, " ")
     .trim().toLowerCase();
   return !!text && !text.includes("coming soon");
+}
+
+// ─── Shared inline style for preview body content ─────────────────────────────
+function previewBodyStyle(layout) {
+  return {
+    flex: 1,
+    padding: "16px 58px 16px 86px",
+    fontSize: layout.fontSize,
+    lineHeight: 1.8,
+    color: "#1c1c1c",
+    overflow: "hidden",
+    fontFamily: "Georgia,serif",
+    wordBreak: "break-word",
+  };
+}
+
+// ─── PreviewBody: renders chapter HTML with blockquote styles in preview ──────
+function PreviewBody({ html, layout }) {
+  return (
+    <div style={previewBodyStyle(layout)}>
+      <style>{`
+        .preview-body blockquote {
+          display: block;
+          margin: 1.2em 0 1.2em 1.2em;
+          padding: .6em 1em;
+          border-left: 3px solid #bbb;
+          background: transparent;
+          font-style: italic;
+          color: #444;
+          line-height: 1.7;
+        }
+        .preview-body blockquote p { margin: 0; }
+        .preview-body p { margin: 0 0 .7em; }
+        .preview-body h1 { font-size: 2em; font-weight: bold; line-height: 1.2; margin: .2em 0 .35em; }
+        .preview-body h2 { font-size: 1.5em; font-weight: bold; margin: .25em 0 .3em; }
+        .preview-body h3 { font-size: 1.17em; font-weight: bold; margin: .3em 0 .25em; }
+        .preview-body strong, .preview-body b { font-weight: bold; }
+        .preview-body em, .preview-body i { font-style: italic; }
+        .preview-body ul { list-style: disc; padding-left: 1.5em; margin: .4em 0; }
+        .preview-body ol { list-style: decimal; padding-left: 1.5em; margin: .4em 0; }
+        .preview-body table { border-collapse: collapse; width: 100%; margin: .6em 0; }
+        .preview-body td, .preview-body th { border: 1px solid #ddd; padding: 4px 8px; }
+        .preview-body th { background: #f5f5f5; font-weight: 600; }
+        .preview-body img { max-width: 100%; height: auto; display: block; margin: .4em auto; }
+      `}</style>
+      <div
+        className="preview-body"
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    </div>
+  );
 }
 
 // ─── Size Selector Dropdown ───────────────────────────────────────────────────
@@ -213,183 +287,67 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
     return () => clearTimeout(id);
   }, [sizeKey]);
 
-  // const handlePrint = useCallback(() => {
-  //   if (!printRef.current) return;
-  //   const iframe = document.createElement("iframe");
-  //   iframe.style.cssText = "position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:0;";
-  //   document.body.appendChild(iframe);
-  //   const win = iframe.contentWindow;
-  //   if (!win) return;
-  //   win.document.write(`
-  //     <!DOCTYPE html><html><head>
-  //     <title>${title || "My Book"}</title>
-  //     <style>
-  //       @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400&display=swap');
-  //       *{box-sizing:border-box;margin:0;padding:0}body{background:white}
-  //       .print-page{width:${layout.w}px;min-height:${layout.h}px;background:white;page-break-after:always;display:flex;flex-direction:column;overflow:hidden;position:relative}
-  //       .print-page:last-child{page-break-after:avoid}
-  //       .print-rhead{display:flex;align-items:center;gap:8px;padding:72px 58px 0 86px}
-  //       .print-rhead-label{font-family:'DM Sans',sans-serif;font-size:7px;font-weight:700;letter-spacing:.22em;color:#aaa;text-transform:uppercase;white-space:nowrap}
-  //       .print-rhead-rule{flex:1;height:.5px;background:#e4e4e4}
-  //       .print-rhead-size{font-family:'DM Mono',monospace;font-size:7px;color:#ccc}
-  //       .print-body{flex:1;padding:16px 58px 16px 86px;font-size:${layout.fontSize}px;line-height:1.8;color:#1c1c1c;font-family:'Lora',serif;word-break:break-word;overflow-wrap:break-word;overflow:hidden}
-  //       .print-body p{margin:0 0 .7em}.print-body h1{font-size:2em;font-weight:bold;line-height:1.2;margin:.2em 0 .35em}
-  //       .print-body h2{font-size:1.5em;font-weight:bold;margin:.25em 0 .3em}.print-body h3{font-size:1.17em;font-weight:bold;margin:.3em 0 .25em}
-  //       .print-body strong,.print-body b{font-weight:bold}.print-body em,.print-body i{font-style:italic}
-  //       .print-body ul{list-style:disc;padding-left:1.5em;margin:.4em 0}.print-body ol{list-style:decimal;padding-left:1.5em;margin:.4em 0}
-  //       .print-body blockquote{border-left:3px solid #c8973a;margin:.7em 0;padding:.5em 1em;background:#fdf9f2;font-style:italic;color:#555}
-  //       .print-body table{border-collapse:collapse;width:100%;margin:.6em 0}.print-body td,.print-body th{border:1px solid #ddd;padding:4px 8px}
-  //       .print-body th{background:#f5f5f5;font-weight:600}.print-body img{max-width:100%;height:auto;display:block;margin:.4em auto}
-  //       .print-folio{display:flex;align-items:center;gap:10px;padding:0 58px 96px 86px}
-  //       .print-folio-rule{flex:1;height:.5px;background:#e4e4e4}
-  //       .print-folio-num{font-family:'DM Sans',sans-serif;font-size:9px;color:#aaa;letter-spacing:.07em}
-  //       .cover-page{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:72px 58px 96px 86px;text-align:center}
-  //       .cover-page img{max-width:60%;max-height:400px;object-fit:contain;border-radius:4px}
-  //       .cover-page h1{font-family:'Lora',serif;font-size:${Math.round(layout.fontSize*2.2)}px;font-weight:700;color:#1a2f4a}
-  //       .cover-page h3{font-family:'DM Sans',sans-serif;font-size:${Math.round(layout.fontSize*1.1)}px;font-weight:400;color:#666}
-  //       @media print{@page{size:${sz.w}px ${sz.h}px;margin:0}body{width:${sz.w}px}}
-  //     </style></head><body>${printRef.current.innerHTML}</body></html>
-  //   `);
-  //   win.document.close();
-  //   iframe.onload = () => {
-  //     win.focus(); win.print();
-  //     setTimeout(() => document.body.removeChild(iframe), 1000);
-  //   };
-  // }, [layout, sz, title]);
-
   const handlePrint = useCallback(() => {
-  if (!printRef.current) return;
+    if (!printRef.current) return;
+    const iframe = document.createElement("iframe");
+    iframe.style.cssText = "position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:0;";
+    document.body.appendChild(iframe);
+    const win = iframe.contentWindow;
+    if (!win) return;
+    win.document.write(`
+      <!DOCTYPE html><html><head>
+      <title>${title || "My Book"}</title>
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400&display=swap');
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{background:white}
+        .print-page{width:${layout.w}px;min-height:${layout.h}px;background:white;page-break-after:always;display:flex;flex-direction:column;overflow:hidden;position:relative}
+        .print-page:last-child{page-break-after:avoid}
+        .print-rhead{display:flex;align-items:center;gap:8px;padding:72px 58px 0 86px}
+        .print-rhead-label{font-family:'DM Sans',sans-serif;font-size:7px;font-weight:700;letter-spacing:.22em;color:#aaa;text-transform:uppercase;white-space:nowrap}
+        .print-rhead-rule{flex:1;height:.5px;background:#e4e4e4}
+        .print-rhead-size{font-family:'DM Mono',monospace;font-size:7px;color:#ccc}
+        .print-body{flex:1;padding:16px 58px 16px 86px;font-size:${layout.fontSize}px;line-height:1.8;color:#1c1c1c;font-family:'Lora',serif;word-break:break-word;overflow-wrap:break-word;overflow:hidden}
+        .print-body p{margin:0 0 .7em}
+        .print-body h1{font-size:2em;font-weight:bold;line-height:1.2;margin:.2em 0 .35em}
+        .print-body h2{font-size:1.5em;font-weight:bold;margin:.25em 0 .3em}
+        .print-body h3{font-size:1.17em;font-weight:bold;margin:.3em 0 .25em}
+        .print-body strong,.print-body b{font-weight:bold}
+        .print-body em,.print-body i{font-style:italic}
+        .print-body ul{list-style:disc;padding-left:1.5em;margin:.4em 0}
+        .print-body ol{list-style:decimal;padding-left:1.5em;margin:.4em 0}
+        .print-body table{border-collapse:collapse;width:100%;margin:.6em 0}
+        .print-body td,.print-body th{border:1px solid #ddd;padding:4px 8px}
+        .print-body th{background:#f5f5f5;font-weight:600}
+        .print-body img{max-width:100%;height:auto;display:block;margin:.4em auto}
+        .print-body blockquote{
+          display:block;
+          margin:1.2em 0 1.2em 1.2em;
+          padding:.6em 1em;
+          border-left:3px solid #bbb;
+          background:transparent;
+          font-style:italic;
+          color:#444;
+          line-height:1.7;
+        }
+        .print-body blockquote p{margin:0}
+        .print-folio{display:flex;align-items:center;gap:10px;padding:0 58px 96px 86px}
+        .print-folio-rule{flex:1;height:.5px;background:#e4e4e4}
+        .print-folio-num{font-family:'DM Sans',sans-serif;font-size:9px;color:#aaa;letter-spacing:.07em}
+        .cover-page{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:72px 58px 96px 86px;text-align:center}
+        .cover-page img{max-width:60%;max-height:400px;object-fit:contain;border-radius:4px}
+        .cover-page h1{font-family:'Lora',serif;font-size:${Math.round(layout.fontSize * 2.2)}px;font-weight:700;color:#1a2f4a}
+        .cover-page h3{font-family:'DM Sans',sans-serif;font-size:${Math.round(layout.fontSize * 1.1)}px;font-weight:400;color:#666}
+        @media print{@page{size:${sz.w}px ${sz.h}px;margin:0}body{width:${sz.w}px}}
+      </style></head><body>${printRef.current.innerHTML}</body></html>
+    `);
+    win.document.close();
+    iframe.onload = () => {
+      win.focus(); win.print();
+      setTimeout(() => document.body.removeChild(iframe), 1000);
+    };
+  }, [layout, sz, title]);
 
-  const iframe = document.createElement("iframe");
-  iframe.style.cssText = "position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:0;";
-  document.body.appendChild(iframe);
-  const win = iframe.contentWindow;
-  if (!win) return;
-
-  const bodyHTML = printRef.current.innerHTML;
-
-  win.document.write(`<!DOCTYPE html><html><head>
-    <title>${title || "My Book"}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400&display=swap">
-    <style>
-      *{box-sizing:border-box;margin:0;padding:0}
-      body{background:white}
-
-      .print-page{
-        width:${layout.w}px;
-        min-height:${layout.h}px;
-        background:white;
-        page-break-after:always;
-        display:flex;
-        flex-direction:column;
-        overflow:hidden;
-        position:relative;
-      }
-      .print-page:last-child{page-break-after:avoid}
-
-      .print-rhead{
-        display:flex;align-items:center;gap:8px;
-        padding:72px 58px 0 86px;
-      }
-      .print-rhead-label{
-        font-family:'DM Sans',sans-serif;
-        font-size:7px;font-weight:700;
-        letter-spacing:.22em;color:#aaa;
-        text-transform:uppercase;white-space:nowrap;
-      }
-      .print-rhead-rule{flex:1;height:.5px;background:#e4e4e4}
-      .print-rhead-size{font-family:'DM Mono',monospace;font-size:7px;color:#ccc}
-
-      .print-body{
-        flex:1;
-        padding:16px 58px 16px 86px;
-        font-size:${layout.fontSize}px;
-        line-height:1.8;
-        color:#1c1c1c;
-        font-family:'Lora',serif;
-        word-break:break-word;
-        overflow-wrap:break-word;
-        overflow:hidden;
-      }
-      .print-body p{margin:0 0 .7em}
-      .print-body h1{font-size:2em;font-weight:700;line-height:1.2;margin:.2em 0 .35em;font-family:'DM Sans',sans-serif}
-      .print-body h2{font-size:1.5em;font-weight:700;margin:.25em 0 .3em;font-family:'DM Sans',sans-serif}
-      .print-body h3{font-size:1.17em;font-weight:700;margin:.3em 0 .25em;font-family:'DM Sans',sans-serif}
-      .print-body strong,.print-body b{font-weight:700}
-      .print-body em,.print-body i{font-style:italic}
-      .print-body ul{list-style:disc;padding-left:1.5em;margin:.4em 0}
-      .print-body ol{list-style:decimal;padding-left:1.5em;margin:.4em 0}
-      .print-body blockquote{
-        border-left:3px solid #c8973a;
-        margin:.7em 0;
-        padding:.6em 1em .6em 1.2em;
-        background:#fdf9f2;
-        font-style:italic;
-        color:#6b5a3e;
-        border-radius:0;
-      }
-      .print-body blockquote p{margin:0}
-      .print-body table{border-collapse:collapse;width:100%;margin:.6em 0}
-      .print-body td,.print-body th{border:1px solid #ddd;padding:4px 8px}
-      .print-body th{background:#f5f5f5;font-weight:600}
-      .print-body img{max-width:100%;height:auto;display:block;margin:.4em auto}
-
-      .print-folio{
-        display:flex;align-items:center;gap:10px;
-        padding:0 58px 96px 86px;
-      }
-      .print-folio-rule{flex:1;height:.5px;background:#e4e4e4}
-      .print-folio-num{
-        font-family:'DM Sans',sans-serif;
-        font-size:9px;color:#aaa;letter-spacing:.07em;
-      }
-
-      .cover-page{
-        display:flex;flex-direction:column;
-        align-items:center;justify-content:center;
-        gap:24px;padding:72px 58px 96px 86px;text-align:center;
-      }
-      .cover-page img{max-width:60%;max-height:400px;object-fit:contain;border-radius:4px}
-      .cover-page h1{
-        font-family:'Lora',serif;
-        font-size:${Math.round(layout.fontSize * 2.2)}px;
-        font-weight:700;color:#1a2f4a;
-      }
-      .cover-page h3{
-        font-family:'DM Sans',sans-serif;
-        font-size:${Math.round(layout.fontSize * 1.1)}px;
-        font-weight:400;color:#666;
-      }
-
-      @media print{
-        @page{size:${sz.w}px ${sz.h}px;margin:0}
-        body{width:${sz.w}px}
-      }
-    </style>
-  </head><body>${bodyHTML}</body></html>`);
-
-  win.document.close();
-
-  // Wait for fonts before printing
-  iframe.onload = () => {
-    if (win.document.fonts) {
-      win.document.fonts.ready.then(() => {
-        win.focus();
-        win.print();
-        setTimeout(() => document.body.removeChild(iframe), 1000);
-      });
-    } else {
-      // Fallback for browsers without FontFaceSet API
-      setTimeout(() => {
-        win.focus();
-        win.print();
-        setTimeout(() => document.body.removeChild(iframe), 1000);
-      }, 800);
-    }
-  };
-}, [layout, sz, title]);
   let pageNum = 0;
 
   return (
@@ -421,7 +379,7 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
           </div>
         )}
 
-        {/* Preview */}
+        {/* Hidden print source */}
         {status === "ready" && (
           <div className="bh-print-modal__canvas">
             <div ref={printRef} style={{ display: "none" }}>
@@ -443,7 +401,10 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
                       <span className="print-rhead-rule" />
                       <span className="print-rhead-size">{PAGE_SIZES[sizeKey].label}</span>
                     </div>
-                    <div className="print-body" dangerouslySetInnerHTML={{ __html: pg.html }} />
+                    <div
+                      className="print-body"
+                      dangerouslySetInnerHTML={{ __html: pg.html }}
+                    />
                     <div className="print-folio">
                       <span className="print-folio-rule" />
                       <span className="print-folio-num">{pageNum}</span>
@@ -453,6 +414,7 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
               })}
             </div>
 
+            {/* Visual preview */}
             <div className="bh-print-modal__stack">
               {pages.map((pg, idx) => {
                 const PREVIEW_W = 460;
@@ -466,14 +428,18 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
                       style={{ width: scaledW, height: scaledH }}>
                       <div className="bh-print-modal__page-shadow" style={{ width: scaledW, height: scaledH }} />
                       <div className="bh-print-modal__page"
-                        style={{ width: layout.w, height: layout.h,
+                        style={{
+                          width: layout.w, height: layout.h,
                           transform: `scale(${scale})`, transformOrigin: "top left",
-                          position: "absolute", top: 0, left: 0 }}>
+                          position: "absolute", top: 0, left: 0
+                        }}>
                         <div className="bh-print-modal__cover">
                           {coverUrl && <img src={coverUrl} alt="Cover"
                             style={{ maxWidth: "60%", maxHeight: 300, objectFit: "contain", borderRadius: 4 }} />}
-                          <h1 style={{ fontFamily: "Georgia,serif", fontSize: layout.fontSize * 2.2,
-                            color: "#1a2f4a", textAlign: "center" }}>
+                          <h1 style={{
+                            fontFamily: "Georgia,serif", fontSize: layout.fontSize * 2.2,
+                            color: "#1a2f4a", textAlign: "center"
+                          }}>
                             {title || "Untitled Book"}
                           </h1>
                           <p style={{ fontFamily: "sans-serif", fontSize: layout.fontSize * 1.1, color: "#666" }}>
@@ -495,14 +461,21 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
                     style={{ width: scaledW, height: scaledH }}>
                     <div className="bh-print-modal__page-shadow" style={{ width: scaledW, height: scaledH }} />
                     <div className="bh-print-modal__page"
-                      style={{ width: layout.w, height: layout.h,
+                      style={{
+                        width: layout.w, height: layout.h,
                         transform: `scale(${scale})`, transformOrigin: "top left",
-                        position: "absolute", top: 0, left: 0 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8,
-                        padding: "72px 58px 0 86px" }}>
-                        <span style={{ fontFamily: "sans-serif", fontSize: 7, fontWeight: 700,
+                        position: "absolute", top: 0, left: 0
+                      }}>
+                      {/* Running head */}
+                      <div style={{
+                        display: "flex", alignItems: "center", gap: 8,
+                        padding: "72px 58px 0 86px"
+                      }}>
+                        <span style={{
+                          fontFamily: "sans-serif", fontSize: 7, fontWeight: 700,
                           letterSpacing: ".22em", color: "#aaa", textTransform: "uppercase",
-                          whiteSpace: "nowrap" }}>
+                          whiteSpace: "nowrap"
+                        }}>
                           {(title || "").toUpperCase()}
                         </span>
                         <span style={{ flex: 1, height: .5, background: "#e4e4e4" }} />
@@ -510,15 +483,20 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
                           {PAGE_SIZES[sizeKey].label}
                         </span>
                       </div>
-                      <div style={{ flex: 1, padding: "16px 58px 16px 86px",
-                        fontSize: layout.fontSize, lineHeight: 1.8, color: "#1c1c1c",
-                        overflow: "hidden", fontFamily: "Georgia,serif", wordBreak: "break-word" }}
-                        dangerouslySetInnerHTML={{ __html: pg.html }} />
-                      <div style={{ display: "flex", alignItems: "center", gap: 10,
-                        padding: "0 58px 96px 86px" }}>
+
+                      {/* ✅ Use PreviewBody so blockquote styles apply in preview too */}
+                      <PreviewBody html={pg.html} layout={layout} />
+
+                      {/* Folio */}
+                      <div style={{
+                        display: "flex", alignItems: "center", gap: 10,
+                        padding: "0 58px 96px 86px"
+                      }}>
                         <span style={{ flex: 1, height: .5, background: "#e4e4e4" }} />
-                        <span style={{ fontFamily: "sans-serif", fontSize: 9, color: "#aaa",
-                          letterSpacing: ".07em" }}>
+                        <span style={{
+                          fontFamily: "sans-serif", fontSize: 9, color: "#aaa",
+                          letterSpacing: ".07em"
+                        }}>
                           {pNum}
                         </span>
                       </div>
@@ -574,14 +552,7 @@ export default function BookHeader({
   const isSubmitted = bookIdDetails?.book_submissions?.length > 0;
   const sz = PAGE_SIZES[sizeKey];
   const chapterCount = bookIdDetails?.book_chapters?.length ?? 0;
-  
 
-const handleMarkAsComplete = (type) => {
-  if (type === "completed") {
-    CompleteApiCall();
-  }
-};
-console.log(bookcover,"bookcover")
   return (
     <>
       <header className="book-header">
@@ -608,32 +579,32 @@ console.log(bookcover,"bookcover")
 
           <div className="bh-divider" />
 
-         {/* Submit for editing */}
-<button
-  type="button"
-  className="bh-btn bh-btn--solid-red"
-  onClick={() => onSubmit?.("submit")}
-  disabled={loading}
->
-  <Send size={14} />
-  {loading ? "Submitting…" : "Submit for editing"}
-</button>
+          {/* Submit for editing */}
+          <button
+            type="button"
+            className="bh-btn bh-btn--solid-red"
+            onClick={() => onSubmit?.("submit")}
+            disabled={loading}
+          >
+            <Send size={14} />
+            {loading ? "Submitting…" : "Submit for editing"}
+          </button>
 
-{/* Mark as complete */}
-<button
-  type="button"
-  className={`bh-btn ${isCompleted ? "bh-btn--completed" : "bh-btn--solid-blue"}`}
-  onClick={() => {
-    if (isCompleted) {
-      toast.info("This book is already completed.");
-      return;
-    }
-    onMarkComplete?.("completed");
-  }}
->
-  <CheckCircle size={14} />
-  Mark as complete
-</button>
+          {/* Mark as complete */}
+          <button
+            type="button"
+            className={`bh-btn ${isCompleted ? "bh-btn--completed" : "bh-btn--solid-blue"}`}
+            onClick={() => {
+              if (isCompleted) {
+                toast.info("This book is already completed.");
+                return;
+              }
+              onMarkComplete?.("completed");
+            }}
+          >
+            <CheckCircle size={14} />
+            Mark as complete
+          </button>
 
           {/* Chat */}
           {bookIdDetails?.book_chat_room?.id && (
