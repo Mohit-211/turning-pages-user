@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { message } from "antd";
-
-
 import "./Toolbar.scss";
 import ToolbarTitle from "./ToolbarTitle";
 import ToolbarSep from "./ToolbarSep";
@@ -11,6 +9,7 @@ import InputModeGroup from "./InputModeGroup";
 import PanelToggleButton from "./PanelToggleButton";
 import ViewModeButton from "./ViewModeButton";
 import SaveButton from "./SaveButton";
+import QuotesButton from "./QuotesButton";
 
 export default function Toolbar({
   chapterTitle,
@@ -28,6 +27,9 @@ export default function Toolbar({
   content = "",
   onOpenAIGuide,
   onlyView = false,
+  // ↓ new props
+  isQuotesPanelOpen,
+  onToggleQuotesPanel,
 }) {
   const isEditMode = viewMode === "edit";
   const isChapterSelected = !!chapterTitle?.title;
@@ -55,23 +57,17 @@ export default function Toolbar({
   return (
     <div className="chapter-toolbar">
       <ToolbarTitle chapterTitle={chapterTitle} />
-
       <ToolbarSep />
-
       <div className="action-buttons">
         <TAVGuideButton onOpenAIGuide={onOpenAIGuide} />
-
         <ToolbarSep />
-
         <TAVToolGroup
           selectedTool={selectedTool}
           onToolChange={setSelectedTool}
           onRun={handleRunTool}
           disabled={actionDisabled}
         />
-
         <ToolbarSep />
-
         <InputModeGroup
           activeMode={activeMode}
           onModeChange={setActiveMode}
@@ -80,20 +76,21 @@ export default function Toolbar({
           onOpenUploadModal={onOpenUploadModal}
           onOpenAIAssistant={onOpenAIAssistant}
         />
-
         <ToolbarSep />
-
         <PanelToggleButton
           isAIPanelOpen={isAIPanelOpen}
           onToggle={onToggleAIPanel}
         />
-
+        {/* ↓ NEW Quotes button */}
+        <QuotesButton
+          isQuotesPanelOpen={isQuotesPanelOpen}
+          onToggle={onToggleQuotesPanel}
+        />
         <ViewModeButton
           viewMode={viewMode}
           setViewMode={setViewMode}
           disabled={!isChapterSelected}
         />
-
         <SaveButton
           saving={saving}
           disabled={!isChapterSelected}

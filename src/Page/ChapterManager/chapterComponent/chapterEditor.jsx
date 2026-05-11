@@ -6,6 +6,7 @@ export default function ChapterEditor({
   content,
   setContent,
   onlyView,
+   editorRef,
 }) {
   const [editorReady, setEditorReady] = useState(false);
 
@@ -22,10 +23,10 @@ export default function ChapterEditor({
 
         value={content || ""}
 
-        onInit={() => {
-          setTimeout(() => setEditorReady(true), 300);
-        }}
-
+       onInit={(evt, editor) => {
+  editorRef.current = editor;
+  setTimeout(() => setEditorReady(true), 300);
+}}
         disabled={onlyView}
 
         init={{

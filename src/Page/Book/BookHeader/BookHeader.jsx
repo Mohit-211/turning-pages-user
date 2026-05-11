@@ -213,50 +213,183 @@ function PrintModal({ bookIdDetails, title, sizeKey, onClose }) {
     return () => clearTimeout(id);
   }, [sizeKey]);
 
-  const handlePrint = useCallback(() => {
-    if (!printRef.current) return;
-    const iframe = document.createElement("iframe");
-    iframe.style.cssText = "position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:0;";
-    document.body.appendChild(iframe);
-    const win = iframe.contentWindow;
-    if (!win) return;
-    win.document.write(`
-      <!DOCTYPE html><html><head>
-      <title>${title || "My Book"}</title>
-      <style>
-        @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400&display=swap');
-        *{box-sizing:border-box;margin:0;padding:0}body{background:white}
-        .print-page{width:${layout.w}px;min-height:${layout.h}px;background:white;page-break-after:always;display:flex;flex-direction:column;overflow:hidden;position:relative}
-        .print-page:last-child{page-break-after:avoid}
-        .print-rhead{display:flex;align-items:center;gap:8px;padding:72px 58px 0 86px}
-        .print-rhead-label{font-family:'DM Sans',sans-serif;font-size:7px;font-weight:700;letter-spacing:.22em;color:#aaa;text-transform:uppercase;white-space:nowrap}
-        .print-rhead-rule{flex:1;height:.5px;background:#e4e4e4}
-        .print-rhead-size{font-family:'DM Mono',monospace;font-size:7px;color:#ccc}
-        .print-body{flex:1;padding:16px 58px 16px 86px;font-size:${layout.fontSize}px;line-height:1.8;color:#1c1c1c;font-family:'Lora',serif;word-break:break-word;overflow-wrap:break-word;overflow:hidden}
-        .print-body p{margin:0 0 .7em}.print-body h1{font-size:2em;font-weight:bold;line-height:1.2;margin:.2em 0 .35em}
-        .print-body h2{font-size:1.5em;font-weight:bold;margin:.25em 0 .3em}.print-body h3{font-size:1.17em;font-weight:bold;margin:.3em 0 .25em}
-        .print-body strong,.print-body b{font-weight:bold}.print-body em,.print-body i{font-style:italic}
-        .print-body ul{list-style:disc;padding-left:1.5em;margin:.4em 0}.print-body ol{list-style:decimal;padding-left:1.5em;margin:.4em 0}
-        .print-body blockquote{border-left:3px solid #c8973a;margin:.7em 0;padding:.5em 1em;background:#fdf9f2;font-style:italic;color:#555}
-        .print-body table{border-collapse:collapse;width:100%;margin:.6em 0}.print-body td,.print-body th{border:1px solid #ddd;padding:4px 8px}
-        .print-body th{background:#f5f5f5;font-weight:600}.print-body img{max-width:100%;height:auto;display:block;margin:.4em auto}
-        .print-folio{display:flex;align-items:center;gap:10px;padding:0 58px 96px 86px}
-        .print-folio-rule{flex:1;height:.5px;background:#e4e4e4}
-        .print-folio-num{font-family:'DM Sans',sans-serif;font-size:9px;color:#aaa;letter-spacing:.07em}
-        .cover-page{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:72px 58px 96px 86px;text-align:center}
-        .cover-page img{max-width:60%;max-height:400px;object-fit:contain;border-radius:4px}
-        .cover-page h1{font-family:'Lora',serif;font-size:${Math.round(layout.fontSize*2.2)}px;font-weight:700;color:#1a2f4a}
-        .cover-page h3{font-family:'DM Sans',sans-serif;font-size:${Math.round(layout.fontSize*1.1)}px;font-weight:400;color:#666}
-        @media print{@page{size:${sz.w}px ${sz.h}px;margin:0}body{width:${sz.w}px}}
-      </style></head><body>${printRef.current.innerHTML}</body></html>
-    `);
-    win.document.close();
-    iframe.onload = () => {
-      win.focus(); win.print();
-      setTimeout(() => document.body.removeChild(iframe), 1000);
-    };
-  }, [layout, sz, title]);
+  // const handlePrint = useCallback(() => {
+  //   if (!printRef.current) return;
+  //   const iframe = document.createElement("iframe");
+  //   iframe.style.cssText = "position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:0;";
+  //   document.body.appendChild(iframe);
+  //   const win = iframe.contentWindow;
+  //   if (!win) return;
+  //   win.document.write(`
+  //     <!DOCTYPE html><html><head>
+  //     <title>${title || "My Book"}</title>
+  //     <style>
+  //       @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400&display=swap');
+  //       *{box-sizing:border-box;margin:0;padding:0}body{background:white}
+  //       .print-page{width:${layout.w}px;min-height:${layout.h}px;background:white;page-break-after:always;display:flex;flex-direction:column;overflow:hidden;position:relative}
+  //       .print-page:last-child{page-break-after:avoid}
+  //       .print-rhead{display:flex;align-items:center;gap:8px;padding:72px 58px 0 86px}
+  //       .print-rhead-label{font-family:'DM Sans',sans-serif;font-size:7px;font-weight:700;letter-spacing:.22em;color:#aaa;text-transform:uppercase;white-space:nowrap}
+  //       .print-rhead-rule{flex:1;height:.5px;background:#e4e4e4}
+  //       .print-rhead-size{font-family:'DM Mono',monospace;font-size:7px;color:#ccc}
+  //       .print-body{flex:1;padding:16px 58px 16px 86px;font-size:${layout.fontSize}px;line-height:1.8;color:#1c1c1c;font-family:'Lora',serif;word-break:break-word;overflow-wrap:break-word;overflow:hidden}
+  //       .print-body p{margin:0 0 .7em}.print-body h1{font-size:2em;font-weight:bold;line-height:1.2;margin:.2em 0 .35em}
+  //       .print-body h2{font-size:1.5em;font-weight:bold;margin:.25em 0 .3em}.print-body h3{font-size:1.17em;font-weight:bold;margin:.3em 0 .25em}
+  //       .print-body strong,.print-body b{font-weight:bold}.print-body em,.print-body i{font-style:italic}
+  //       .print-body ul{list-style:disc;padding-left:1.5em;margin:.4em 0}.print-body ol{list-style:decimal;padding-left:1.5em;margin:.4em 0}
+  //       .print-body blockquote{border-left:3px solid #c8973a;margin:.7em 0;padding:.5em 1em;background:#fdf9f2;font-style:italic;color:#555}
+  //       .print-body table{border-collapse:collapse;width:100%;margin:.6em 0}.print-body td,.print-body th{border:1px solid #ddd;padding:4px 8px}
+  //       .print-body th{background:#f5f5f5;font-weight:600}.print-body img{max-width:100%;height:auto;display:block;margin:.4em auto}
+  //       .print-folio{display:flex;align-items:center;gap:10px;padding:0 58px 96px 86px}
+  //       .print-folio-rule{flex:1;height:.5px;background:#e4e4e4}
+  //       .print-folio-num{font-family:'DM Sans',sans-serif;font-size:9px;color:#aaa;letter-spacing:.07em}
+  //       .cover-page{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:72px 58px 96px 86px;text-align:center}
+  //       .cover-page img{max-width:60%;max-height:400px;object-fit:contain;border-radius:4px}
+  //       .cover-page h1{font-family:'Lora',serif;font-size:${Math.round(layout.fontSize*2.2)}px;font-weight:700;color:#1a2f4a}
+  //       .cover-page h3{font-family:'DM Sans',sans-serif;font-size:${Math.round(layout.fontSize*1.1)}px;font-weight:400;color:#666}
+  //       @media print{@page{size:${sz.w}px ${sz.h}px;margin:0}body{width:${sz.w}px}}
+  //     </style></head><body>${printRef.current.innerHTML}</body></html>
+  //   `);
+  //   win.document.close();
+  //   iframe.onload = () => {
+  //     win.focus(); win.print();
+  //     setTimeout(() => document.body.removeChild(iframe), 1000);
+  //   };
+  // }, [layout, sz, title]);
 
+  const handlePrint = useCallback(() => {
+  if (!printRef.current) return;
+
+  const iframe = document.createElement("iframe");
+  iframe.style.cssText = "position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:0;";
+  document.body.appendChild(iframe);
+  const win = iframe.contentWindow;
+  if (!win) return;
+
+  const bodyHTML = printRef.current.innerHTML;
+
+  win.document.write(`<!DOCTYPE html><html><head>
+    <title>${title || "My Book"}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400&display=swap">
+    <style>
+      *{box-sizing:border-box;margin:0;padding:0}
+      body{background:white}
+
+      .print-page{
+        width:${layout.w}px;
+        min-height:${layout.h}px;
+        background:white;
+        page-break-after:always;
+        display:flex;
+        flex-direction:column;
+        overflow:hidden;
+        position:relative;
+      }
+      .print-page:last-child{page-break-after:avoid}
+
+      .print-rhead{
+        display:flex;align-items:center;gap:8px;
+        padding:72px 58px 0 86px;
+      }
+      .print-rhead-label{
+        font-family:'DM Sans',sans-serif;
+        font-size:7px;font-weight:700;
+        letter-spacing:.22em;color:#aaa;
+        text-transform:uppercase;white-space:nowrap;
+      }
+      .print-rhead-rule{flex:1;height:.5px;background:#e4e4e4}
+      .print-rhead-size{font-family:'DM Mono',monospace;font-size:7px;color:#ccc}
+
+      .print-body{
+        flex:1;
+        padding:16px 58px 16px 86px;
+        font-size:${layout.fontSize}px;
+        line-height:1.8;
+        color:#1c1c1c;
+        font-family:'Lora',serif;
+        word-break:break-word;
+        overflow-wrap:break-word;
+        overflow:hidden;
+      }
+      .print-body p{margin:0 0 .7em}
+      .print-body h1{font-size:2em;font-weight:700;line-height:1.2;margin:.2em 0 .35em;font-family:'DM Sans',sans-serif}
+      .print-body h2{font-size:1.5em;font-weight:700;margin:.25em 0 .3em;font-family:'DM Sans',sans-serif}
+      .print-body h3{font-size:1.17em;font-weight:700;margin:.3em 0 .25em;font-family:'DM Sans',sans-serif}
+      .print-body strong,.print-body b{font-weight:700}
+      .print-body em,.print-body i{font-style:italic}
+      .print-body ul{list-style:disc;padding-left:1.5em;margin:.4em 0}
+      .print-body ol{list-style:decimal;padding-left:1.5em;margin:.4em 0}
+      .print-body blockquote{
+        border-left:3px solid #c8973a;
+        margin:.7em 0;
+        padding:.6em 1em .6em 1.2em;
+        background:#fdf9f2;
+        font-style:italic;
+        color:#6b5a3e;
+        border-radius:0;
+      }
+      .print-body blockquote p{margin:0}
+      .print-body table{border-collapse:collapse;width:100%;margin:.6em 0}
+      .print-body td,.print-body th{border:1px solid #ddd;padding:4px 8px}
+      .print-body th{background:#f5f5f5;font-weight:600}
+      .print-body img{max-width:100%;height:auto;display:block;margin:.4em auto}
+
+      .print-folio{
+        display:flex;align-items:center;gap:10px;
+        padding:0 58px 96px 86px;
+      }
+      .print-folio-rule{flex:1;height:.5px;background:#e4e4e4}
+      .print-folio-num{
+        font-family:'DM Sans',sans-serif;
+        font-size:9px;color:#aaa;letter-spacing:.07em;
+      }
+
+      .cover-page{
+        display:flex;flex-direction:column;
+        align-items:center;justify-content:center;
+        gap:24px;padding:72px 58px 96px 86px;text-align:center;
+      }
+      .cover-page img{max-width:60%;max-height:400px;object-fit:contain;border-radius:4px}
+      .cover-page h1{
+        font-family:'Lora',serif;
+        font-size:${Math.round(layout.fontSize * 2.2)}px;
+        font-weight:700;color:#1a2f4a;
+      }
+      .cover-page h3{
+        font-family:'DM Sans',sans-serif;
+        font-size:${Math.round(layout.fontSize * 1.1)}px;
+        font-weight:400;color:#666;
+      }
+
+      @media print{
+        @page{size:${sz.w}px ${sz.h}px;margin:0}
+        body{width:${sz.w}px}
+      }
+    </style>
+  </head><body>${bodyHTML}</body></html>`);
+
+  win.document.close();
+
+  // Wait for fonts before printing
+  iframe.onload = () => {
+    if (win.document.fonts) {
+      win.document.fonts.ready.then(() => {
+        win.focus();
+        win.print();
+        setTimeout(() => document.body.removeChild(iframe), 1000);
+      });
+    } else {
+      // Fallback for browsers without FontFaceSet API
+      setTimeout(() => {
+        win.focus();
+        win.print();
+        setTimeout(() => document.body.removeChild(iframe), 1000);
+      }, 800);
+    }
+  };
+}, [layout, sz, title]);
   let pageNum = 0;
 
   return (

@@ -10,6 +10,7 @@ import BookHeader from "../Book/BookHeader/BookHeader";
 import AIReportPanel from "./chapterComponent/AIReportPanel/AIReportPanel";
 import PlagiarismModal from "./chapterComponent/PlagiarismModal/PlagiarismModal";
 import FactCheckModal from "./chapterComponent/FactCheckModal/FactCheckModal";
+import QuotesPanel from "./chapterComponent/ToolBar/QuotesPanel";
 
 import {
   GetBookByIdApi,
@@ -38,6 +39,8 @@ import Toolbar from "./chapterComponent/ToolBar/toolbar";
 import InputModePanel from "./chapterComponent/ToolBar/InputModePanel";
 
 export default function ChapterManager() {
+  const quotesPanelRef = useRef(null);
+  const editorRef = useRef(null);
   const [hasPackage, setHasPackage] = useState(false);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const navigate = useNavigate();
@@ -75,13 +78,19 @@ export default function ChapterManager() {
   const [plagiarismModalOpen, setPlagiarismModalOpen] = useState(false);
   const [factModalOpen, setFactModalOpen] = useState(false);
 
+  // ── Quotes panel ──────────────────────────────────────────
+  const [isQuotesPanelOpen, setIsQuotesPanelOpen] = useState(false);
+
   // ── Input mode panel: "write" | "upload" | "ai" | null ───
   const [activeModePanel, setActiveModePanel] = useState(null);
 
-  // ── Resizable InputModePanel ──────────────────────────────
+  // ── Resizable panels (shared width logic) ─────────────────
   const [panelWidth, setPanelWidth] = useState(400);
+  const [quotesPanelWidth, setQuotesPanelWidth] = useState(380);
   const panelRef = useRef(null);
 
+
+  // Resize for InputModePanel (upload / ai)
   const startResize = useCallback(
     (e) => {
       const startX = e.clientX;
@@ -106,6 +115,34 @@ export default function ChapterManager() {
       e.preventDefault();
     },
     [panelWidth]
+  );
+
+  // Resize for QuotesPanel
+  const startQuotesResize = useCallback(
+    (e) => {
+      const startX = e.clientX;
+      const startWidth =
+        quotesPanelRef.current?.offsetWidth || quotesPanelWidth;
+      document.body.style.cursor = "col-resize";
+      document.body.style.userSelect = "none";
+
+      const onMove = (e) => {
+        const dx = startX - e.clientX;
+        setQuotesPanelWidth(Math.min(700, Math.max(300, startWidth + dx)));
+      };
+
+      const onUp = () => {
+        document.body.style.cursor = "";
+        document.body.style.userSelect = "";
+        document.removeEventListener("mousemove", onMove);
+        document.removeEventListener("mouseup", onUp);
+      };
+
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
+      e.preventDefault();
+    },
+    [quotesPanelWidth]
   );
 
   // ── Submission ────────────────────────────────────────────
@@ -153,7 +190,20 @@ export default function ChapterManager() {
     const opening = !isAIPanelOpen;
     setIsAIPanelOpen(opening);
     setShowAIGuide(false);
-    if (opening) setActiveModePanel(null);
+    if (opening) {
+      setActiveModePanel(null);
+      setIsQuotesPanelOpen(false);
+    }
+  };
+
+  const handleToggleQuotesPanel = () => {
+    const opening = !isQuotesPanelOpen;
+    setIsQuotesPanelOpen(opening);
+    if (opening) {
+      setIsAIPanelOpen(false);
+      setActiveModePanel(null);
+      setShowAIGuide(false);
+    }
   };
 
   const handleModePanel = (mode) => {
@@ -161,6 +211,7 @@ export default function ChapterManager() {
     setActiveModePanel(next);
     if (next === "ai") {
       setIsAIPanelOpen(false);
+      setIsQuotesPanelOpen(false);
       setShowAIGuide(false);
     }
   };
@@ -236,6 +287,7 @@ export default function ChapterManager() {
       let response;
       const openPanel = () => {
         setIsAIPanelOpen(true);
+        setIsQuotesPanelOpen(false);
         setActiveModePanel(null);
         setAiActiveTab(tool);
         setAiLoading(true);
@@ -295,6 +347,7 @@ export default function ChapterManager() {
   const handlePlagiarismCheck = async (text) => {
     setPlagiarismModalOpen(false);
     setIsAIPanelOpen(true);
+    setIsQuotesPanelOpen(false);
     setActiveModePanel(null);
     setAiActiveTab("plagiarism");
     setAiLoading(true);
@@ -316,6 +369,7 @@ export default function ChapterManager() {
   const handleFactCheck = async (text) => {
     setFactModalOpen(false);
     setIsAIPanelOpen(true);
+    setIsQuotesPanelOpen(false);
     setActiveModePanel(null);
     setAiActiveTab("fact");
     setAiLoading(true);
@@ -446,6 +500,7 @@ export default function ChapterManager() {
             activeTool={aiActiveTab}
             onOpenAIGuide={() => {
               setIsAIPanelOpen(true);
+              setIsQuotesPanelOpen(false);
               setActiveModePanel(null);
               setShowAIGuide(true);
             }}
@@ -454,6 +509,8 @@ export default function ChapterManager() {
             onWriteManually={() => handleModePanel("write")}
             onOpenUploadModal={() => handleModePanel("upload")}
             onOpenAIAssistant={() => handleModePanel("ai")}
+            isQuotesPanelOpen={isQuotesPanelOpen}
+            onToggleQuotesPanel={handleToggleQuotesPanel}
           />
         </div>
 
@@ -484,6 +541,7 @@ export default function ChapterManager() {
                   content={editorContent}
                   setContent={setEditorContent}
                   onlyView={onlyView}
+                  editorRef={editorRef}
                 />
               ) : (
                 <PdfViewer htmlContent={editorContent} />
@@ -545,6 +603,28 @@ export default function ChapterManager() {
                   loading={aiLoading}
                 />
               )}
+            </div>
+          )}
+
+          {/* ── Quotes Panel (resizable) ── */}
+          {isQuotesPanelOpen && !activeModePanel && (
+            <div
+              ref={quotesPanelRef}
+              className="input-mode-wrapper quotes-panel-wrapper"
+              style={{ width: quotesPanelWidth }}
+            >
+              <div
+                className="resize-handle"
+                onMouseDown={startQuotesResize}
+              />
+              <QuotesPanel
+                onInsertQuote={(html) =>
+                  setEditorContent((prev) => prev + html)
+                }
+                onClose={() => setIsQuotesPanelOpen(false)}
+                  editorRef={editorRef}
+                
+              />
             </div>
           )}
         </div>
@@ -618,7 +698,9 @@ export default function ChapterManager() {
             </svg>
           </div>
           <h2>Upgrade required</h2>
-          <p>Purchase a package to submit your book for professional editing.</p>
+          <p>
+            Purchase a package to submit your book for professional editing.
+          </p>
           <button
             className="upgrade-modal-btn"
             onClick={() => {

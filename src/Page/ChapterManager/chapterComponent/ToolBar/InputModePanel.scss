@@ -701,7 +701,11 @@ $imp-red-mid:   rgba(229, 40, 60, 0.08);
   background: #ffffff;
   border-bottom: 1px solid #ececec;
 }
-
+.imp-ai-tab__content {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
 /* Base Tab Style */
 .imp-ai-tab {
   flex: 1;
