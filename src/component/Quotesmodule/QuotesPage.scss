@@ -35,20 +35,11 @@ $accents: (
   'love':        #c2405a,
 );
 
-// Accent override map for JS (matches tagAccents in JSX)
-// All:        #1e2d40
-// Motivation: #e8323c
-// Wisdom:     #2e7d6e
-// Life:       #5a4fcf
-// Inspiration:#f4803a
-// Love:       #c2405a
-
 // ============================================================
 // Mixins
 // ============================================================
 
 @mixin font-label($size: 11px, $spacing: 0.08em) {
-    
   font-size: $size;
   font-weight: 600;
   letter-spacing: $spacing;
@@ -103,7 +94,6 @@ $accents: (
 .quotes-page {
   min-height: 100vh;
   background: $bg-base;
-    
 }
 
 // ============================================================
@@ -126,7 +116,6 @@ $accents: (
   }
 
   &__title {
-     
     font-size: clamp(32px, 5vw, 58px);
     font-weight: 700;
     color: #fff;
@@ -188,7 +177,6 @@ $accents: (
     border: none;
     outline: none;
     background: transparent;
-      
     font-size: 14px;
     color: $ink;
     padding: 11px 0;
@@ -308,12 +296,12 @@ $accents: (
   }
 
   &:hover {
-     background: $primary-gradient;
+    background: $primary-gradient;
     border-color: darken($border, 6%);
   }
 
   &--active {
-  background: $primary-gradient;
+    background: $primary-gradient;
     color: #fff;
     border-color: $ink;
     box-shadow: 0 4px 14px rgba($navy, 0.2);
@@ -341,7 +329,6 @@ $accents: (
   margin-bottom: 24px;
 
   &__number {
-     
     font-size: 30px;
     font-weight: 700;
     color: $ink;
@@ -394,8 +381,7 @@ $accents: (
     left: 0;
     width: 4px;
     height: 100%;
-        background: linear-gradient(180deg, #174f78, #ed1c24); // 🔥 gradient
-
+    background: linear-gradient(180deg, #174f78, #ed1c24); // 🔥 gradient
     opacity: 0.7;
     border-radius: 12px 0 0 12px;
     @include smooth(background, 0.35s);
@@ -429,7 +415,6 @@ $accents: (
 }
 
 .quote-text {
-   
   font-size: 16px;
   font-style: italic;
   line-height: 1.8;
@@ -458,7 +443,6 @@ $accents: (
 }
 
 .quote-tag {
-    
   font-size: 11px;
   font-weight: 500;
   color: var(--accent, $red);
@@ -489,8 +473,7 @@ $accents: (
   }
 
   &--copied {
-       background: $primary-gradient;
-
+    background: $primary-gradient;
     border-color: #2e7d6e;
     color: #fff;
   }
@@ -502,7 +485,20 @@ $accents: (
 // Empty State
 // ============================================================
 
+.quotes-empty-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 380px;
+}
 
+// ============================================================
+// Loading More Indicator
+// ============================================================
+
+.quotes-loading-more {
+  margin-top: 24px;
+}
 
 // ============================================================
 // All Categories Modal
@@ -526,7 +522,7 @@ $accents: (
   border: 1px solid $border-card;
   border-radius: 14px;
   width: 100%;
-  max-width: 480px;
+  max-width: 565px;
   max-height: 80vh;
   display: flex;
   flex-direction: column;
@@ -543,7 +539,6 @@ $accents: (
   }
 
   &__title {
-     
     font-size: 18px;
     font-weight: 700;
     color: $ink;
@@ -584,7 +579,6 @@ $accents: (
       border: none;
       outline: none;
       background: transparent;
-        
       font-size: 13px;
       color: $ink;
       padding: 12px 0;
@@ -637,7 +631,7 @@ $accents: (
     }
 
     &--active {
-        background: $primary-gradient;
+      background: $primary-gradient;
       color: #fff;
       border-color: $ink;
     }
@@ -652,7 +646,6 @@ $accents: (
 
   &__active-badge {
     margin-left: auto;
-      
     font-size: 9px;
     font-weight: 600;
     letter-spacing: 0.05em;

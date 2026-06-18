@@ -80,14 +80,18 @@ export default function QuotesPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [copied, setCopied] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchLoading, setSearchLoading] = useState(false);
   const [showCatModal, setShowCatModal] = useState(false);
   const [catSearch, setCatSearch] = useState("");
+  const [currentLimit, setCurrentLimit] = useState(30);
+  const [hasMore, setHasMore] = useState(true);
 
   const searchRef = useRef(null);
   const fullQuotesRef = useRef([]);
   const fullFetchedRef = useRef(false);
+  const loadingMoreRef = useRef(false);
 
   const fetchTags = async () => {
     try {
@@ -110,12 +114,17 @@ export default function QuotesPage() {
     }
   };
 
-  const fetchQuotesByTag = async (tag) => {
+  const fetchQuotesByTag = async (tag, limit = 30) => {
     setIsLoading(true);
+    setCurrentLimit(limit);
+    setAllQuotes([]);
+    setQuotes([]);
+    setHasMore(true);
+
     try {
       const res = tag === "All"
-        ? await GetAllQuotesApi(1, 30)
-        : await GetQuotesByTagApi(tag, 1, 30);
+        ? await GetAllQuotesApi(1, limit)
+        : await GetQuotesByTagApi(tag, 1, limit);
 
       const list = res?.data?.data?.data || [];
       const total = res?.data?.data?.total || list.length;
@@ -123,13 +132,64 @@ export default function QuotesPage() {
       setAllQuotes(list);
       setQuotes(list);
       setTotalCount(total);
+      setHasMore(list.length === limit && list.length < total);
     } catch {
       setQuotes([]);
+      setAllQuotes([]);
       setTotalCount(0);
+      setHasMore(false);
     } finally {
       setIsLoading(false);
     }
   };
+
+  const loadMoreQuotes = async () => {
+    if (loadingMoreRef.current || isLoadingMore || !hasMore || searchQuery.trim()) return;
+
+    loadingMoreRef.current = true;
+    setIsLoadingMore(true);
+
+    const newLimit = currentLimit + 10;
+
+    try {
+      const res = activeTag === "All"
+        ? await GetAllQuotesApi(1, newLimit)
+        : await GetQuotesByTagApi(activeTag, 1, newLimit);
+
+      const list = res?.data?.data?.data || [];
+      const total = res?.data?.data?.total || list.length;
+
+      setAllQuotes(list);
+      setQuotes(list);
+      setCurrentLimit(newLimit);
+      setTotalCount(total);
+      setHasMore(list.length === newLimit && list.length < total);
+    } catch {
+      setHasMore(false);
+    } finally {
+      setIsLoadingMore(false);
+      loadingMoreRef.current = false;
+    }
+  };
+
+  /* detect scroll to bottom */
+  useEffect(() => {
+    const handleScroll = () => {
+      // Scroll detection is now optional
+      // Users can click "Load More" button instead
+      // Uncomment below to enable auto-load on scroll:
+      
+      // const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      // const windowHeight = window.innerHeight;
+      // const docHeight = document.documentElement.scrollHeight;
+      // if (docHeight - (scrollTop + windowHeight) < 600 && !isLoadingMore && hasMore && !searchQuery.trim()) {
+      //   loadMoreQuotes();
+      // }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isLoadingMore, hasMore, currentLimit, activeTag, searchQuery]);
 
   const handleSearchSubmit = async () => {
     const q = searchQuery.trim();
@@ -259,95 +319,174 @@ export default function QuotesPage() {
           </div>
         )}
 
-     {/* Quotes / Empty State */}
-{!isLoading && !searchLoading && (
-  quotes.length === 0 ? (
-    <div className="quotes-empty-wrapper">
-      <EmptyState
-        title="No results found"
-        description="Try different keywords"
-       
-      
-      />
-    </div>
-  ) : (
-    <div className="quotes-grid">
-      {quotes.map((quote, i) => (
-        <article
-          key={quote.id}
-          className={`quote-card ${i % 4 === 0 ? "quote-card--tall" : ""}`}
-          style={{ "--accent": tagAccents[getItemTag(quote)] || "#1e2d40" }}
-        >
-          <p className="quote-text">"{quote.quote}"</p>
-
-          <footer className="quote-footer">
-            <div className="quote-meta">
-              <span className="quote-author">— {quote.author}</span>
-              <span className="quote-tag">{getItemTag(quote)}</span>
+        {/* Quotes / Empty State */}
+        {!isLoading && !searchLoading && (
+          quotes.length === 0 ? (
+            <div className="quotes-empty-wrapper">
+              <EmptyState
+                title="No results found"
+                description="Try different keywords"
+              />
             </div>
+          ) : (
+            <>
+              <div className="quotes-grid">
+                {quotes.map((quote, i) => (
+                  <article
+                    key={quote.id}
+                    className={`quote-card ${i % 4 === 0 ? "quote-card--tall" : ""}`}
+                    style={{ "--accent": tagAccents[getItemTag(quote)] || "#1e2d40" }}
+                  >
+                    <p className="quote-text">"{quote.quote}"</p>
 
-            <button
-              className={`copy-btn ${copied === quote.id ? "copy-btn--copied" : ""}`}
-              onClick={() => {
-                navigator.clipboard.writeText(`"${quote.quote}" — ${quote.author}`);
-                setCopied(quote.id);
-                setTimeout(() => setCopied(null), 1500);
-              }}
-            >
-              {copied === quote.id ? <><IconCheck /> Copied</> : <><IconCopy /> Copy</>}
-            </button>
-          </footer>
-        </article>
-      ))}
-    </div>
-  )
-)}
+                    <footer className="quote-footer">
+                      <div className="quote-meta">
+                        <span className="quote-author">— {quote.author}</span>
+                        <span className="quote-tag">{getItemTag(quote)}</span>
+                      </div>
+
+                      <button
+                        className={`copy-btn ${copied === quote.id ? "copy-btn--copied" : ""}`}
+                        onClick={() => {
+                          navigator.clipboard.writeText(`"${quote.quote}" — ${quote.author}`);
+                          setCopied(quote.id);
+                          setTimeout(() => setCopied(null), 1500);
+                        }}
+                      >
+                        {copied === quote.id ? <><IconCheck /> Copied</> : <><IconCopy /> Copy</>}
+                      </button>
+                    </footer>
+                  </article>
+                ))}
+              </div>
+
+              {/* Loading more indicator */}
+              {isLoadingMore && (
+                <div className="quotes-loading-more">
+                  <div className="quotes-grid">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <div key={i} className="quote-card quote-card--skeleton" />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Load More Button */}
+              {hasMore && !isLoadingMore && !searchQuery.trim() && (
+                <div style={{ display: "flex", justifyContent: "center", marginTop: "40px", marginBottom: "40px" }}>
+                  <button
+                    onClick={loadMoreQuotes}
+                    style={{
+                      padding: "12px 32px",
+                      fontSize: "16px",
+                      fontWeight: "600",
+                      backgroundColor: "#ef4444",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "6px",
+                      cursor: "pointer",
+                      transition: "all 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = "#ef4444";
+                      e.target.style.transform = "translateY(-2px)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = "#ef4444";
+                      e.target.style.transform = "translateY(0)";
+                    }}
+                  >
+                    Load More Quotes
+                  </button>
+                </div>
+              )}
+            </>
+          )
+        )}
       </main>
 
       {/* All Categories Modal */}
-      {showCatModal && (
-        <div className="cat-modal-overlay" onClick={() => setShowCatModal(false)}>
-          <div className="cat-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="cat-modal__header">
-              <h2 className="cat-modal__title">All Categories</h2>
-              <button className="cat-modal__close" onClick={() => setShowCatModal(false)}>
-                <IconClose />
-              </button>
-            </div>
-            <div className="cat-modal__search">
-              <span className="cat-modal__search-icon"><IconSearch /></span>
-              <input
-                className="cat-modal__search-input"
-                placeholder="Filter categories…"
-                value={catSearch}
-                onChange={(e) => setCatSearch(e.target.value)}
-                autoFocus
+    {showCatModal && (
+  <div
+    className="cat-modal-overlay"
+    onClick={() => setShowCatModal(false)}
+  >
+    <div
+      className="cat-modal"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="cat-modal__header">
+        <h2 className="cat-modal__title">All Categories</h2>
+        <button
+          className="cat-modal__close"
+          onClick={() => setShowCatModal(false)}
+        >
+          <IconClose />
+        </button>
+      </div>
+
+      <div className="cat-modal__search">
+        <span className="cat-modal__search-icon">
+          <IconSearch />
+        </span>
+
+        <input
+          className="cat-modal__search-input"
+          placeholder="Search categories..."
+          value={catSearch}
+          onChange={(e) => setCatSearch(e.target.value)}
+          autoFocus
+        />
+
+        {catSearch && (
+          <button
+            className="cat-modal__search-clear"
+            onClick={() => setCatSearch("")}
+          >
+            <IconClose />
+          </button>
+        )}
+      </div>
+
+      <div className="cat-modal__grid">
+        {tags
+          .filter((t) =>
+            t.toLowerCase().includes(catSearch.toLowerCase())
+          )
+          .map((tag) => (
+            <button
+              key={tag}
+              className={`cat-modal__item ${
+                activeTag === tag
+                  ? "cat-modal__item--active"
+                  : ""
+              }`}
+              style={{
+                "--accent": tagAccents[tag] || "#2563eb",
+              }}
+              onClick={() => handleCatSelect(tag)}
+            >
+              <span
+                className="cat-modal__dot"
+                style={{
+                  background:
+                    tagAccents[tag] || "#2563eb",
+                }}
               />
-              {catSearch && (
-                <button className="cat-modal__search-clear" onClick={() => setCatSearch("")}>
-                  <IconClose />
-                </button>
+
+              <span>{tag}</span>
+
+              {activeTag === tag && (
+                <span className="cat-modal__active-badge">
+                  ✓
+                </span>
               )}
-            </div>
-            <div className="cat-modal__grid">
-              {tags
-                .filter(t => t.toLowerCase().includes(catSearch.toLowerCase()))
-                .map(tag => (
-                  <button
-                    key={tag}
-                    className={`cat-modal__item ${activeTag === tag ? "cat-modal__item--active" : ""}`}
-                    style={{ "--accent": tagAccents[tag] || "#1e2d40" }}
-                    onClick={() => handleCatSelect(tag)}
-                  >
-                    <span className="cat-modal__dot" style={{ background: tagAccents[tag] || "#1e2d40" }} />
-                    {tag}
-                    {activeTag === tag && <span className="cat-modal__active-badge">Active</span>}
-                  </button>
-                ))}
-            </div>
-          </div>
-        </div>
-      )}
+            </button>
+          ))}
+      </div>
+    </div>
+  </div>
+)}
 
     </div>
   );

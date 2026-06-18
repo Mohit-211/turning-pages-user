@@ -51,19 +51,28 @@ const getItemTag = (item) => {
   return (raw ?? "").trim();
 };
 
+const LIMIT_PER_PAGE = 30;
+
 export default function QuotesPanel({
   editorRef,
   onClose,
 })  {
   const [quotes, setQuotes]           = useState([]);
+  const [quotesTotal, setQuotesTotal]           = useState();
+
   const [allQuotes, setAllQuotes]     = useState([]);
   const [tags, setTags]               = useState(["All"]);
   const [activeTag, setActiveTag]     = useState("All");
   const [isLoading, setIsLoading]     = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [copied, setCopied]           = useState(null);
   const [inserted, setInserted]       = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore]         = useState(true);
   const searchRef                     = useRef(null);
+  const listRef                       = useRef(null);
+  const loadingMoreRef                = useRef(false);
 
   /* fetch tags once */
   useEffect(() => {
@@ -78,24 +87,89 @@ export default function QuotesPanel({
   /* fetch quotes when tag changes */
   useEffect(() => {
     setIsLoading(true);
+    setCurrentPage(1);
+    setAllQuotes([]);
+    setQuotes([]);
+    setHasMore(true);
+
     const fn =
       activeTag === "All"
-        ? GetAllQuotesApi(1, 30)
-        : GetQuotesByTagApi(activeTag, 1, 30);
+        ? GetAllQuotesApi(1, LIMIT_PER_PAGE)
+        : GetQuotesByTagApi(activeTag, 1, LIMIT_PER_PAGE);
 
     fn.then((res) => {
-        const list = res?.data?.data?.data || [];
-        setAllQuotes(list);
-        setQuotes(list);
+      console.log(res,"res")
+      const list = res?.data?.data?.data || [];
+      setQuotesTotal(res?.data?.data.total)
+      console.log(list,"list")
+      setAllQuotes(list);
+      setQuotes(list);
+      setHasMore(list.length === LIMIT_PER_PAGE);
+    })
+      .catch(() => {
+        setQuotes([]);
+        setAllQuotes([]);
       })
-      .catch(() => setQuotes([]))
       .finally(() => setIsLoading(false));
   }, [activeTag]);
+console.log(quotesTotal,"===>")
+  /* fetch more quotes when scrolling */
+  const loadMoreQuotes = async () => {
+    if (loadingMoreRef.current || isLoadingMore || !hasMore) return;
+
+    loadingMoreRef.current = true;
+    setIsLoadingMore(true);
+
+    const nextPage = currentPage + 1;
+    const fn =
+      activeTag === "All"
+        ? GetAllQuotesApi(nextPage, LIMIT_PER_PAGE)
+        : GetQuotesByTagApi(activeTag, nextPage, LIMIT_PER_PAGE);
+
+    try {
+      const res = await fn;
+      const list = res?.data?.data?.data || [];
+
+      setAllQuotes((prev) => [...prev, ...list]);
+      setQuotes((prev) => [...prev, ...list]);
+      setCurrentPage(nextPage);
+      setHasMore(list.length === LIMIT_PER_PAGE);
+    } catch {
+      setHasMore(false);
+    } finally {
+      setIsLoadingMore(false);
+      loadingMoreRef.current = false;
+    }
+  };
+
+  /* detect scroll to bottom */
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!listRef.current) return;
+
+      const { scrollTop, scrollHeight, clientHeight } = listRef.current;
+      const distanceFromBottom = scrollHeight - (scrollTop + clientHeight);
+
+      // Load more when user is 300px from bottom
+      if (distanceFromBottom < 300 && !isLoadingMore && hasMore) {
+        loadMoreQuotes();
+      }
+    };
+
+    const element = listRef.current;
+    if (element) {
+      element.addEventListener("scroll", handleScroll);
+      return () => element.removeEventListener("scroll", handleScroll);
+    }
+  }, [isLoadingMore, hasMore, currentPage, activeTag]);
 
   /* live search filter */
   useEffect(() => {
     const q = searchQuery.trim().toLowerCase();
-    if (!q) { setQuotes(allQuotes); return; }
+    if (!q) {
+      setQuotes(allQuotes);
+      return;
+    }
     setQuotes(
       allQuotes.filter(
         (item) =>
@@ -112,26 +186,25 @@ export default function QuotesPanel({
     setTimeout(() => setCopied(null), 1500);
   };
 
-const handleInsert = (quote) => {
-  const quoteHtml = `
-    <blockquote>
-      <p>"${quote.quote}"</p>
-      <footer>— ${quote.author}</footer>
-    </blockquote>
-  `;
+  const handleInsert = (quote) => {
+    const quoteHtml = `
+      <blockquote>
+        <p>"${quote.quote}"</p>
+        <footer>— ${quote.author}</footer>
+      </blockquote>
+    `;
 
-  if (editorRef?.current) {
-    editorRef.current.focus();
-    editorRef.current.insertContent(quoteHtml);
-  }
+    if (editorRef?.current) {
+      editorRef.current.focus();
+      editorRef.current.insertContent(quoteHtml);
+    }
 
-  setInserted(quote.id);
+    setInserted(quote.id);
 
-  setTimeout(() => {
-    setInserted(null);
-  }, 1500);
-};
-  
+    setTimeout(() => {
+      setInserted(null);
+    }, 1500);
+  };
 
   return (
     <div className="quotes-panel">
@@ -188,12 +261,12 @@ const handleInsert = (quote) => {
         {isLoading ? (
           <Skeleton.Button active size="small" shape="round" style={{ width: 50 }} />
         ) : (
-          <span>{quotes.length} quote{quotes.length !== 1 ? "s" : ""}</span>
+          <span>{quotesTotal} quote{quotes.length !== 1 ? "s" : ""}</span>
         )}
       </div>
 
       {/* ── List ── */}
-      <div className="quotes-panel__list">
+      <div className="quotes-panel__list" ref={listRef}>
         {isLoading ? (
           Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="quotes-panel__skeleton" />
@@ -208,56 +281,65 @@ const handleInsert = (quote) => {
             <span>Try a different search or category</span>
           </div>
         ) : (
-          quotes.map((quote) => {
-            const tag = getItemTag(quote);
-            const accent = tagAccents[tag] || "#1e2d40";
-            return (
-              <div
-                key={quote.id}
-                className="quotes-panel__card"
-                style={{ "--accent": accent }}
-              >
-                {/* Quote mark watermark */}
-                <span className="quotes-panel__card-watermark">"</span>
+          <>
+            {quotes?.map((quote) => {
+              const tag = getItemTag(quote);
+              const accent = tagAccents[tag] || "#1e2d40";
+              return (
+                <div
+                  key={quote.id}
+                  className="quotes-panel__card"
+                  style={{ "--accent": accent }}
+                >
+                  {/* Quote mark watermark */}
+                  <span className="quotes-panel__card-watermark">"</span>
 
-                {/* Quote text */}
-                <p className="quotes-panel__card-text">{quote.quote}</p>
+                  {/* Quote text */}
+                  <p className="quotes-panel__card-text">{quote.quote}</p>
 
-                {/* Author + tag row */}
-                <div className="quotes-panel__card-author-row">
-                  <span className="quotes-panel__card-author">— {quote.author}</span>
-                  {tag && (
-                    <span className="quotes-panel__card-tag">{tag}</span>
-                  )}
-                </div>
+                  {/* Author + tag row */}
+                  <div className="quotes-panel__card-author-row">
+                    <span className="quotes-panel__card-author">— {quote.author}</span>
+                    {tag && (
+                      <span className="quotes-panel__card-tag">{tag}</span>
+                    )}
+                  </div>
 
-                {/* Action buttons */}
-                <div className="quotes-panel__card-actions">
-                  <button
-                    className={`quotes-panel__action-btn ${copied === quote.id ? "quotes-panel__action-btn--done" : ""}`}
-                    onClick={() => handleCopy(quote)}
-                  >
-                    {copied === quote.id
-                      ? <><IconCheck /><span>Copied!</span></>
-                      : <><IconCopy /><span>Copy</span></>
-                    }
-                  </button>
-
-                  {editorRef  && (
+                  {/* Action buttons */}
+                  <div className="quotes-panel__card-actions">
                     <button
-                      className={`quotes-panel__action-btn quotes-panel__action-btn--insert ${inserted === quote.id ? "quotes-panel__action-btn--done" : ""}`}
-                      onClick={() => handleInsert(quote)}
+                      className={`quotes-panel__action-btn ${copied === quote.id ? "quotes-panel__action-btn--done" : ""}`}
+                      onClick={() => handleCopy(quote)}
                     >
-                      {inserted === quote.id
-                        ? <><IconCheck /><span>Inserted!</span></>
-                        : <><IconInsert /><span>Insert</span></>
+                      {copied === quote.id
+                        ? <><IconCheck /><span>Copied!</span></>
+                        : <><IconCopy /><span>Copy</span></>
                       }
                     </button>
-                  )}
+
+                    {editorRef  && (
+                      <button
+                        className={`quotes-panel__action-btn quotes-panel__action-btn--insert ${inserted === quote.id ? "quotes-panel__action-btn--done" : ""}`}
+                        onClick={() => handleInsert(quote)}
+                      >
+                        {inserted === quote.id
+                          ? <><IconCheck /><span>Inserted!</span></>
+                          : <><IconInsert /><span>Insert</span></>
+                        }
+                      </button>
+                    )}
+                  </div>
                 </div>
+              );
+            })}
+
+            {/* Loading more indicator */}
+            {isLoadingMore && (
+              <div className="quotes-panel__loading-more">
+                <Skeleton.Button active size="small" shape="round" style={{ width: 80 }} />
               </div>
-            );
-          })
+            )}
+          </>
         )}
       </div>
     </div>
