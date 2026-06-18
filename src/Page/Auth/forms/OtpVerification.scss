@@ -27,4 +27,39 @@
   .btn-primary {
     margin-top: 0.75rem;
   }
+
+  // ✅ Resend OTP — matches your #174f78 theme
+  .resend-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 1.1rem;
+    font-size: 0.85rem;
+
+    .resend-label {
+      color: #6b7280;
+    }
+
+    .resend-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #174f78; // ✅ matches .otp-email and your brand color
+      transition: color 0.2s;
+
+      &:hover:not(.resend-btn--disabled) {
+        color: #0f3554;
+        text-decoration: underline;
+      }
+
+      &--disabled {
+        color: #9ca3af;
+        cursor: not-allowed;
+      }
+    }
+  }
 }
