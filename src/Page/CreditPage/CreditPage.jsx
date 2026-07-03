@@ -4,17 +4,17 @@ import "./CreditPage.scss";
 import { GetCreditApi } from "../../api/operations/credit.api"; // adjust path
 
 const creditActivities = [
-  { activity: "Create a chapter outline", credits: 1, category: "Planning" },
+  { activity: "Create a chapter outline", credits: 0.5, category: "Planning" },
   { activity: "Create a chapter draft", credits: 2, category: "Writing" },
-  { activity: "Expand or rework a chapter section", credits: 1, category: "Writing" },
+  { activity: "Expand or rework a chapter section", credits: 0.75, category: "Writing" },
   { activity: "Edit or improve a chapter", credits: 1, category: "Editing" },
   { activity: "Style or voice alignment for a chapter", credits: 1, category: "Editing" },
-  { activity: "Chapter summary", credits: 1, category: "Planning" },
-  { activity: "Book summary", credits: 2, category: "Planning" },
+  { activity: "Chapter summary", credits: 0.25, category: "Planning" },
+  { activity: "Book summary", credits: 0.5, category: "Planning" },
   { activity: "Fact check a chapter", credits: 2, category: "Validation" },
   { activity: "Plagiarism check a chapter", credits: 2, category: "Validation" },
-  { activity: "Rewrite a paragraph or short passage", credits: 1, category: "Writing" },
-  { activity: "Title or subtitle ideas", credits: 1, category: "Planning" },
+  { activity: "Rewrite a paragraph or short passage", credits: 0.25, category: "Writing" },
+  { activity: "Title or subtitle ideas", credits: 0.25, category: "Planning" },
 ];
 
 const includedFeatures = [
@@ -86,10 +86,10 @@ console.log(data,"data")
     }
   };
 const PLANS = [
-  { id: "starter", value: "starter", name: "Starter", price: 29, credits: 5 },
-  { id: "author", value: "author", name: "Author", price: 59, credits: 12 },
-  { id: "pro", value: "pro_author", name: "Pro Author", price: 99, credits: 25, popular: true },
-  { id: "studio", value: "studio", name: "Studio", price: 179, credits: 50 },
+  { id: "starter", value: "starter", name: "Starter", price: 29, credits: 50 },
+  { id: "author", value: "author", name: "Author", price: 59, credits: 120 },
+  { id: "pro", value: "pro_author", name: "Pro Author", price: 99, credits: 250, popular: true },
+  { id: "studio", value: "studio", name: "Studio", price: 179, credits: 500 },
 ];
   const totalSelected = selected.reduce((s, i) => s + creditActivities[i].credits, 0);
   const workflowTotal = sampleWorkflow.reduce((s, r) => s + r.credits, 0);
