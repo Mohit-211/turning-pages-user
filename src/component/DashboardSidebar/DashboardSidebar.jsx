@@ -43,28 +43,28 @@ const DashboardSidebar = () => {
   });
   const [creditScore, setCreditScore] = useState(0);
   useEffect(() => {
-  const fetchProfile = async () => {
-    try {
-      const res = await UserProfileApi();
-      setCreditScore(Number(res?.data?.data?.total_credit) || 0);
-    } catch {
-      setCreditScore(0);
-    }
-  };
+    const fetchProfile = async () => {
+      try {
+        const res = await UserProfileApi();
+        setCreditScore(Number(res?.data?.data?.total_credit) || 0);
+      } catch {
+        setCreditScore(0);
+      }
+    };
 
-  fetchProfile();
-
-  // ✅ listen for updates
-  const handleProfileUpdate = () => {
     fetchProfile();
-  };
 
-  window.addEventListener("profileUpdated", handleProfileUpdate);
+    // ✅ listen for updates
+    const handleProfileUpdate = () => {
+      fetchProfile();
+    };
 
-  return () => {
-    window.removeEventListener("profileUpdated", handleProfileUpdate);
-  };
-}, []);
+    window.addEventListener("profileUpdated", handleProfileUpdate);
+
+    return () => {
+      window.removeEventListener("profileUpdated", handleProfileUpdate);
+    };
+  }, []);
   const toggleSidebar = () => {
     const val = !collapsed;
     setCollapsed(val);
@@ -87,43 +87,37 @@ const DashboardSidebar = () => {
             return (
               <li key={item.title} className="sidebar-menu-item">
                 {/* ✅ Tooltip on EVERY item */}
-              
-                  <Link
-                    to={item.url}
-                    className={`sidebar-menu-button ${
-                      isActive(item.url) ? "active" : ""
+
+                <Link
+                  to={item.url}
+                  className={`sidebar-menu-button ${isActive(item.url) ? "active" : ""
                     }`}
-                  >
-                    <Icon className="icon" />
-                    {!collapsed && (
-                      <>
-                        <div className="menu-content">
-                          <span className="title">{item.title}</span>
-                          {/* ℹ️ Info icon (extra detail) */}
-                          {item.tooltip && (
-                            <Tooltip title={item.tooltip}>
-                              <Info
-                                className="info-icon"
-                                onClick={(e) => e.preventDefault()}
-                              />
-                            </Tooltip>
-                          )}
-                        </div>
-                        {item.showScore && (
-                          <span className="credit-badge">
-                            {creditScore}
-                          </span>
+                >
+                  <Icon className="icon" />
+                  {!collapsed && (
+                    <>
+                      <div className="menu-content">
+                        <span className="title">{item.title}</span>
+                        {/* ℹ️ Info icon (extra detail) */}
+                        {item.tooltip && (
+                          <Tooltip title={item.tooltip}>
+                            <Info
+                              className="info-icon"
+                              onClick={(e) => e.preventDefault()}
+                            />
+                          </Tooltip>
                         )}
-                      </>
-                    )}
-                    {/* collapsed badge */}
-                    {collapsed && item.showScore && (
-                      <span className="credit-badge collapsed-badge">
-                        {creditScore}
-                      </span>
-                    )}
-                  </Link>
-                
+                      </div>
+                      {item.showScore && (
+                        <span className="credit-badge">
+                          {creditScore}
+                        </span>
+                      )}
+                    </>
+                  )}
+
+                </Link>
+
               </li>
             );
           })}
