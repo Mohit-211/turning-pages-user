@@ -288,10 +288,10 @@ const PLAN_PALETTE = {
 };
 
 const PLANS = [
-  { id: "starter", value: "starter", name: "Starter", price: 29, credits: 5 },
-  { id: "author", value: "author", name: "Author", price: 59, credits: 12 },
-  { id: "pro", value: "pro_author", name: "Pro Author", price: 99, credits: 25 },
-  { id: "studio", value: "studio", name: "Studio", price: 179, credits: 50 },
+  { id: "starter", value: "starter", name: "Starter", price: 29, credits: 50 },
+  { id: "author", value: "author", name: "Author", price: 59, credits: 120 },
+  { id: "pro", value: "pro_author", name: "Pro Author", price: 99, credits: 250 },
+  { id: "studio", value: "studio", name: "Studio", price: 179, credits: 500 },
 ];
 
 // ✅ palette

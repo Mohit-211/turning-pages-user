@@ -73,7 +73,9 @@ export default function QuotesPanel({
   const searchRef                     = useRef(null);
   const listRef                       = useRef(null);
   const loadingMoreRef                = useRef(false);
-
+const fullQuotesRef  = useRef([]);
+const fullFetchedRef = useRef(false);
+const [searchLoading, setSearchLoading] = useState(false);
   /* fetch tags once */
   useEffect(() => {
     GetTagsApi()
@@ -83,7 +85,18 @@ export default function QuotesPanel({
       })
       .catch(() => {});
   }, []);
-
+const fetchAllForSearch = async () => {
+  if (fullFetchedRef.current) return fullQuotesRef.current;
+  try {
+    const res = await GetAllQuotesApi(1, 9999);
+    const list = res?.data?.data?.data || [];
+    fullQuotesRef.current = list;
+    fullFetchedRef.current = true;
+    return list;
+  } catch {
+    return [];
+  }
+};
   /* fetch quotes when tag changes */
   useEffect(() => {
     setIsLoading(true);
@@ -164,22 +177,38 @@ console.log(quotesTotal,"===>")
   }, [isLoadingMore, hasMore, currentPage, activeTag]);
 
   /* live search filter */
-  useEffect(() => {
-    const q = searchQuery.trim().toLowerCase();
-    if (!q) {
-      setQuotes(allQuotes);
-      return;
-    }
+  /* live search filter — searches full dataset, not just loaded page */
+useEffect(() => {
+  const q = searchQuery.trim().toLowerCase();
+
+  if (!q) {
+    setQuotes(allQuotes);
+    return;
+  }
+
+  let cancelled = false;
+  setSearchLoading(true);
+
+  (async () => {
+    const source = fullFetchedRef.current
+      ? fullQuotesRef.current
+      : await fetchAllForSearch();
+
+    if (cancelled) return;
+
     setQuotes(
-      allQuotes.filter(
+      source.filter(
         (item) =>
           item.quote?.toLowerCase().includes(q) ||
           item.author?.toLowerCase().includes(q) ||
           getItemTag(item).toLowerCase().includes(q)
       )
     );
-  }, [searchQuery, allQuotes]);
+    setSearchLoading(false);
+  })();
 
+  return () => { cancelled = true; };
+}, [searchQuery, allQuotes]);
   const handleCopy = (quote) => {
     navigator.clipboard.writeText(`"${quote.quote}" — ${quote.author}`);
     setCopied(quote.id);
@@ -257,21 +286,24 @@ console.log(quotesTotal,"===>")
       </div>
 
       {/* ── Count ── */}
-      <div className="quotes-panel__count">
-        {isLoading ? (
-          <Skeleton.Button active size="small" shape="round" style={{ width: 50 }} />
-        ) : (
-          <span>{quotesTotal} quote{quotes.length !== 1 ? "s" : ""}</span>
-        )}
-      </div>
+     {/* ── Count ── */}
+<div className="quotes-panel__count">
+  {isLoading || searchLoading ? (
+    <Skeleton.Button active size="small" shape="round" style={{ width: 50 }} />
+  ) : (
+    <span>
+      {searchQuery.trim() ? quotes.length : quotesTotal} quote{quotes.length !== 1 ? "s" : ""}
+    </span>
+  )}
+</div>
 
       {/* ── List ── */}
       <div className="quotes-panel__list" ref={listRef}>
-        {isLoading ? (
-          Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="quotes-panel__skeleton" />
-          ))
-        ) : quotes.length === 0 ? (
+      {isLoading || searchLoading ? (
+  Array.from({ length: 4 }).map((_, i) => (
+    <div key={i} className="quotes-panel__skeleton" />
+  ))
+) : quotes.length === 0 ? (
           <div className="quotes-panel__empty">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <circle cx="11" cy="11" r="8" />
