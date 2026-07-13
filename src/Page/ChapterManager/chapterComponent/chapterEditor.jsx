@@ -6,7 +6,7 @@ export default function ChapterEditor({
   content,
   setContent,
   onlyView,
-   editorRef,
+  editorRef,
 }) {
   const [editorReady, setEditorReady] = useState(false);
 
@@ -23,10 +23,10 @@ export default function ChapterEditor({
 
         value={content || ""}
 
-       onInit={(evt, editor) => {
-  editorRef.current = editor;
-  setTimeout(() => setEditorReady(true), 300);
-}}
+        onInit={(evt, editor) => {
+          editorRef.current = editor;
+          setTimeout(() => setEditorReady(true), 300);
+        }}
         disabled={onlyView}
 
         init={{
@@ -36,11 +36,20 @@ export default function ChapterEditor({
           statusbar: false,
 
           plugins:
-            "advlist autolink lists link image charmap preview anchor table",
-
+            "advlist autolink lists link image charmap preview anchor table media",
           toolbar:
-            "undo redo | blocks | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image table",
+            "undo redo | blocks fontfamily fontsize | bold italic underline forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image media table | removeformat",
 
+          // toolbar:
+          //   "undo redo | blocks | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image table",
+          images_upload_handler: (blobInfo) =>
+            new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result); // data:image/...;base64,...
+              reader.onerror = () =>
+                reject("Image upload failed: could not read file.");
+              reader.readAsDataURL(blobInfo.blob());
+            }),
           content_style: `
             body { 
               font-family: Georgia, serif; 
