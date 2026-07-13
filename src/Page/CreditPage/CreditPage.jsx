@@ -33,10 +33,10 @@ const separateServices = [
 ];
 
 const sampleWorkflow = [
-  { task: "Outline 6 chapters", credits: 6 },
+  { task: "Outline 6 chapters", credits: 3 },
   { task: "Draft 6 chapters", credits: 12 },
   { task: "Edit 6 chapters", credits: 6 },
-  { task: "Book summary", credits: 2 },
+  { task: "Book summary", credits:0.5},
   { task: "Fact check 2 chapters", credits: 4 },
 ];
 
