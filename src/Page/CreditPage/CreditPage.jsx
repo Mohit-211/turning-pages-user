@@ -32,12 +32,21 @@ const separateServices = [
   { label: "9-point TAV Analysis™ as a standalone service", icon: "📊" },
 ];
 
+// ✅ UPDATED: full sample workflow for ONE complete book (6 chapters),
+// now touching every credit-consuming activity so users can see the
+// full range of usage, not just the writing steps.
 const sampleWorkflow = [
-  { task: "Outline 6 chapters", credits: 3 },
-  { task: "Draft 6 chapters", credits: 12 },
-  { task: "Edit 6 chapters", credits: 6 },
-  { task: "Book summary", credits:0.5},
-  { task: "Fact check 2 chapters", credits: 4 },
+  { task: "Outline 6 chapters", detail: "6 × Create a chapter outline (0.5 cr)", credits: 3 },
+  { task: "Draft 6 chapters", detail: "6 × Create a chapter draft (2 cr)", credits: 12 },
+  { task: "Expand or rework 2 chapter sections", detail: "2 × Expand/rework a section (0.75 cr)", credits: 1.5 },
+  { task: "Edit 6 chapters", detail: "6 × Edit or improve a chapter (1 cr)", credits: 6 },
+  { task: "Style/voice alignment for 6 chapters", detail: "6 × Style or voice alignment (1 cr)", credits: 6 },
+  { task: "Chapter summaries (6)", detail: "6 × Chapter summary (0.25 cr)", credits: 1.5 },
+  { task: "Book summary", detail: "1 × Book summary (0.5 cr)", credits: 0.5 },
+  { task: "Fact check 3 chapters", detail: "3 × Fact check a chapter (2 cr)", credits: 6 },
+  { task: "Plagiarism check 3 chapters", detail: "3 × Plagiarism check a chapter (2 cr)", credits: 6 },
+  { task: "Rewrite 4 paragraphs/passages", detail: "4 × Rewrite a paragraph (0.25 cr)", credits: 1 },
+  { task: "Title & subtitle ideas", detail: "1 × Title or subtitle ideas (0.25 cr)", credits: 0.25 },
 ];
 
 // const tabs = ["Overview", "Credit Usage", "Sample Usage",  "Free Access","Additional Services"];
@@ -48,6 +57,13 @@ const tabs = [
   "Free Access",
   "Additional Services",
   "Plans & Pricing", // ✅ NEW
+];
+
+const PLANS = [
+  { id: "starter", value: "starter", name: "Starter", price: 29, credits: 50 },
+  { id: "author", value: "author", name: "Author", price: 59, credits: 120 },
+  { id: "pro", value: "pro_author", name: "Pro Author", price: 99, credits: 250, popular: true },
+  { id: "studio", value: "studio", name: "Studio", price: 179, credits: 500 },
 ];
 
 export default function CreditSystem() {
@@ -71,28 +87,30 @@ export default function CreditSystem() {
   const fetchStats = async () => {
     try {
       const res = await GetCreditApi();
-      console.log(res,"res")
+      console.log(res, "res");
       const data = res?.data?.data;
-console.log(data,"data")
+      console.log(data, "data");
       setStats({
         total: data.total_credits,
-        used: data.credits_used ,
+        used: data.credits_used,
         avg: data.avg_credits_per_book,
-        activities: data.activities
-,
+        activities: data.activities,
       });
     } catch (err) {
       console.log("Credit API Error:", err);
     }
   };
-const PLANS = [
-  { id: "starter", value: "starter", name: "Starter", price: 29, credits: 50 },
-  { id: "author", value: "author", name: "Author", price: 59, credits: 120 },
-  { id: "pro", value: "pro_author", name: "Pro Author", price: 99, credits: 250, popular: true },
-  { id: "studio", value: "studio", name: "Studio", price: 179, credits: 500 },
-];
+
   const totalSelected = selected.reduce((s, i) => s + creditActivities[i].credits, 0);
+
+  // Per-book total from the full sample workflow (uses every activity type)
   const workflowTotal = sampleWorkflow.reduce((s, r) => s + r.credits, 0);
+
+  // ✅ NEW: 5-book scenario — minimum credits to use every feature across 5 books
+  const BOOK_COUNT = 5;
+  const fiveBookTotal = workflowTotal * BOOK_COUNT;
+  const recommendedPlan =
+    PLANS.find((p) => p.credits >= fiveBookTotal) || PLANS[PLANS.length - 1];
 
   const toggle = (idx) =>
     setSelected((p) => (p.includes(idx) ? p.filter((i) => i !== idx) : [...p, idx]));
@@ -101,7 +119,6 @@ const PLANS = [
     <div className="credit-system">
       <div className="cs-main">
         <main className="cs-content">
-
           {/* Welcome */}
           <div className="cs-welcome">
             <div>
@@ -135,7 +152,7 @@ const PLANS = [
             ))}
           </div>
 
-            {/* Tabbed card */}
+          {/* Tabbed card */}
           <div className="cs-card">
             <div className="cs-tabs">
               {tabs.map((tab) => (
@@ -150,7 +167,6 @@ const PLANS = [
             </div>
 
             <div className="cs-panel">
-
               {/* OVERVIEW */}
               {activeTab === "Overview" && (
                 <div className="cs-overview">
@@ -160,7 +176,7 @@ const PLANS = [
                     make meaningful progress on your manuscript. A Book Credit is used when
                     the platform helps you move your book forward through writing, editing,
                     refining, or validating your content. Most authors use{" "}
-                    <strong style={{ color: "#C0392B" }}>20 to 30 Book Credits</strong> to
+                    <strong style={{ color: "#C0392B" }}>40 to 50 Book Credits</strong> to
                     write, revise, and prepare a full book for publishing.
                   </p>
                   <div className="cs-overview__grid">
@@ -177,7 +193,7 @@ const PLANS = [
                       },
                       {
                         title: "Typical usage",
-                        desc: "A full 6-chapter book typically uses around 30 credits from outline to summary.",
+                        desc: `A full 6-chapter book using every feature (outline, draft, edit, style, summaries, fact check, plagiarism check, rewrites, titles) uses about $45 credits from outline to summary.`,
                         icon: "📖",
                       },
                       {
@@ -195,6 +211,33 @@ const PLANS = [
                       </div>
                     ))}
                   </div>
+
+                  {/* ✅ NEW: 5-book scenario */}
+                  {/* <div className="cs-overview-card cs-overview-card--highlight" style={{marginTop:"14px"}}>
+                    <span className="cs-overview-card__icon">📚</span>
+                    <div>
+                      <div className="cs-overview-card__title">
+                        Writing 5 books and using every feature?
+                      </div>
+                      <div className="cs-overview-card__desc">
+                        If you plan to outline, draft, edit, style, summarize, fact check,
+                        plagiarism check, rewrite passages, and generate titles for{" "}
+                        <strong>{BOOK_COUNT} books</strong> (6 chapters each), you'll need a
+                        minimum of{" "}
+                        <strong style={{ color: "#C0392B" }}>
+                          {fiveBookTotal} credits
+                        </strong>{" "}
+                        ({workflowTotal} credits × {BOOK_COUNT} books) to cover every
+                        activity across all of them.
+                        <br />
+                        <br />
+                        The <strong>{recommendedPlan.name}</strong> plan (
+                        {recommendedPlan.credits} credits/mo for ${recommendedPlan.price}
+                        /mo) is the minimum plan that covers this in a single month — or
+                        spread the work across a couple of months on a smaller plan.
+                      </div>
+                    </div>
+                  </div> */}
                 </div>
               )}
 
@@ -202,11 +245,19 @@ const PLANS = [
               {activeTab === "Credit Usage" && (
                 <div className="cs-credits">
                   <div className="cs-credits__header">
-                    <p className="cs-credits__hint">Credits are used whenever you access certain features or perform specific actions. Different tasks may use different amounts. Your balance updates instantly, so you always know where you stand.</p>
+                    <p className="cs-credits__hint">
+                      Credits are used whenever you access certain features or perform
+                      specific actions. Different tasks may use different amounts. Your
+                      balance updates instantly, so you always know where you stand.
+                    </p>
                     {selected.length > 0 && (
                       <div className="cs-credits__summary">
-                        <span className="cs-credits__summary-count">{selected.length} selected</span>
-                        <span className="cs-credits__summary-total">{totalSelected} Credits</span>
+                        <span className="cs-credits__summary-count">
+                          {selected.length} selected
+                        </span>
+                        <span className="cs-credits__summary-total">
+                          {totalSelected} Credits
+                        </span>
                         <button
                           className="cs-credits__summary-clear"
                           onClick={() => setSelected([])}
@@ -227,12 +278,16 @@ const PLANS = [
                         >
                           <div className="cs-activity__left">
                             <div
-                              className={`cs-activity__check${sel ? " cs-activity__check--checked" : ""}`}
+                              className={`cs-activity__check${
+                                sel ? " cs-activity__check--checked" : ""
+                              }`}
                             >
                               {sel && <span className="cs-activity__checkmark">✓</span>}
                             </div>
                             <span
-                              className={`cs-activity__label${sel ? " cs-activity__label--selected" : ""}`}
+                              className={`cs-activity__label${
+                                sel ? " cs-activity__label--selected" : ""
+                              }`}
                             >
                               {item.activity}
                             </span>
@@ -244,7 +299,9 @@ const PLANS = [
                               {item.category}
                             </span>
                             <span
-                              className={`cs-activity__credits${sel ? " cs-activity__credits--selected" : ""}`}
+                              className={`cs-activity__credits${
+                                sel ? " cs-activity__credits--selected" : ""
+                              }`}
                             >
                               {item.credits} cr
                             </span>
@@ -260,7 +317,9 @@ const PLANS = [
               {activeTab === "Free Access" && (
                 <div className="cs-included">
                   <p className="cs-included__intro">
-                    These features are available to you at no cost, no credits required. You can explore, try things out, and get value right away without worrying about usage. It’s our way of letting you experience the platform freely.
+                    These features are available to you at no cost, no credits required. You
+                    can explore, try things out, and get value right away without worrying
+                    about usage. It’s our way of letting you experience the platform freely.
                   </p>
                   <div className="cs-included__grid">
                     {includedFeatures.map((f, i) => (
@@ -277,7 +336,11 @@ const PLANS = [
               {activeTab === "Sample Usage" && (
                 <div className="cs-workflow">
                   <p className="cs-workflow__intro">
-                   Want a clearer picture? Here’s a sample walkthrough showing how credits are used in a real scenario. Follow along to understand what actions cost, how much they use, and how quickly credits are deducted.
+                    Want a clearer picture? Here's a full sample walkthrough for{" "}
+                    <strong>one 6-chapter book</strong>, using every credit-consuming
+                    feature — outlining, drafting, expanding, editing, style alignment,
+                    summaries, fact checking, plagiarism checking, rewrites, and title
+                    ideas — so you can see exactly what a complete workflow costs.
                   </p>
                   <div className="cs-workflow__table">
                     <div className="cs-workflow__thead">
@@ -287,11 +350,18 @@ const PLANS = [
                     {sampleWorkflow.map((row, i) => (
                       <div
                         key={i}
-                        className={`cs-workflow__row cs-workflow__row--${i % 2 === 0 ? "even" : "odd"}`}
+                        className={`cs-workflow__row cs-workflow__row--${
+                          i % 2 === 0 ? "even" : "odd"
+                        }`}
                       >
                         <div className="cs-workflow__row-left">
                           <span className="cs-workflow__step-num">{i + 1}</span>
-                          <span className="cs-workflow__task-name">{row.task}</span>
+                          <div>
+                            <span className="cs-workflow__task-name">{row.task}</span>
+                            {row.detail && (
+                              <div className="cs-workflow__task-detail">{row.detail}</div>
+                            )}
+                          </div>
                         </div>
                         <div className="cs-workflow__row-right">
                           <div className="cs-workflow__bar-track">
@@ -310,10 +380,45 @@ const PLANS = [
                       </div>
                     ))}
                     <div className="cs-workflow__total-row">
-                      <span className="cs-workflow__total-label">Total</span>
+                      <span className="cs-workflow__total-label">Total (1 book)</span>
                       <span className="cs-workflow__total-val">{workflowTotal}</span>
                     </div>
                   </div>
+
+                  {/* ✅ NEW: 5-book projection table */}
+                  {/* <div className="cs-workflow__table" style={{ marginTop: "1.5rem" }}>
+                    <div className="cs-workflow__thead">
+                      <span className="cs-workflow__col-label">
+                        Scaling up: {BOOK_COUNT} books, full feature usage
+                      </span>
+                      <span className="cs-workflow__col-label">Credits</span>
+                    </div>
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <div
+                        key={n}
+                        className={`cs-workflow__row cs-workflow__row--${
+                          n % 2 === 0 ? "even" : "odd"
+                        }`}
+                      >
+                        <div className="cs-workflow__row-left">
+                          <span className="cs-workflow__step-num">{n}</span>
+                          <span className="cs-workflow__task-name">
+                            Book {n} (outline → draft → edit → style → summary →
+                            fact check → plagiarism check → rewrites → titles)
+                          </span>
+                        </div>
+                        <div className="cs-workflow__row-right">
+                          <span className="cs-workflow__credit-val">{workflowTotal}</span>
+                        </div>
+                      </div>
+                    ))}
+                    <div className="cs-workflow__total-row">
+                      <span className="cs-workflow__total-label">
+                        Total for {BOOK_COUNT} books
+                      </span>
+                      <span className="cs-workflow__total-val">{fiveBookTotal}</span>
+                    </div>
+                  </div> */}
                 </div>
               )}
 
@@ -321,7 +426,8 @@ const PLANS = [
               {activeTab === "Additional Services" && (
                 <div className="cs-services">
                   <p className="cs-services__intro">
-                  Some services are separate from Book Credits because they are professional publishing or premium editorial services.
+                    Some services are separate from Book Credits because they are
+                    professional publishing or premium editorial services.
                   </p>
                   <div className="cs-services__list">
                     {separateServices.map((s, i) => (
@@ -343,30 +449,29 @@ const PLANS = [
                   </div>
                 </div>
               )}
-            {activeTab === "Plans & Pricing" && (
-  <div className="cs-plans">
-   <p className="cs-services__intro">
-      Choose a subscription plan that fits your writing needs. Each plan provides monthly credits.
-    </p>
 
-    <div className="cs-plans__grid">
-      {PLANS.map((plan) => (
-        <div key={plan.id} className="cs-plan-card">
-          <div className="cs-credits__summary-count">{plan.name}</div>
+              {activeTab === "Plans & Pricing" && (
+                <div className="cs-plans">
+                  <p className="cs-services__intro">
+                    Choose a subscription plan that fits your writing needs. Each plan
+                    provides monthly credits.
+                  </p>
 
-          <div className="cs-plan-card__price">
-            ${plan.price} <span>/mo</span>
-          </div>
+                  <div className="cs-plans__grid">
+                    {PLANS.map((plan) => (
+                      <div key={plan.id} className="cs-plan-card">
+                        <div className="cs-credits__summary-count">{plan.name}</div>
 
-          <div className="cs-plan-card__credits">
-            {plan.credits} credits
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-)}
+                        <div className="cs-plan-card__price">
+                          ${plan.price} <span>/mo</span>
+                        </div>
 
+                        <div className="cs-plan-card__credits">{plan.credits} credits</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </main>
