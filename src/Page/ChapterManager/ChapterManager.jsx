@@ -3,9 +3,9 @@ import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, BookOpen, Plus } from "lucide-react";
 import "./ChapterManager.scss";
 
-import ChapterList from "./chapterComponent/ChapterList";
-import AddChapterModal from "./chapterComponent/AddChapterModal";
-import UploadChapterModal from "./chapterComponent/UploadChapterModal";
+import ChapterList from "./chapterComponent/chapterList";
+import AddChapterModal from "./chapterComponent/addChapterModal";
+import UploadChapterModal from "./chapterComponent/uploadChapterModal";
 import BookHeader from "../Book/BookHeader/BookHeader";
 import AIReportPanel from "./chapterComponent/AIReportPanel/AIReportPanel";
 import PlagiarismModal from "./chapterComponent/PlagiarismModal/PlagiarismModal";
