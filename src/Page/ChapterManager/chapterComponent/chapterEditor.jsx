@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
-import "./ChapterEditor.scss";
+import "./chapterEditor.scss";
 
 export default function ChapterEditor({
   content,
