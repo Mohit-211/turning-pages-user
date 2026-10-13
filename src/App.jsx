@@ -7,6 +7,8 @@ import AuthLayout from './Page/Auth/AuthLayout';
 import LoginForm from './Page/Auth/LoginForm';
 import SignUpForm from './Page/Auth/SignUpForm';
 import OtpVerification from './Page/Auth/OtpVerification';
+import ForgotPasswordForm from './Page/Auth/ForgotPasswordForm';
+import ResetPasswordForm from './Page/Auth/ResetPasswordForm';
 import Dashboard from './Page/Dashboard/Dashboard';
 import CreateBook from './Page/Book/CreateBook';
 import MyBookPage from './Page/MyBookPage/MyBookPage';
@@ -42,6 +44,16 @@ function App() {
           <Route path="/otp-verify" element={
             <AuthLayout>
               <OtpVerification />
+            </AuthLayout>
+          } />
+          <Route path="/forgot-password" element={
+            <AuthLayout>
+              <ForgotPasswordForm />
+            </AuthLayout>
+          } />
+          <Route path="/reset-password" element={
+            <AuthLayout>
+              <ResetPasswordForm />
             </AuthLayout>
           } />
           <Route path="/create-book" element={<CreateBook />} />

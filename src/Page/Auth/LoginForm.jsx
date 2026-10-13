@@ -66,7 +66,7 @@ const LoginForm = () => {
           <Input.Password placeholder="Enter your password" />
         </Form.Item>
         <Form.Item>
-          <Link to="/auth/forgot-password" className="forgot-link">
+          <Link to="/forgot-password" className="forgot-link">
             Forgot Password?
           </Link>
         </Form.Item>

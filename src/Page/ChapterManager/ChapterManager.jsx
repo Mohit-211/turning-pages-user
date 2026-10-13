@@ -11,10 +11,10 @@ import AIAssistantDrawer from "./chapterComponent/aIAssistantDrawer";
 import AddChapterModal from "./chapterComponent/addChapterModal";
 import UploadChapterModal from "./chapterComponent/uploadChapterModal";
 import BookHeader from "../Book/BookHeader/BookHeader";
-import GrammarAssistant from "./chapterComponent/GrammarAssistant";
 import { useParams } from "react-router-dom";
 import config from "../../constants/config";
 import { Chapter_ENDPOINTS } from "../../api/endpoints";
+import { forceLogout } from "../../errors/ApiErrorHandler";
 const { Sider, Content } = Layout;
 export default function ChapterManager() {
   const token = localStorage.getItem("book_publish_token");
@@ -70,7 +70,7 @@ export default function ChapterManager() {
       message.success(`Chapter "${selected?.title}" saved successfully`);
       await fetchChapters();
     } catch {
-      message.error("Failed to save chapter");
+      // Error toast comes from the API client; unsaved text stays in the editor.
     } finally {
       setSaving(false);
     }
@@ -140,27 +140,41 @@ export default function ChapterManager() {
           }),
         }
       );
-      if (!response.ok) throw new Error("Request failed");
+      if (response.status === 401) return forceLogout();
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        throw new Error(data?.message || "AI content generation failed");
+      }
       if (!response.body) throw new Error("No response body");
       const reader = response.body.getReader();
       const decoder = new TextDecoder("utf-8");
       let fullText = "";
+      // An SSE event can be split across network chunks, so keep the incomplete tail for the next read.
+      let buffer = "";
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split("\n").filter((line) => line.trim() !== "");
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop();
         for (const line of lines) {
           if (!line.startsWith("data:")) continue;
           const jsonStr = line.replace("data:", "").trim();
+          if (!jsonStr || jsonStr === "[DONE]") continue;
+          let data;
           try {
-            const data = JSON.parse(jsonStr);
-            if (data.token !== undefined) {
-              fullText += data.token;
-              setStreamedText((prev) => prev + data.token);
-            }
+            data = JSON.parse(jsonStr);
           } catch {
-            // ignore malformed chunks
+            continue; // ignore malformed events
+          }
+          if (data.type === "error") throw new Error(data.token);
+          if (data.type === "final") {
+            // The final event repeats the whole reply; use it instead of appending.
+            fullText = data.token;
+            setStreamedText(data.token);
+          } else if (data.token !== undefined) {
+            fullText += data.token;
+            setStreamedText((prev) => prev + data.token);
           }
         }
       }
@@ -172,7 +186,7 @@ export default function ChapterManager() {
       }
     } catch (error) {
       console.error("AI stream error:", error);
-      message.error("AI content generation failed");
+      message.error(error.message || "AI content generation failed");
     } finally {
       setAiLoading(false);
     }
@@ -229,12 +243,6 @@ export default function ChapterManager() {
                 readOnly={!userHasPermission}   // ⬅️ ADD THIS
 
               />
-
-              {/* <GrammarAssistant
-  text={editorContent}
-  setText={setEditorContent}
-  token={token}
-/> */}
             </div>
           ) : (
             <div className="spin-wrapper">

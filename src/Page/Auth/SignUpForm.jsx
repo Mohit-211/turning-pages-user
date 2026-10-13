@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Form, Input, Button, Typography, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import ReCAPTCHA from "react-google-recaptcha";   // ✅ import captcha
 import { registerApi } from "../../api/auth/auth.api";
+import { passwordRule } from "../../constants/validation";
 import "./Auth.scss";
 
 const { Text } = Typography;
@@ -13,6 +14,7 @@ const SignUpForm = ({ signUpData = {}, setSignUpData = () => { } }) => {
   const [loading, setLoading] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const [captchaValue, setCaptchaValue] = useState(null); // ✅ captcha state
+  const recaptchaRef = useRef(null);
 
   useEffect(() => {
     if (!signUpData?.confirmPassword) {
@@ -27,10 +29,10 @@ const SignUpForm = ({ signUpData = {}, setSignUpData = () => { } }) => {
   }, [signUpData?.password, signUpData?.confirmPassword]);
 
   const onFinish = async (values) => {
-    // if (!captchaValue) {
-    //   message.error("Please verify the reCAPTCHA");
-    //   return;
-    // }
+    if (!captchaValue) {
+      message.error("Please complete the captcha.");
+      return;
+    }
 
     const { name, email, mobile, password, confirmPassword } = values;
     if (password !== confirmPassword) {
@@ -44,10 +46,10 @@ const SignUpForm = ({ signUpData = {}, setSignUpData = () => { } }) => {
       const payload = {
         name,
         email,
-        mobile,
+        ...(mobile ? { mobile } : {}),
         password,
         confirm_password: confirmPassword,
-        captcha: captchaValue, // ✅ send captcha token if needed in backend
+        captcha: captchaValue,
       };
       const response = await registerApi(payload);
 
@@ -68,6 +70,9 @@ const SignUpForm = ({ signUpData = {}, setSignUpData = () => { } }) => {
       } else {
         setPasswordError(errorMsg || "Something went wrong");
       }
+      // A captcha token works only once, so the user has to solve a new one before retrying.
+      recaptchaRef.current?.reset();
+      setCaptchaValue(null);
     } finally {
       setLoading(false);
     }
@@ -114,10 +119,9 @@ const SignUpForm = ({ signUpData = {}, setSignUpData = () => { } }) => {
 
         {/* Mobile */}
         <Form.Item
-          label="Mobile"
+          label="Mobile (optional)"
           name="mobile"
           rules={[
-            { required: true, message: "Please enter your mobile number" },
             { pattern: /^\d{10}$/, message: "Mobile number must be 10 digits" },
           ]}
         >
@@ -138,26 +142,7 @@ const SignUpForm = ({ signUpData = {}, setSignUpData = () => { } }) => {
           hasFeedback
           rules={[
             { required: true, message: "Please create a password" },
-            {
-              validator: (_, value) => {
-                if (!value) return Promise.resolve();
-                if (value.includes(" ")) {
-                  return Promise.reject("Password cannot contain spaces");
-                }
-                if (value.length < 8) {
-                  return Promise.reject(
-                    "Password must be at least 8 characters long"
-                  );
-                }
-                const digitMatches = value.match(/\d/g) || [];
-                if (digitMatches.length < 2) {
-                  return Promise.reject(
-                    "Password must contain at least 2 digits"
-                  );
-                }
-                return Promise.resolve();
-              },
-            },
+            passwordRule,
           ]}
         >
           <Input.Password
@@ -203,8 +188,10 @@ const SignUpForm = ({ signUpData = {}, setSignUpData = () => { } }) => {
         {/* ✅ ReCAPTCHA */}
         <Form.Item style={{ justifySelf: "center", textAlign: "center" }}>
           <ReCAPTCHA
-            sitekey="6LdpsOgrAAAAAPx-8vWg-L8aBFYI_K2Y-eHzoutI"
+            ref={recaptchaRef}
+            sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
             onChange={(value) => setCaptchaValue(value)}
+            onExpired={() => setCaptchaValue(null)}
           />
         </Form.Item>
 

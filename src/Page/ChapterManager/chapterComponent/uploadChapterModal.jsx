@@ -3,10 +3,10 @@ import { Modal, Upload, message } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
 import * as mammoth from "mammoth";
 import * as pdfjsLib from "pdfjs-dist";
-import "pdfjs-dist/build/pdf.worker.min.mjs"; // 👈 Important
+import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 
-// Configure PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+// Configure PDF.js worker (bundled by Vite, so it always matches the installed pdfjs-dist version)
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
 const { Dragger } = Upload;
 

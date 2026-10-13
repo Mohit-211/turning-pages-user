@@ -12,5 +12,10 @@ export const verifyOtpApi = (payload) => client.post(AUTH_ENDPOINTS.VERIFY_OTP, 
 
 // Password 
 export const forgotPasswordApi = (payload) => client.post(AUTH_ENDPOINTS.FORGOT_PASSWORD, payload);
-export const resetPasswordApi = (payload) => client.post(AUTH_ENDPOINTS.RESET_PASSWORD, payload);
-export const changePasswordApi = (payload) => client.post(AUTH_ENDPOINTS.CHANGE_PASSWORD, payload);
+// Changing the password signs out every other session, so the old token stops working.
+export const changePasswordApi = async (payload) => {
+  const response = await client.post(AUTH_ENDPOINTS.CHANGE_PASSWORD, payload);
+  const token = response?.data?.data?.tokens?.access?.token;
+  if (token) localStorage.setItem("book_publish_token", token);
+  return response;
+};

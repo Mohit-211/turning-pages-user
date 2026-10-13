@@ -1,6 +1,12 @@
 import { message } from "antd";
 import errorMessages from "./errorMessages";
 
+export const forceLogout = (msg) => {
+  message.error(msg || errorMessages.UNAUTHORIZED);
+  localStorage.removeItem("book_publish_token");
+  window.location.href = "/login";
+};
+
 export const handleApiError = (error) => {
   if (!error.response) {
     message.error(errorMessages.NETWORK_ERROR || "Network error. Please check your connection.");
@@ -13,9 +19,7 @@ export const handleApiError = (error) => {
 
   // ✅ Handle JWT expiration globally
   if (serverMessage && serverMessage.toLowerCase().includes("jwt expired")) {
-    message.error("Session expired. Please log in again.");
-    localStorage.removeItem("book_publish_token");
-    window.location.href = "/login";
+    forceLogout("Session expired. Please log in again.");
     return Promise.reject(error);
   }
 
@@ -24,9 +28,7 @@ export const handleApiError = (error) => {
       message.error(serverMessage || "Bad request.");
       break;
     case 401:
-      message.error(serverMessage || "Unauthorized. Please login again.");
-      localStorage.removeItem("book_publish_token");
-      window.location.href = "/login";
+      forceLogout(serverMessage);
       break;
     case 403:
       message.error(serverMessage || "You don’t have permission to do this.");

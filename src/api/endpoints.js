@@ -5,8 +5,7 @@ export const AUTH_ENDPOINTS = {
   SEND_OTP: "user/auth/otp",
   VERIFY_OTP: "user/auth/verify-otp",
   FORGOT_PASSWORD: "user/auth/forgot-password",
-  RESET_PASSWORD: "user/auth/reset-password",
-  CHANGE_PASSWORD: "user/auth/change-password",
+  CHANGE_PASSWORD: "user/auth/reset-password",
 };
 export const USER_ENDPOINTS = {
   PROFILE: "user/profile",
@@ -34,7 +33,4 @@ export const Chapter_ENDPOINTS = {
   UPDATE: "chapters",
   DELETE: "chapters/remove",
   GenerateChapterContent: "chapters/generate/chapter/content"
-};
-export const Grammar_ENDPOINTS = {
-  CHECK: "grammar/check",
 };
