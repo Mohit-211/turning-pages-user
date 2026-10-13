@@ -1,5 +1,5 @@
 import React from "react";
-import "./Button.scss";
+import "./button.scss";
 
 const Button = React.forwardRef(
   ({ children, variant = "default", size = "default", asChild = false, className = "", ...props }, ref) => {

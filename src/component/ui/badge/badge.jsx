@@ -1,5 +1,5 @@
 import React from "react";
-import "./Badge.scss";
+import "./badge.scss";
 
 function Badge({ className = "", variant = "default", ...props }) {
   return (
