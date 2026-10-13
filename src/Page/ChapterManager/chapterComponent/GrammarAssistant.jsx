@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import "./GrammarAssistant.scss";
+import config from "../../../constants/config";
+import { Grammar_ENDPOINTS } from "../../../api/endpoints";
 
 export default function GrammarAssistant({ text, setText, token }) {
   const [errors, setErrors] = useState([]);
@@ -14,7 +16,7 @@ export default function GrammarAssistant({ text, setText, token }) {
 
     try {
       const res = await fetch(
-        "https://api.turningpages.io:9090/api/v1/grammar/check",
+        `${config.API_BASE_URL}${Grammar_ENDPOINTS.CHECK}`,
         {
           method: "POST",
           headers: {

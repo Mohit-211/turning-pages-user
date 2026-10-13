@@ -13,6 +13,8 @@ import UploadChapterModal from "./chapterComponent/uploadChapterModal";
 import BookHeader from "../Book/BookHeader/BookHeader";
 import GrammarAssistant from "./chapterComponent/GrammarAssistant";
 import { useParams } from "react-router-dom";
+import config from "../../constants/config";
+import { Chapter_ENDPOINTS } from "../../api/endpoints";
 const { Sider, Content } = Layout;
 export default function ChapterManager() {
   const token = localStorage.getItem("book_publish_token");
@@ -124,7 +126,7 @@ export default function ChapterManager() {
     setStreamedText("");
     try {
       const response = await fetch(
-        "https://api.turningpages.io:9090/api/v1/chapters/generate/chapter/content",
+        `${config.API_BASE_URL}${Chapter_ENDPOINTS.GenerateChapterContent}`,
         {
           method: "POST",
           headers: {

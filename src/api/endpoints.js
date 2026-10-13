@@ -33,5 +33,8 @@ export const Chapter_ENDPOINTS = {
   GET_ALL: (id) => `chapters/${id}`,
   UPDATE: "chapters",
   DELETE: "chapters/remove",
-  GenerateChapterContent: "/chapters/generate/chapter/content"
+  GenerateChapterContent: "chapters/generate/chapter/content"
+};
+export const Grammar_ENDPOINTS = {
+  CHECK: "grammar/check",
 };
